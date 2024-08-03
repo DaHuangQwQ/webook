@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webook-record
+spec:
+  selector:
+    app: webook-record
+  ports:
+    - protocol: TCP
+      port: 98
+      targetPort: 8080
+  type: ClusterIP
