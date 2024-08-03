@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-demo
+spec:
+#  使用 nginx
+  ingressClassName: nginx
+  rules:
+#    host 是 localhost 命中这条 rule
+    - host: localhost
+      http:
+        paths:
+#          请求路径前缀是 / 命中这条 rule
+#          将流量转发给后面的 名字是 webook 服务上，端口是 80
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: webook
+                port:
+                  number: 80
