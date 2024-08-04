@@ -1,10 +1,10 @@
 package web
 
 import (
+	regexp "github.com/dlclark/regexp2"
 	"github.com/gin-contrib/sessions"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
-	"regexp"
 	"time"
 	"webook/internal/domain"
 	"webook/internal/service"
@@ -25,20 +25,23 @@ type UserClaims struct {
 
 func NewUserHandler(svc *service.UserService) *UserHandler {
 	const (
-		emailRegexPattern  = "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$"
-		passwordExpPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*])[A-Za-z\\d!@#$%^&*]{8,}$\n"
+		emailRegexPattern  = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
+		passwordExpPattern = `^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$`
 	)
-	emailExp := regexp.MustCompile(emailRegexPattern)
-	passwordExp := regexp.MustCompile(passwordExpPattern)
+	emailExp := regexp.MustCompile(emailRegexPattern, regexp.None)
+	passwordExp := regexp.MustCompile(passwordExpPattern, regexp.None)
 
 	return &UserHandler{
+		svc:         svc,
 		emailExp:    emailExp,
 		passwordExp: passwordExp,
 	}
 }
 
 func (u *UserHandler) RegisterRoutes(router *gin.Engine) {
-	router.POST("/signup", u.SignUp)
+	router.POST("/users/signup", u.SignUp)
+	router.POST("/users/login", u.LoginJwt)
+	router.GET("/users/profile", u.Profile)
 }
 
 func (h *UserHandler) SignUp(ctx *gin.Context) {
@@ -53,7 +56,11 @@ func (h *UserHandler) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	isEmail := h.emailExp.MatchString(req.Email)
+	isEmail, err := h.emailExp.MatchString(req.Email)
+	if err != nil {
+		ctx.String(http.StatusOK, "系统错误")
+		return
+	}
 	if !isEmail {
 		ctx.String(http.StatusOK, "非法邮箱格式")
 		return
@@ -64,13 +71,17 @@ func (h *UserHandler) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	isPassword := h.passwordExp.MatchString(req.Password)
+	isPassword, err := h.passwordExp.MatchString(req.Password)
+	if err != nil {
+		ctx.String(http.StatusOK, "系统错误")
+		return
+	}
 	if !isPassword {
 		ctx.String(http.StatusOK, "密码必须包含字母、数字、特殊字符，并且不少于八位")
 		return
 	}
 
-	err := h.svc.Signup(ctx, domain.User{
+	err = h.svc.Signup(ctx, domain.User{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -147,4 +158,8 @@ func (h *UserHandler) LoginJwt(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "系统错误")
 	}
 	return
+}
+
+func (h *UserHandler) Profile(ctx *gin.Context) {
+	ctx.String(http.StatusOK, "profile")
 }

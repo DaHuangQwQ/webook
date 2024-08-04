@@ -26,9 +26,8 @@ func NewUserRepository(dao *dao.UserDao, cache *cache.UserCache) *UserRepository
 
 func (repo *UserRepository) Create(ctx context.Context, user domain.User) error {
 	err := repo.dao.Insert(ctx, dao.User{
-		Name:     "",
-		Age:      0,
-		Password: "",
+		Email:    user.Email,
+		Password: user.Password,
 	})
 	return err
 }
@@ -60,11 +59,9 @@ func (repo *UserRepository) FindByID(ctx context.Context, id int64) (domain.User
 		return domain.User{}, err
 	}
 	user := domain.User{
-		Id:        ue.Id,
-		FirstName: "",
-		LastName:  "",
-		Password:  "",
-		Email:     "",
+		Id:       ue.Id,
+		Password: ue.Password,
+		Email:    ue.Email,
 	}
 
 	go func() {
@@ -81,9 +78,7 @@ func (repo *UserRepository) FindByID(ctx context.Context, id int64) (domain.User
 
 func (repo *UserRepository) toDomain(u dao.User) domain.User {
 	return domain.User{
-		Id:        0,
-		FirstName: "",
-		LastName:  "",
-		Password:  "",
+		Email:    u.Email,
+		Password: u.Password,
 	}
 }

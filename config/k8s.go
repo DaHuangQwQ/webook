@@ -5,10 +5,10 @@ package config
 var (
 	Config = config{
 		Mysql: Mysql{
-			host: "root:root@tcp(webook-mysql:3308)/dahuang",
+			DSN: "root:root@tcp(webook-mysql:3308)/dahuang",
 		},
 		Redis: Redis{
-			host: "webook-redis",
+			Host: "webook-redis",
 		},
 	}
 )

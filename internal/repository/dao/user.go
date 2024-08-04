@@ -18,6 +18,10 @@ var (
 )
 
 func NewUserDao(db *gorm.DB) *UserDao {
+	err := db.AutoMigrate(&User{})
+	if err != nil {
+		return nil
+	}
 	return &UserDao{db: db}
 }
 
@@ -49,11 +53,10 @@ func (dao *UserDao) FindById(ctx context.Context, id int64) (User, error) {
 }
 
 type User struct {
-	Id       int64  `json:"id"`
-	Name     string `gorm:"primaryKey"`
-	Age      int
-	Password string
+	Id       int64  `json:"id" gorm:"primary_key;autoIncrement"`
+	Email    string `json:"email" gorm:"type:varchar(100);not null""'`
+	Password string `json:"password" gorm:"type:varchar(100);not null"`
 
-	CTime int64
-	UTime int64
+	CTime int64 `json:"ctime" gorm:"autoCreateTime:milli"`
+	UTime int64 `json:"utime" gorm:"autoUpdateTime:milli"`
 }

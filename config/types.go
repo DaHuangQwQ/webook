@@ -6,9 +6,9 @@ type config struct {
 }
 
 type Redis struct {
-	host string
+	Host string
 }
 
 type Mysql struct {
-	host string
+	DSN string
 }
