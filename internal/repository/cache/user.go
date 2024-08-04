@@ -20,9 +20,9 @@ type UserCache struct {
 	Expiration time.Duration
 }
 
-// A 用到了 B, B 一定是 接口
-// A 用到了 B, B 一定是 A的字段
-// A 用到了 B, A 绝对不初始化 B, 而是外面注入
+// A 用到了 B, B 一定是 接口 => 保证面向接口
+// A 用到了 B, B 一定是 A的字段  => 避免包方法、包变量, 这俩都缺乏扩展性
+// A 用到了 B, A 绝对不初始化 B, 而是外面注入 => 保持依赖注入 和 依赖反转
 // 依赖注入
 
 func NewUserCache(redis redis.Cmdable) *UserCache {
