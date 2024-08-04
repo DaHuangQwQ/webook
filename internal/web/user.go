@@ -97,7 +97,7 @@ func (h *UserHandler) Login(ctx *gin.Context) {
 	switch err {
 	case nil:
 		sess := sessions.Default(ctx)
-		sess.Set("userId", u.ID)
+		sess.Set("userId", u.Id)
 		sess.Options(sessions.Options{
 			// 十五分钟
 			MaxAge: 900,
@@ -131,7 +131,7 @@ func (h *UserHandler) LoginJwt(ctx *gin.Context) {
 			RegisteredClaims: jwt.RegisteredClaims{
 				ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			},
-			userId:    u.ID,
+			userId:    u.Id,
 			UserAgent: ctx.Request.UserAgent(),
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
