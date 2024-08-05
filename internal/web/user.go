@@ -11,8 +11,12 @@ import (
 )
 import "github.com/gin-gonic/gin"
 
+// 确保实现了 handler 接口
+var _ handler = (*UserHandler)(nil)
+
 type UserHandler struct {
 	svc         *service.UserService
+	codeSvc     *service.CodeService
 	emailExp    *regexp.Regexp
 	passwordExp *regexp.Regexp
 }
@@ -23,7 +27,9 @@ type UserClaims struct {
 	UserAgent string
 }
 
-func NewUserHandler(svc *service.UserService) *UserHandler {
+const biz = "login"
+
+func NewUserHandler(svc *service.UserService, codeSvc *service.CodeService) *UserHandler {
 	const (
 		emailRegexPattern  = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
 		passwordExpPattern = `^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$`
@@ -33,6 +39,7 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 
 	return &UserHandler{
 		svc:         svc,
+		codeSvc:     codeSvc,
 		emailExp:    emailExp,
 		passwordExp: passwordExp,
 	}
@@ -88,7 +95,7 @@ func (h *UserHandler) SignUp(ctx *gin.Context) {
 	switch err {
 	case nil:
 		ctx.String(http.StatusOK, "注册成功")
-	case service.ErrDuplicateEmail:
+	case service.ErrDuplicate:
 		ctx.String(http.StatusOK, "邮箱冲突，请换一个")
 	default:
 		ctx.String(http.StatusOK, "系统错误")
@@ -138,19 +145,11 @@ func (h *UserHandler) LoginJwt(ctx *gin.Context) {
 	u, err := h.svc.Login(ctx, req.Email, req.Password)
 	switch err {
 	case nil:
-		claims := UserClaims{
-			RegisteredClaims: jwt.RegisteredClaims{
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
-			},
-			userId:    u.Id,
-			UserAgent: ctx.Request.UserAgent(),
-		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-		tokenStr, err := token.SignedString([]byte("123412341234"))
+		err := h.setToken(ctx, u.Id)
 		if err != nil {
 			ctx.JSON(http.StatusOK, "系统错误")
+			return
 		}
-		ctx.Header("x-jwt-token", tokenStr)
 		ctx.String(http.StatusOK, "登录成功")
 	case service.ErrInvalidUserOrPassword:
 		ctx.String(http.StatusOK, "用户名或者密码不对")
@@ -160,6 +159,71 @@ func (h *UserHandler) LoginJwt(ctx *gin.Context) {
 	return
 }
 
+func (h *UserHandler) setToken(ctx *gin.Context, uid int64) error {
+	claims := UserClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
+		},
+		userId:    uid,
+		UserAgent: ctx.Request.UserAgent(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenStr, err := token.SignedString([]byte("123412341234"))
+	if err != nil {
+		return err
+	}
+	ctx.Header("x-jwt-token", tokenStr)
+	return nil
+}
+
 func (h *UserHandler) Profile(ctx *gin.Context) {
 	ctx.String(http.StatusOK, "profile")
+}
+
+func (h *UserHandler) SendLoginSmsCode(ctx *gin.Context) {
+	type Req struct {
+		Phone string `json:"phone"`
+	}
+	var req Req
+	if err := ctx.Bind(&req); err != nil {
+		return
+	}
+	err := h.codeSvc.Send(ctx, biz, req.Phone)
+	if err != nil {
+		ctx.String(http.StatusOK, "发送失败")
+		return
+	}
+	ctx.String(http.StatusOK, "发送成功")
+}
+
+func (h *UserHandler) LoginSms(ctx *gin.Context) {
+	type Req struct {
+		Phone string `json:"phone"`
+		Code  string `json:"code"`
+	}
+	var req Req
+	if err := ctx.Bind(&req); err != nil {
+		return
+	}
+	// 正则表达式
+	if req.Phone == "" {
+		return
+	}
+	verify, err := h.codeSvc.Verify(ctx, biz, req.Phone, req.Code)
+	if err != nil {
+		return
+	}
+	if !verify {
+		ctx.String(http.StatusOK, "验证码不正确")
+		return
+	}
+	user, err := h.svc.FindOrCreate(ctx, req.Phone)
+	if err != nil {
+		ctx.String(http.StatusOK, err.Error())
+	}
+	err = h.setToken(ctx, user.Id)
+	if err != nil {
+		return
+	}
+	ctx.String(http.StatusOK, "验证码正确")
 }

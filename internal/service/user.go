@@ -13,7 +13,7 @@ type UserService struct {
 }
 
 var (
-	ErrDuplicateEmail        = repository.ErrDuplicateEmail
+	ErrDuplicate             = repository.ErrDuplicate
 	ErrInvalidUserOrPassword = errors.New("用户不存在或者密码不对")
 )
 
@@ -52,4 +52,28 @@ func (svc *UserService) Login(ctx context.Context, email string, password string
 func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
 	u, err := svc.repo.FindByID(ctx, id)
 	return u, err
+}
+
+func (svc *UserService) FindOrCreate(ctx context.Context, phone string) (domain.User, error) {
+
+	// 快路径
+	user, err := svc.repo.FindByPhone(ctx, phone)
+	if err != repository.ErrUserNotFound {
+		// err 为 nil 进入这里
+		// err 未找到 进入这里
+		return user, err
+	}
+	// 降级策略
+	//if ctx.Value("降级") == "true" {
+	//	return
+	//}
+	// 慢路径
+	err = svc.repo.Create(ctx, domain.User{
+		Phone: phone,
+	})
+	if err != nil && err != ErrDuplicate {
+		return domain.User{}, err
+	}
+	// 这里会遇到 主从延迟 的问题
+	return svc.repo.FindByPhone(ctx, phone)
 }
