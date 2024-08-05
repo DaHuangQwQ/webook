@@ -15,8 +15,8 @@ import "github.com/gin-gonic/gin"
 var _ handler = (*UserHandler)(nil)
 
 type UserHandler struct {
-	svc         service.IUserService
-	codeSvc     service.ICodeService
+	svc         service.UserService
+	codeSvc     service.CodeService
 	emailExp    *regexp.Regexp
 	passwordExp *regexp.Regexp
 }
@@ -29,7 +29,7 @@ type UserClaims struct {
 
 const biz = "login"
 
-func NewUserHandler(svc service.IUserService, codeSvc service.ICodeService) *UserHandler {
+func NewUserHandler(svc service.UserService, codeSvc service.CodeService) *UserHandler {
 	const (
 		emailRegexPattern  = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
 		passwordExpPattern = `^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$`
@@ -178,6 +178,10 @@ func (h *UserHandler) setToken(ctx *gin.Context, uid int64) error {
 
 func (h *UserHandler) Profile(ctx *gin.Context) {
 	ctx.String(http.StatusOK, "profile")
+}
+
+func (h *UserHandler) Edit(ctx *gin.Context) {
+	type Req struct{}
 }
 
 func (h *UserHandler) SendLoginSmsCode(ctx *gin.Context) {
