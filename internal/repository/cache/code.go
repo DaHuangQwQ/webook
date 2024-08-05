@@ -8,7 +8,12 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type CodeCache struct {
+type CodeCache interface {
+	Set(ctx context.Context, biz, phone, code string) error
+	Verify(ctx context.Context, biz, phone, inputCode string) (bool, error)
+}
+
+type RedisCodeCache struct {
 	redis redis.Cmdable
 }
 
@@ -23,13 +28,13 @@ var (
 	luaVerifyCode string
 )
 
-func NewCodeCache(redis redis.Cmdable) *CodeCache {
-	return &CodeCache{
+func NewCodeCache(redis redis.Cmdable) CodeCache {
+	return &RedisCodeCache{
 		redis: redis,
 	}
 }
 
-func (c *CodeCache) Set(ctx context.Context, biz, phone, code string) error {
+func (c *RedisCodeCache) Set(ctx context.Context, biz, phone, code string) error {
 	res, err := c.redis.Eval(ctx, luaSetCode, []string{c.Key(biz, phone)}, code).Int()
 	if err != nil {
 		return err
@@ -49,7 +54,7 @@ func (c *CodeCache) Set(ctx context.Context, biz, phone, code string) error {
 	}
 }
 
-func (c *CodeCache) Verify(ctx context.Context, biz, phone, inputCode string) (bool, error) {
+func (c *RedisCodeCache) Verify(ctx context.Context, biz, phone, inputCode string) (bool, error) {
 	res, err := c.redis.Eval(ctx, luaVerifyCode, []string{c.Key(biz, phone)}, inputCode).Int()
 	if err != nil {
 		return false, err
@@ -66,6 +71,6 @@ func (c *CodeCache) Verify(ctx context.Context, biz, phone, inputCode string) (b
 	}
 }
 
-func (c *CodeCache) Key(biz, phone string) string {
+func (c *RedisCodeCache) Key(biz, phone string) string {
 	return fmt.Sprintf("phone_code:%s:%s", biz, phone)
 }

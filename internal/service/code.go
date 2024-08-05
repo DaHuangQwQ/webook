@@ -11,8 +11,13 @@ import (
 //type CodeService interface {
 //}
 
+type ICodeService interface {
+	Send(ctx context.Context, biz string, phone string) error
+	Verify(ctx context.Context, biz string, phone string, inputCode string) (bool, error)
+}
+
 type CodeService struct {
-	repo   *repository.CodeRepository
+	repo   repository.CodeRepository
 	smsMvc sms.Service
 }
 
@@ -20,7 +25,7 @@ const (
 	codeTplId = "123456"
 )
 
-func NewCodeService(repo *repository.CodeRepository, smsMvc sms.Service) *CodeService {
+func NewCodeService(repo repository.CodeRepository, smsMvc sms.Service) ICodeService {
 	return &CodeService{
 		repo:   repo,
 		smsMvc: smsMvc,

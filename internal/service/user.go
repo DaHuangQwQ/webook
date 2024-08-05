@@ -8,8 +8,15 @@ import (
 	"webook/internal/repository"
 )
 
+type IUserService interface {
+	Signup(ctx context.Context, u domain.User) error
+	Login(ctx context.Context, email string, password string) (domain.User, error)
+	Profile(ctx context.Context, id int64) (domain.User, error)
+	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
+}
+
 type UserService struct {
-	repo *repository.UserRepository
+	repo repository.UserRepository
 }
 
 var (
@@ -17,7 +24,7 @@ var (
 	ErrInvalidUserOrPassword = errors.New("用户不存在或者密码不对")
 )
 
-func NewUserService(repo *repository.UserRepository) *UserService {
+func NewUserService(repo repository.UserRepository) IUserService {
 	return &UserService{
 		repo: repo,
 	}
