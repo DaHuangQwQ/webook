@@ -8,14 +8,14 @@ import (
 	"webook/internal/repository"
 )
 
-type IUserService interface {
+type UserService interface {
 	Signup(ctx context.Context, u domain.User) error
 	Login(ctx context.Context, email string, password string) (domain.User, error)
 	Profile(ctx context.Context, id int64) (domain.User, error)
 	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
 }
 
-type UserService struct {
+type userService struct {
 	repo repository.UserRepository
 }
 
@@ -24,13 +24,13 @@ var (
 	ErrInvalidUserOrPassword = errors.New("用户不存在或者密码不对")
 )
 
-func NewUserService(repo repository.UserRepository) IUserService {
-	return &UserService{
+func NewUserService(repo repository.UserRepository) UserService {
+	return &userService{
 		repo: repo,
 	}
 }
 
-func (svc *UserService) Signup(ctx context.Context, u domain.User) error {
+func (svc *userService) Signup(ctx context.Context, u domain.User) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -39,7 +39,7 @@ func (svc *UserService) Signup(ctx context.Context, u domain.User) error {
 	return svc.repo.Create(ctx, u)
 }
 
-func (svc *UserService) Login(ctx context.Context, email string, password string) (domain.User, error) {
+func (svc *userService) Login(ctx context.Context, email string, password string) (domain.User, error) {
 	u, err := svc.repo.FindByEmail(ctx, email)
 
 	if errors.Is(err, repository.ErrUserNotFound) {
@@ -56,12 +56,12 @@ func (svc *UserService) Login(ctx context.Context, email string, password string
 	return u, nil
 }
 
-func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
+func (svc *userService) Profile(ctx context.Context, id int64) (domain.User, error) {
 	u, err := svc.repo.FindByID(ctx, id)
 	return u, err
 }
 
-func (svc *UserService) FindOrCreate(ctx context.Context, phone string) (domain.User, error) {
+func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain.User, error) {
 
 	// 快路径
 	user, err := svc.repo.FindByPhone(ctx, phone)
