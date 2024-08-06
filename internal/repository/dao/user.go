@@ -67,6 +67,7 @@ type User struct {
 	Email    sql.NullString `json:"email" gorm:"type:varchar(100);unique"`
 	Phone    sql.NullString `json:"phone" gorm:"type:varchar(100);unique"`
 	Password string         `json:"password" gorm:"type:varchar(100);not null"`
+	Nickname string         `json:"nickname" gorm:"type:varchar(100)"`
 
 	CTime int64 `json:"ctime" gorm:"autoCreateTime:milli"`
 	UTime int64 `json:"utime" gorm:"autoUpdateTime:milli"`

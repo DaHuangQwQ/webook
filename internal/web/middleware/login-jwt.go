@@ -15,7 +15,12 @@ type LoginJwtMiddleware struct {
 
 func NewLoginJwtMiddleware() *LoginJwtMiddleware {
 	return &LoginJwtMiddleware{
-		paths: []string{"/users/signup", "/users/login"},
+		paths: []string{
+			"/users/signup",
+			"/users/login",
+			"/users/login_sms/code/send",
+			"/hello",
+		},
 	}
 }
 

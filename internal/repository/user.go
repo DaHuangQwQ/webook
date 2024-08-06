@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"time"
 	"webook/internal/domain"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
@@ -82,7 +83,7 @@ func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domai
 		}
 	}()
 
-	return user, err
+	return user, nil
 }
 
 func (repo *CachedUserRepository) domainToEntity(user domain.User) dao.User {
@@ -106,5 +107,6 @@ func (repo *CachedUserRepository) entityToDomain(user dao.User) domain.User {
 		Email:    user.Email.String,
 		Password: user.Password,
 		Phone:    user.Phone.String,
+		CTime:    time.UnixMilli(user.CTime),
 	}
 }
