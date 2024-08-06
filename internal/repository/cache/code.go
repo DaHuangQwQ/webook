@@ -46,8 +46,9 @@ func (c *RedisCodeCache) Set(ctx context.Context, biz, phone, code string) error
 	case -1:
 		// 发送太频繁
 		return ErrSendCodeTooMany
-	//case -2:
-	// 系统错误
+	case -2:
+		//系统错误
+		return errors.New("验证码存在，但是没有过期时间")
 	default:
 		// 系统错误
 		return errors.New("系统错误")

@@ -3,6 +3,7 @@ module webook
 go 1.22
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/DaHuangQwQ/gutil v0.0.0-20240804061315-1140de3ad9b8
 	github.com/dlclark/regexp2 v1.11.2
 	github.com/gin-contrib/cors v1.7.2

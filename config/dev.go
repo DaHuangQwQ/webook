@@ -8,7 +8,7 @@ var (
 			DSN: "root:root@tcp(localhost:3306)/dahuang",
 		},
 		Redis: Redis{
-			Host: "localhost",
+			Host: "localhost:31379",
 		},
 	}
 )

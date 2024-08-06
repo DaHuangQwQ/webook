@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 	"webook/internal/domain"
+	"webook/internal/repository/cache"
 	"webook/internal/service"
 )
 import "github.com/gin-gonic/gin"
@@ -19,6 +20,7 @@ type UserHandler struct {
 	codeSvc     service.CodeService
 	emailExp    *regexp.Regexp
 	passwordExp *regexp.Regexp
+	phoneExp    *regexp.Regexp
 }
 
 type UserClaims struct {
@@ -33,15 +35,18 @@ func NewUserHandler(svc service.UserService, codeSvc service.CodeService) *UserH
 	const (
 		emailRegexPattern  = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
 		passwordExpPattern = `^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$`
+		phoneExpPattern    = "^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\\d{8}$"
 	)
 	emailExp := regexp.MustCompile(emailRegexPattern, regexp.None)
 	passwordExp := regexp.MustCompile(passwordExpPattern, regexp.None)
+	phoneExp := regexp.MustCompile(phoneExpPattern, regexp.None)
 
 	return &UserHandler{
 		svc:         svc,
 		codeSvc:     codeSvc,
 		emailExp:    emailExp,
 		passwordExp: passwordExp,
+		phoneExp:    phoneExp,
 	}
 }
 
@@ -49,6 +54,7 @@ func (u *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.POST("/users/signup", u.SignUp)
 	router.POST("/users/login", u.LoginJwt)
 	router.GET("/users/profile", u.Profile)
+	router.POST("/users/login_sms/code/send", u.SendLoginSmsCode)
 }
 
 func (h *UserHandler) SignUp(ctx *gin.Context) {
@@ -192,12 +198,46 @@ func (h *UserHandler) SendLoginSmsCode(ctx *gin.Context) {
 	if err := ctx.Bind(&req); err != nil {
 		return
 	}
-	err := h.codeSvc.Send(ctx, biz, req.Phone)
+	isPhone, err := h.phoneExp.MatchString(req.Phone)
 	if err != nil {
-		ctx.String(http.StatusOK, "发送失败")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
 		return
 	}
-	ctx.String(http.StatusOK, "发送成功")
+	if !isPhone {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 4,
+			Msg:  "请输入手机号码",
+		})
+		return
+	}
+	//if req.Phone == "" {
+	//	ctx.JSON(http.StatusOK, Result{
+	//		Code: 4,
+	//		Msg:  "请输入手机号码",
+	//	})
+	//	return
+	//}
+
+	err = h.codeSvc.Send(ctx, biz, req.Phone)
+	switch err {
+	case nil:
+		ctx.JSON(http.StatusOK, Result{
+			Msg: "发送成功",
+		})
+	case cache.ErrSendCodeTooMany:
+		ctx.JSON(http.StatusOK, Result{
+			Code: 4,
+			Msg:  "短信发送太频繁，请稍后再试",
+		})
+	default:
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+	}
 }
 
 func (h *UserHandler) LoginSms(ctx *gin.Context) {
