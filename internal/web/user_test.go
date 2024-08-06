@@ -27,6 +27,8 @@ func TestNewUserCrypto(t *testing.T) {
 	}
 }
 
+// table driver
+
 func TestUserHandler_SignUp(t *testing.T) {
 	testCases := []struct {
 		name string
