@@ -54,6 +54,7 @@ func (u *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.POST("/users/signup", u.SignUp)
 	router.POST("/users/login", u.LoginJwt)
 	router.GET("/users/profile", u.Profile)
+	router.POST("/users/login_sms", u.LoginSms)
 	router.POST("/users/login_sms/code/send", u.SendLoginSmsCode)
 }
 
@@ -247,14 +248,22 @@ func (h *UserHandler) LoginSms(ctx *gin.Context) {
 	}
 	var req Req
 	if err := ctx.Bind(&req); err != nil {
+		ctx.String(http.StatusOK, "系统错误")
 		return
 	}
 	// 正则表达式
 	if req.Phone == "" {
+		ctx.String(http.StatusOK, "请输入手机号")
 		return
 	}
 	verify, err := h.codeSvc.Verify(ctx, biz, req.Phone, req.Code)
-	if err != nil {
+	switch err {
+	case nil:
+	case cache.ErrCodeVerifyTooMany:
+		ctx.String(http.StatusOK, "验证太频繁")
+		return
+	default:
+		ctx.String(http.StatusOK, "系统错误")
 		return
 	}
 	if !verify {
@@ -264,6 +273,7 @@ func (h *UserHandler) LoginSms(ctx *gin.Context) {
 	user, err := h.svc.FindOrCreate(ctx, req.Phone)
 	if err != nil {
 		ctx.String(http.StatusOK, err.Error())
+		return
 	}
 	err = h.setToken(ctx, user.Id)
 	if err != nil {

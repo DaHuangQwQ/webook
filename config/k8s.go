@@ -8,7 +8,7 @@ var (
 			DSN: "root:root@tcp(webook-mysql:3308)/dahuang",
 		},
 		Redis: Redis{
-			Host: "webook-redis",
+			Host: "webook-redis:6379",
 		},
 	}
 )
