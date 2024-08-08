@@ -18,6 +18,7 @@ func NewLoginJwtMiddleware() *LoginJwtMiddleware {
 		paths: []string{
 			"/users/signup",
 			"/users/login",
+			"/users/login_sms",
 			"/users/login_sms/code/send",
 			"/hello",
 		},

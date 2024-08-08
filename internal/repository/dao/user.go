@@ -64,8 +64,8 @@ func (dao *GormUserDao) FindById(ctx context.Context, id int64) (User, error) {
 
 type User struct {
 	Id       int64          `json:"id" gorm:"primary_key;autoIncrement"`
-	Email    sql.NullString `json:"email" gorm:"type:varchar(100);unique"`
-	Phone    sql.NullString `json:"phone" gorm:"type:varchar(100);unique"`
+	Email    sql.NullString `json:"email" gorm:"type:varchar(100);unique;sql:null"`
+	Phone    sql.NullString `json:"phone" gorm:"type:varchar(100);unique;sql:null"`
 	Password string         `json:"password" gorm:"type:varchar(100);not null"`
 	Nickname string         `json:"nickname" gorm:"type:varchar(100)"`
 
