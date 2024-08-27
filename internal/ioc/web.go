@@ -10,18 +10,24 @@ import (
 	"webook/internal/web/jwt"
 	"webook/internal/web/middleware"
 	"webook/pkg/ginx/middleware/ratelimit"
+	"webook/pkg/logger"
 	limit "webook/pkg/ratelimit"
 )
 
-func InitWebServer(mdls []gin.HandlerFunc, userHdl *web.UserHandler, wechatHdl *web.OAuth2WechatHandler) *gin.Engine {
+func InitWebServer(mdls []gin.HandlerFunc,
+	userHdl *web.UserHandler,
+	wechatHdl *web.OAuth2WechatHandler,
+	articleHdl *web.ArticleHandler,
+) *gin.Engine {
 	server := gin.Default()
 	server.Use(mdls...)
 	userHdl.RegisterRoutes(server)
 	wechatHdl.RegisterRoutes(server)
+	articleHdl.RegisterRoutes(server)
 	return server
 }
 
-func InitGinMiddlewares(redisClient redis.Cmdable) []gin.HandlerFunc {
+func InitGinMiddlewares(redisClient redis.Cmdable, l logger.LoggerV1) []gin.HandlerFunc {
 	return []gin.HandlerFunc{
 		cors.New(cors.Config{
 			//AllowAllOrigins: true,
@@ -42,6 +48,6 @@ func InitGinMiddlewares(redisClient redis.Cmdable) []gin.HandlerFunc {
 			MaxAge: 12 * time.Hour,
 		}),
 		ratelimit.NewBuilder(limit.NewRedisSlidingWindowLimiter(redisClient, time.Second, 10)).Build(),
-		middleware.NewLoginJwtMiddleware().Build(jwt.NewRedisJWTHandler(redisClient)),
+		middleware.NewLoginJwtMiddleware(l).Build(jwt.NewRedisJWTHandler(redisClient)),
 	}
 }
