@@ -13,6 +13,7 @@ type UserService interface {
 	Login(ctx context.Context, email string, password string) (domain.User, error)
 	Profile(ctx context.Context, id int64) (domain.User, error)
 	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
+	FindOrCreateByWechat(ctx context.Context, wechatInfo domain.WechatInfo) (domain.User, error)
 }
 
 type userService struct {
@@ -83,4 +84,27 @@ func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain.
 	}
 	// 这里会遇到 主从延迟 的问题
 	return svc.repo.FindByPhone(ctx, phone)
+}
+
+func (svc *userService) FindOrCreateByWechat(ctx context.Context, wechatInfo domain.WechatInfo) (domain.User, error) {
+	// 快路径
+	user, err := svc.repo.FindByWechat(ctx, wechatInfo.OpenId)
+	if err != repository.ErrUserNotFound {
+		// err 为 nil 进入这里
+		// err 未找到 进入这里
+		return user, err
+	}
+	// 降级策略
+	//if ctx.Value("降级") == "true" {
+	//	return
+	//}
+	// 慢路径
+	err = svc.repo.Create(ctx, domain.User{
+		WechatInfo: wechatInfo,
+	})
+	if err != nil && err != ErrDuplicate {
+		return domain.User{}, err
+	}
+	// 这里会遇到 主从延迟 的问题
+	return svc.repo.FindByWechat(ctx, wechatInfo.OpenId)
 }
