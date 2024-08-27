@@ -29,3 +29,7 @@ redis:
 mysql:
 	@kubectl delete -f ./k8s-webook-mysql.yaml || true
 	@kubectl apply -f ./k8s-webook-mysql.yaml
+remote:
+	@rm webook || true
+	@go mod tidy
+	@GOOS=linux GOARCH=amd64 go build -tags=k8s -o webook .

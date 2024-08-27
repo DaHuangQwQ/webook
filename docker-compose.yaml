@@ -7,13 +7,34 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./script/mysql/:/docker-entrypoint-initdb.d/
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
   redis:
     image: 'bitnami/redis:latest'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
-      - "6379:6379"
+      - "6380:6379"
+
+#  etcd:
+#    image: "bitnami/etcd:latest"
+#    restart: always
+#    entrypoint:
+#      - ALLOW_NON_AUTHENTICATION=yes
+#    ports:
+#      - "12379:2379"
+#
+#  mongo:
+#    image: mongo:6.0
+#    restart: always
+#    environment:
+#      MONGO_INITDB_ROOT_USERNAME: root
+#      MONGO_INITDB_ROOT_PASSWORD: example
+#    ports:
+#      - 27017:27017
+
+volumes:
+  mysql_data:
