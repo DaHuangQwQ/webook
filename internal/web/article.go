@@ -3,23 +3,97 @@ package web
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"webook/internal/domain"
+	"webook/internal/service"
+	ijwt "webook/internal/web/jwt"
+	"webook/pkg/logger"
 )
 
 var _ handler = (*ArticleHandler)(nil)
 
 type ArticleHandler struct {
+	svc service.ArticleService
+
+	l logger.LoggerV1
 }
 
-func NewArticleHandler() *ArticleHandler {
-	return &ArticleHandler{}
+func NewArticleHandler(articleSvc service.ArticleService, l logger.LoggerV1) *ArticleHandler {
+	return &ArticleHandler{
+		svc: articleSvc,
+		l:   l,
+	}
 }
 
 func (h *ArticleHandler) RegisterRoutes(router *gin.Engine) {
 	server := router.Group("/articles")
 	server.POST("/edit", h.Edit)
+	server.POST("/publish", h.Publish)
 }
 
-func (h *ArticleHandler) Edit(c *gin.Context) {
+func (h *ArticleHandler) Edit(ctx *gin.Context) {
 	// new or edit
-	c.String(http.StatusOK, "你好")
+	var req ArticleReq
+	if err := ctx.Bind(&req); err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Msg: "参数错误",
+		})
+		return
+	}
+	claims := ctx.MustGet("claims").(ijwt.UserClaims)
+	id, err := h.svc.Save(ctx, req.toDomain(claims.Uid))
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		h.l.Info("文章保存失败", logger.Field{Key: "err", Val: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: id,
+	})
+}
+
+func (h *ArticleHandler) Publish(ctx *gin.Context) {
+	// new or edit
+	var req ArticleReq
+	if err := ctx.Bind(&req); err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "参数错误",
+		})
+	}
+	claims := ctx.MustGet("claims").(ijwt.UserClaims)
+	id, err := h.svc.Publish(ctx, req.toDomain(claims.Uid))
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: id,
+	})
+}
+
+type ArticleReq struct {
+	Id      int64  `json:"id"`
+	Title   string `json:"title"`
+	Content string `json:"content"`
+}
+
+func (art *ArticleReq) toDomain(uid int64) domain.Article {
+	return domain.Article{
+		Id:      art.Id,
+		Title:   art.Title,
+		Content: art.Content,
+		Author: domain.Author{
+			Id: uid,
+		},
+	}
 }
