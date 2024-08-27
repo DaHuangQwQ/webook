@@ -7,7 +7,7 @@ import (
 
 func InitRedis() redis.Cmdable {
 	type Config struct {
-		addr string `yaml:"addr"`
+		Addr string `yaml:"addr"`
 	}
 	var config Config
 	err := viper.UnmarshalKey("redis", &config)
@@ -15,6 +15,6 @@ func InitRedis() redis.Cmdable {
 		panic(err)
 	}
 	return redis.NewClient(&redis.Options{
-		Addr: config.addr,
+		Addr: config.Addr,
 	})
 }
