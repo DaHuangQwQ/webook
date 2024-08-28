@@ -13,7 +13,7 @@ services:
       - "3307:3306"
 
   redis:
-    image: 'bitnami/redis:latest'
+    image: 'bitnami/redis:7.2'
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     ports:
