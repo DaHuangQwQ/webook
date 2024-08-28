@@ -22,7 +22,7 @@ type codeService struct {
 }
 
 const (
-	codeTplId = "123456"
+	codeTplId = "SMS_472455063"
 )
 
 func NewCodeService(repo repository.CodeRepository, smsMvc sms.Service) CodeService {
@@ -38,7 +38,7 @@ func (svc *codeService) Send(ctx context.Context, biz string, phone string) erro
 	if err != nil {
 		return err
 	}
-	return svc.smsMvc.Send(ctx, codeTplId, []sms.NamedArg{{Value: code}}, phone)
+	return svc.smsMvc.Send(ctx, codeTplId, []sms.NamedArg{{Name: "code", Value: code}}, phone)
 }
 
 func (svc *codeService) Verify(ctx context.Context, biz string, phone string, inputCode string) (bool, error) {
