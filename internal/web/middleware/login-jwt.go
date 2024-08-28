@@ -42,8 +42,8 @@ func (m *LoginJwtMiddleware) Build(jwtHandler ijwt.Handler) gin.HandlerFunc {
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		claims := &ijwt.UserClaims{}
-		parseToken, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+		var claims ijwt.UserClaims
+		parseToken, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
 			return ijwt.JWTKey, nil
 		})
 		if err != nil {
@@ -61,7 +61,7 @@ func (m *LoginJwtMiddleware) Build(jwtHandler ijwt.Handler) gin.HandlerFunc {
 		if claims.UserAgent != c.Request.UserAgent() {
 			// token 被窃取
 			// 监控
-			m.l.Info("userAgent不同")
+			m.l.Warn("userAgent不同")
 			c.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
