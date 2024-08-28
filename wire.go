@@ -7,6 +7,7 @@ import (
 	"github.com/google/wire"
 	"webook/internal/ioc"
 	"webook/internal/repository"
+	"webook/internal/repository/article"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
 	"webook/internal/service"
@@ -21,6 +22,7 @@ func InitWebServer() *gin.Engine {
 		ioc.InitLogger,
 		// DAO 部分
 		dao.NewUserDao,
+		dao.NewGormArticleDao,
 
 		// cache 部分
 		cache.NewCodeCache, cache.NewUserCache,
@@ -28,11 +30,13 @@ func InitWebServer() *gin.Engine {
 		// repository 部分
 		repository.NewUserRepository,
 		repository.NewCodeRepository,
+		article.NewCachedArticleRepository,
 
 		// Service 部分
 		ioc.InitSMSService,
 		service.NewUserService,
 		service.NewCodeService,
+		service.NewArticleService,
 		ioc.InitWechat,
 
 		jwt.NewRedisJWTHandler,
