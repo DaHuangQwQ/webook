@@ -13,6 +13,7 @@ type ArticleDao interface {
 	UpdateById(ctx context.Context, article Article) error
 	Upsert(ctx context.Context, article PublishedArticle) error
 	Sync(ctx context.Context, article Article) (int64, error)
+	SyncStatus(ctx context.Context, articleID int64, authorId int64, status uint8) error
 	GetList(ctx context.Context) ([]PublishedArticle, error)
 }
 
@@ -45,6 +46,7 @@ func (dao *GormArticleDao) UpdateById(ctx context.Context, article Article) erro
 			"title":   article.Title,
 			"content": article.Content,
 			"u_time":  article.UTime,
+			"status":  article.Status,
 		})
 	if res.Error != nil {
 		return res.Error
@@ -82,6 +84,30 @@ func (dao *GormArticleDao) Sync(ctx context.Context, article Article) (int64, er
 	return id, err
 }
 
+func (dao *GormArticleDao) SyncStatus(ctx context.Context, articleID int64, authorId int64, status uint8) error {
+	now := time.Now().UnixMilli()
+	return dao.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		res := tx.Model(&Article{}).Where("id = ? AND author_id = ?", articleID, authorId).
+			Updates(map[string]any{
+				"status": status,
+				"u_time": now,
+			})
+		if res.Error != nil {
+			return res.Error
+		}
+		if res.RowsAffected != 1 {
+			return fmt.Errorf("作者不对, 有人在搞, article_id: %d, author_id %d", articleID, authorId)
+		}
+
+		return tx.Model(&PublishedArticle{}).Where("id = ?", articleID).
+			Updates(map[string]any{
+				"status": status,
+				"u_time": now,
+			}).Error
+
+	})
+}
+
 func (dao *GormArticleDao) Upsert(ctx context.Context, article PublishedArticle) error {
 	// insert or update
 	now := time.Now().UnixMilli()
@@ -94,6 +120,7 @@ func (dao *GormArticleDao) Upsert(ctx context.Context, article PublishedArticle)
 			"title":   article.Title,
 			"content": article.Content,
 			"u_time":  now,
+			"status":  article.Status,
 		}),
 	}).Create(&article).Error
 	return err
@@ -117,6 +144,8 @@ type Article struct {
 	// 按照这个索引, 创建时间倒序排序
 	// 最佳实践是 在 AuthorId 和 CTime 创建联合索引
 	AuthorId int64 `gorm:"index=aid_ctime"`
+
+	Status uint8
 
 	CTime int64 `gorm:"index=aid_ctime"`
 	UTime int64

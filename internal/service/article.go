@@ -8,6 +8,7 @@ import (
 
 type ArticleService interface {
 	Save(ctx context.Context, article domain.Article) (id int64, err error)
+	Withdraw(ctx context.Context, article domain.Article) error
 	Publish(ctx context.Context, article domain.Article) (int64, error)
 	GetList(ctx context.Context) (list []domain.Article, err error)
 }
@@ -46,7 +47,12 @@ func (s *articleService) Publish(ctx context.Context, article domain.Article) (i
 	// 线上库 俩库id应该是相等的
 
 	// save: update or create
+	article.Status = domain.ArticleStatusPublished
 	return s.repo.Sync(ctx, article)
+}
+
+func (s *articleService) Withdraw(ctx context.Context, article domain.Article) error {
+	return s.repo.SyncStatus(ctx, article.Id, article.Author.Id, domain.ArticleStatusPrivate)
 }
 
 func (s *articleService) GetList(ctx context.Context) (list []domain.Article, err error) {

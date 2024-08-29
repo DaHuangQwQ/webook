@@ -12,6 +12,7 @@ type ArticleRepository interface {
 	Update(ctx context.Context, article domain.Article) error
 	// Sync 存储并同步数据
 	Sync(ctx context.Context, article domain.Article) (int64, error)
+	SyncStatus(ctx context.Context, articleId int64, authorId int64, status domain.ArticleStatus) error
 	GetList(ctx context.Context) ([]domain.Article, error)
 }
 
@@ -66,6 +67,10 @@ func (c *CachedArticleRepository) Sync(ctx context.Context, article domain.Artic
 	return id, err
 }
 
+func (c *CachedArticleRepository) SyncStatus(ctx context.Context, articleId int64, authorId int64, status domain.ArticleStatus) error {
+	return c.dao.SyncStatus(ctx, articleId, authorId, status.ToUInt8())
+}
+
 func (c *CachedArticleRepository) GetList(ctx context.Context) ([]domain.Article, error) {
 	articlesList, err := c.dao.GetList(ctx)
 	if err != nil {
@@ -96,5 +101,18 @@ func (c *CachedArticleRepository) toEntity(article domain.Article) dao.Article {
 		Title:    article.Title,
 		Content:  article.Content,
 		AuthorId: article.Author.Id,
+		Status:   article.Status.ToUInt8(),
+	}
+}
+
+func (c *CachedArticleRepository) toDomain(article dao.Article) domain.Article {
+	return domain.Article{
+		Id:      article.Id,
+		Title:   article.Title,
+		Content: article.Content,
+		Author: domain.Author{
+			Id: article.AuthorId,
+		},
+		Status: domain.ArticleStatus(article.Status),
 	}
 }
