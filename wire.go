@@ -20,6 +20,7 @@ func InitWebServer() *gin.Engine {
 		// 第三方依赖
 		ioc.InitRedis, ioc.InitDB,
 		ioc.InitLogger,
+		ioc.InitOssService,
 		// DAO 部分
 		dao.NewUserDao,
 		dao.NewGormArticleDao,

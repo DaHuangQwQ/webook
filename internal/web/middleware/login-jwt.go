@@ -24,6 +24,7 @@ func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
 			"/oauth2/wechat/authurl",
 			"/oauth2/wechat/callback",
 			"/oauth2/wechat/code2session",
+			"/articles/getlist",
 		},
 		l: l,
 	}

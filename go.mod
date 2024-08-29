@@ -7,6 +7,7 @@ require (
 	github.com/DaHuangQwQ/gutil v0.0.0-20240804061315-1140de3ad9b8
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.9
 	github.com/alibabacloud-go/dysmsapi-20170525/v4 v4.0.0
+	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
 	github.com/dlclark/regexp2 v1.11.2
 	github.com/gin-contrib/cors v1.7.2
 	github.com/gin-contrib/sessions v1.0.1
