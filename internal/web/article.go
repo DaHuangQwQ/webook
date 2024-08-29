@@ -28,6 +28,7 @@ func (h *ArticleHandler) RegisterRoutes(router *gin.Engine) {
 	server := router.Group("/articles")
 	server.POST("/edit", h.Edit)
 	server.POST("/publish", h.Publish)
+	server.GET("/getlist", h.GetList)
 }
 
 func (h *ArticleHandler) Edit(ctx *gin.Context) {
@@ -78,6 +79,22 @@ func (h *ArticleHandler) Publish(ctx *gin.Context) {
 		Code: 0,
 		Msg:  "ok",
 		Data: id,
+	})
+}
+
+func (h *ArticleHandler) GetList(ctx *gin.Context) {
+	articles, err := h.svc.GetList(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: articles,
 	})
 }
 

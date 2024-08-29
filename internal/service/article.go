@@ -9,6 +9,7 @@ import (
 type ArticleService interface {
 	Save(ctx context.Context, article domain.Article) (id int64, err error)
 	Publish(ctx context.Context, article domain.Article) (int64, error)
+	GetList(ctx context.Context) (list []domain.Article, err error)
 }
 
 type articleService struct {
@@ -31,19 +32,23 @@ func (s *articleService) Save(ctx context.Context, article domain.Article) (int6
 
 func (s *articleService) Publish(ctx context.Context, article domain.Article) (int64, error) {
 	// 制作库
-	var (
-		id  = article.Id
-		err error
-	)
-	if article.Id > 0 {
-		err = s.repo.Update(ctx, article)
-	} else {
-		id, err = s.repo.Create(ctx, article)
-	}
-
-	article.Id = id
+	//var (
+	//	id  = article.Id
+	//	err error
+	//)
+	//if article.Id > 0 {
+	//	err = s.repo.Update(ctx, article)
+	//} else {
+	//	id, err = s.repo.Create(ctx, article)
+	//}
+	//
+	//article.Id = id
 	// 线上库 俩库id应该是相等的
 
 	// save: update or create
-	return id, err
+	return s.repo.Sync(ctx, article)
+}
+
+func (s *articleService) GetList(ctx context.Context) (list []domain.Article, err error) {
+	return s.repo.GetList(ctx)
 }
