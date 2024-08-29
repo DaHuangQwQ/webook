@@ -11,7 +11,7 @@ type User struct {
 
 	Nickname string
 	Grade    int
-	// 0 未知， 1 男， 2 女
+
 	Gender int
 
 	CTime time.Time
@@ -22,6 +22,7 @@ type User struct {
 type UserInfo struct {
 	Nickname string
 	Grade    int
+	Phone    string
 	// 0 未知， 1 男， 2 女
 	Gender int
 }

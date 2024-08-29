@@ -383,6 +383,7 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 func (h *UserHandler) GetInfo(ctx *gin.Context) {
 	UserId := ctx.MustGet("claims").(ijwt.UserClaims)
 	UserInfo, err := h.svc.FindByID(ctx, UserId.Uid)
+	h.l.Info("UserInfo", logger.Field{Key: "err", Val: UserInfo})
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
@@ -390,12 +391,16 @@ func (h *UserHandler) GetInfo(ctx *gin.Context) {
 		})
 		return
 	}
-
+	phoneRes := ""
+	if UserInfo.Phone != "" {
+		phoneRes = UserInfo.Phone[:3] + "****" + UserInfo.Phone[7:]
+	}
 	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: domain.UserInfo{
 			Nickname: UserInfo.Nickname,
+			Phone:    phoneRes,
 			Grade:    UserInfo.Grade,
 			Gender:   UserInfo.Gender,
 		},
