@@ -3,10 +3,13 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
+	"github.com/spf13/viper"
 	"time"
 	"webook/internal/domain"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
+	"webook/internal/repository/dao/oss"
 )
 
 type UserRepository interface {
@@ -15,11 +18,23 @@ type UserRepository interface {
 	FindByPhone(ctx context.Context, phone string) (domain.User, error)
 	FindByID(ctx context.Context, id int64) (domain.User, error)
 	FindByWechat(ctx context.Context, OpenId string) (domain.User, error)
+	UpdateByID(ctx context.Context, user domain.User) error
+	AvatarUpdate(ctx context.Context, id int64, file []byte, fileType string) (string, error)
+	GetAvatar(ctx context.Context, id int64) (string, error)
 }
 
 type CachedUserRepository struct {
 	dao   dao.UserDao
 	cache cache.UserCache
+	oss   oss.Client
+}
+
+func (repo *CachedUserRepository) GetAvatar(ctx context.Context, id int64) (string, error) {
+	user, err := repo.dao.FindById(ctx, id)
+	if err != nil {
+		return "", err
+	}
+	return user.AvatarUrl, nil
 }
 
 var (
@@ -27,10 +42,11 @@ var (
 	ErrUserNotFound = dao.ErrRecordNotFound
 )
 
-func NewUserRepository(dao dao.UserDao, cache cache.UserCache) UserRepository {
+func NewUserRepository(dao dao.UserDao, cache cache.UserCache, oss oss.Client) UserRepository {
 	return &CachedUserRepository{
 		dao:   dao,
 		cache: cache,
+		oss:   oss,
 	}
 }
 
@@ -95,9 +111,36 @@ func (repo *CachedUserRepository) FindByWechat(ctx context.Context, OpenId strin
 	return repo.entityToDomain(u), nil
 }
 
+func (repo *CachedUserRepository) UpdateByID(ctx context.Context, user domain.User) error {
+	return repo.dao.Update(ctx, repo.domainToEntity(user))
+}
+
+func (repo *CachedUserRepository) AvatarUpdate(ctx context.Context, id int64, file []byte, fileType string) (string, error) {
+	type Config struct {
+		ENDP string `yaml:"ENDP"`
+	}
+	var config Config
+	err := viper.UnmarshalKey("OSS", &config)
+	if err != nil {
+		return "", err
+	}
+	fileName := fmt.Sprintf("avatar/%d.%s", id, fileType)
+	ossAdress := "https://ceit." + config.ENDP + "/" + fileName
+	err = repo.dao.Update(ctx, dao.User{
+		Id:        id,
+		AvatarUrl: ossAdress,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return ossAdress, repo.oss.UploadFile(ctx, fileName, file)
+}
+
 func (repo *CachedUserRepository) domainToEntity(user domain.User) dao.User {
 	return dao.User{
-		Id: user.Id,
+		Id:       user.Id,
+		Nickname: user.Nickname,
 		Email: sql.NullString{
 			String: user.Email,
 			Valid:  user.Email != "",
@@ -115,6 +158,8 @@ func (repo *CachedUserRepository) domainToEntity(user domain.User) dao.User {
 			String: user.WechatInfo.UnionId,
 			Valid:  user.WechatInfo.UnionId != "",
 		},
+		Grade:  user.Grade,
+		Gender: user.Gender,
 	}
 }
 
@@ -124,6 +169,9 @@ func (repo *CachedUserRepository) entityToDomain(user dao.User) domain.User {
 		Email:    user.Email.String,
 		Password: user.Password,
 		Phone:    user.Phone.String,
+		Nickname: user.Nickname,
+		Grade:    user.Grade,
+		Gender:   user.Gender,
 		CTime:    time.UnixMilli(user.CTime),
 
 		WechatInfo: domain.WechatInfo{

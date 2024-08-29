@@ -15,6 +15,7 @@ type UserDao interface {
 	FindByPhone(ctx context.Context, phone string) (User, error)
 	FindById(ctx context.Context, id int64) (User, error)
 	FindByWechat(ctx context.Context, openId string) (User, error)
+	Update(ctx context.Context, user User) error
 }
 
 type GormUserDao struct {
@@ -69,6 +70,13 @@ func (dao *GormUserDao) FindByWechat(ctx context.Context, openId string) (User, 
 	return u, err
 }
 
+func (dao *GormUserDao) Update(ctx context.Context, user User) error {
+	now := time.Now().UnixMilli()
+	user.UTime = now
+	err := dao.db.WithContext(ctx).Updates(user).Error
+	return err
+}
+
 type User struct {
 	Id int64 `json:"id" gorm:"primary_key;autoIncrement"`
 
@@ -79,6 +87,10 @@ type User struct {
 	Phone    sql.NullString `json:"phone" gorm:"type:varchar(100);unique;sql:null"`
 	Password string         `json:"password" gorm:"type:varchar(100);not null"`
 	Nickname string         `json:"nickname" gorm:"type:varchar(100)"`
+	Grade    int            `json:"grade" gorm:"type:int(11)"`
+	Gender   int            `json:"gender" gorm:"type:int(11)"`
+
+	AvatarUrl string `json:"avatar_url" gorm:"type:varchar(100)"`
 
 	CTime int64 `json:"ctime" gorm:"autoCreateTime:milli"`
 	UTime int64 `json:"utime" gorm:"autoUpdateTime:milli"`

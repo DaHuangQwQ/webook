@@ -5,10 +5,12 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+	"strings"
 	"webook/internal/domain"
 	"webook/internal/repository/cache"
 	"webook/internal/service"
 	ijwt "webook/internal/web/jwt"
+	"webook/pkg/logger"
 )
 import "github.com/gin-gonic/gin"
 
@@ -22,11 +24,13 @@ type UserHandler struct {
 	emailExp    *regexp.Regexp
 	passwordExp *regexp.Regexp
 	phoneExp    *regexp.Regexp
+
+	l logger.LoggerV1
 }
 
 const biz = "login"
 
-func NewUserHandler(svc service.UserService, codeSvc service.CodeService, hdl ijwt.Handler) *UserHandler {
+func NewUserHandler(svc service.UserService, codeSvc service.CodeService, hdl ijwt.Handler, l logger.LoggerV1) *UserHandler {
 	const (
 		emailRegexPattern  = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
 		passwordExpPattern = `^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$`
@@ -43,6 +47,7 @@ func NewUserHandler(svc service.UserService, codeSvc service.CodeService, hdl ij
 		passwordExp: passwordExp,
 		phoneExp:    phoneExp,
 		Handler:     hdl,
+		l:           l,
 	}
 }
 
@@ -60,6 +65,13 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	// 手机验证码登录相关功能
 	ug.POST("/login_sms/code/send", h.SendLoginSmsCode)
 	ug.POST("/login_sms", h.LoginSms)
+	ug.POST("/phone_update", h.PhoneUpdate)
+
+	ug.POST("/info_update", h.InfoUpdate)
+	ug.GET("/get_info", h.GetInfo)
+
+	ug.POST("/avatar_update", h.AvatarUpdate)
+	ug.GET("/get_avatar", h.GetAvatar)
 }
 
 func (h *UserHandler) SignUp(ctx *gin.Context) {
@@ -235,26 +247,41 @@ func (h *UserHandler) LoginSms(ctx *gin.Context) {
 	}
 	var req Req
 	if err := ctx.Bind(&req); err != nil {
-		ctx.String(http.StatusOK, "系统错误")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
 		return
 	}
 	// 正则表达式
 	if req.Phone == "" {
-		ctx.String(http.StatusOK, "请输入手机号")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "请输入手机号",
+		})
 		return
 	}
 	verify, err := h.codeSvc.Verify(ctx, biz, req.Phone, req.Code)
 	switch err {
 	case nil:
 	case cache.ErrCodeVerifyTooMany:
-		ctx.String(http.StatusOK, "验证太频繁")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "验证太频繁",
+		})
 		return
 	default:
-		ctx.String(http.StatusOK, "系统错误")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
 		return
 	}
 	if !verify {
-		ctx.String(http.StatusOK, "验证码不正确")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "验证码不正确",
+		})
 		return
 	}
 	user, err := h.svc.FindOrCreate(ctx, req.Phone)
@@ -309,4 +336,184 @@ func (h *UserHandler) LogoutJWT(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, Result{Msg: "退出登录成功"})
+}
+
+func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
+	type Req struct {
+		Name   string `json:"name"`
+		Grade  int    `json:"grade"`
+		Gender int    `json:"gender"`
+	}
+	var req Req
+	if err := ctx.Bind(&req); err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "参数错误",
+		})
+		return
+	}
+	reqNil := Req{}
+	if req == reqNil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "参数为空",
+		})
+		return
+	}
+	userId := ctx.MustGet("claims").(ijwt.UserClaims)
+	var err = h.svc.UpdateByID(ctx, domain.User{
+		Id:       userId.Uid,
+		Nickname: req.Name,
+		Grade:    req.Grade,
+		Gender:   req.Gender,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+	})
+}
+
+func (h *UserHandler) GetInfo(ctx *gin.Context) {
+	UserId := ctx.MustGet("claims").(ijwt.UserClaims)
+	UserInfo, err := h.svc.FindByID(ctx, UserId.Uid)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: domain.UserInfo{
+			Nickname: UserInfo.Nickname,
+			Grade:    UserInfo.Grade,
+			Gender:   UserInfo.Gender,
+		},
+	})
+}
+
+func (h *UserHandler) AvatarUpdate(ctx *gin.Context) {
+	file, fileTypes, err := ctx.Request.FormFile("file")
+	if file == nil || err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "图片上传失败",
+		})
+		return
+	}
+	if fileTypes.Size > 2*1024*1024 {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "文件不应该超过2MB",
+		})
+		return
+	}
+	fileType := strings.Split(fileTypes.Header.Get("Content-Type"), "/")[1]
+	user := ctx.MustGet("claims").(ijwt.UserClaims)
+	ossAdress, err := h.svc.AvatarUpdate(ctx, user.Uid, file, fileType)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		h.l.Info("AvatarUpdate错误", logger.Field{Key: "err", Val: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: ossAdress,
+	})
+	file.Close()
+}
+
+func (h *UserHandler) GetAvatar(ctx *gin.Context) {
+	userId := ctx.MustGet("claims").(ijwt.UserClaims)
+	avatar, err := h.svc.GetAvatar(ctx, userId.Uid)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: avatar,
+	})
+}
+
+func (h *UserHandler) PhoneUpdate(ctx *gin.Context) {
+	type Req struct {
+		Phone string `json:"phone"`
+		Code  string `json:"code"`
+	}
+	var req Req
+	if err := ctx.Bind(&req); err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	// 正则表达式
+	if req.Phone == "" {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "请输入手机号",
+		})
+		return
+	}
+	verify, err := h.codeSvc.Verify(ctx, biz, req.Phone, req.Code)
+	switch err {
+	case nil:
+	case cache.ErrCodeVerifyTooMany:
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "验证太频繁",
+		})
+		return
+	default:
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		h.l.Info("短信错误", logger.Field{Key: "err", Val: err})
+		return
+	}
+	if !verify {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "验证码不正确",
+		})
+		return
+	}
+	UserId := ctx.MustGet("claims").(ijwt.UserClaims)
+	err = h.svc.UpdateByID(ctx, domain.User{
+		Id:    UserId.Uid,
+		Phone: req.Phone,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		h.l.Info("信息更新错误", logger.Field{Key: "err", Val: err})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Code: 0,
+		Msg:  "ok",
+	})
 }

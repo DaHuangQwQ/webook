@@ -1,9 +1,13 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"errors"
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
+	"io"
+	"mime/multipart"
 	"webook/internal/domain"
 	"webook/internal/repository"
 )
@@ -14,10 +18,18 @@ type UserService interface {
 	Profile(ctx context.Context, id int64) (domain.User, error)
 	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
 	FindOrCreateByWechat(ctx context.Context, wechatInfo domain.WechatInfo) (domain.User, error)
+	UpdateByID(ctx context.Context, user domain.User) error
+	FindByID(ctx context.Context, id int64) (domain.User, error)
+	AvatarUpdate(ctx context.Context, id int64, file multipart.File, fileType string) (string, error)
+	GetAvatar(ctx context.Context, id int64) (string, error)
 }
 
 type userService struct {
 	repo repository.UserRepository
+}
+
+func (svc *userService) GetAvatar(ctx context.Context, id int64) (string, error) {
+	return svc.repo.GetAvatar(ctx, id)
 }
 
 var (
@@ -107,4 +119,28 @@ func (svc *userService) FindOrCreateByWechat(ctx context.Context, wechatInfo dom
 	}
 	// 这里会遇到 主从延迟 的问题
 	return svc.repo.FindByWechat(ctx, wechatInfo.OpenId)
+}
+
+func (svc *userService) UpdateByID(ctx context.Context, user domain.User) error {
+	return svc.repo.UpdateByID(ctx, user)
+}
+
+func (svc *userService) FindByID(ctx context.Context, id int64) (domain.User, error) {
+	return svc.repo.FindByID(ctx, id)
+}
+
+func (svc *userService) AvatarUpdate(ctx context.Context, id int64, file multipart.File, fileType string) (string, error) {
+	fileBytes, err := svc.fileToBytes(file)
+	if err != nil {
+		return " ", fmt.Errorf("%w", err)
+	}
+	return svc.repo.AvatarUpdate(ctx, id, fileBytes, fileType)
+}
+
+func (svc *userService) fileToBytes(file multipart.File) ([]byte, error) {
+	var buffer bytes.Buffer
+	if _, err := io.Copy(&buffer, file); err != nil {
+		return nil, err
+	}
+	return buffer.Bytes(), nil
 }
