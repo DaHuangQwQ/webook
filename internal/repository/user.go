@@ -72,18 +72,18 @@ func (repo *CachedUserRepository) FindByPhone(ctx context.Context, phone string)
 }
 
 func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domain.User, error) {
-	u, err := repo.cache.Get(ctx, id)
-
-	switch err {
-	case nil:
-		// cache 命中
-		return u, err
-	case cache.ErrUserKeyNotExist:
-		// cache 未命中
-	default:
-		// redis 出错
-
-	}
+	//u, err := repo.cache.Get(ctx, id)
+	//
+	//switch err {
+	//case nil:
+	//	// cache 命中
+	//	return u, err
+	//case cache.ErrUserKeyNotExist:
+	//	// cache 未命中
+	//default:
+	//	// redis 出错
+	//
+	//}
 
 	ue, err := repo.dao.FindById(ctx, id)
 	if err != nil {
@@ -91,14 +91,14 @@ func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domai
 	}
 	user := repo.entityToDomain(ue)
 
-	go func() {
-		err = repo.cache.Set(ctx, user)
-		if err != nil {
-			// 写入缓存
-			// 监控
-			//return domain.User{}, err
-		}
-	}()
+	//go func() {
+	//	err = repo.cache.Set(ctx, user)
+	//	if err != nil {
+	//		// 写入缓存
+	//		// 监控
+	//		//return domain.User{}, err
+	//	}
+	//}()
 
 	return user, nil
 }
@@ -124,7 +124,7 @@ func (repo *CachedUserRepository) AvatarUpdate(ctx context.Context, id int64, fi
 	if err != nil {
 		return "", err
 	}
-	fileName := fmt.Sprintf("avatar/%d.%s", id, fileType)
+	fileName := fmt.Sprintf("avatar/%d.%s", time.Now().UnixMilli(), fileType)
 	ossAdress := "https://ceit." + config.ENDP + "/" + fileName
 	err = repo.dao.Update(ctx, dao.User{
 		Id:        id,
@@ -158,8 +158,9 @@ func (repo *CachedUserRepository) domainToEntity(user domain.User) dao.User {
 			String: user.WechatInfo.UnionId,
 			Valid:  user.WechatInfo.UnionId != "",
 		},
-		Grade:  user.Grade,
-		Gender: user.Gender,
+		Grade:     user.Grade,
+		Gender:    user.Gender,
+		AvatarUrl: user.Avatar,
 	}
 }
 
@@ -173,6 +174,7 @@ func (repo *CachedUserRepository) entityToDomain(user dao.User) domain.User {
 		Grade:    user.Grade,
 		Gender:   user.Gender,
 		CTime:    time.UnixMilli(user.CTime),
+		Avatar:   user.AvatarUrl,
 
 		WechatInfo: domain.WechatInfo{
 			OpenId:  user.WechatOpenId.String,

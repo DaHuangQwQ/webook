@@ -13,6 +13,7 @@ type User struct {
 	Grade    int
 
 	Gender int
+	Avatar string
 
 	CTime time.Time
 
@@ -20,9 +21,11 @@ type User struct {
 }
 
 type UserInfo struct {
-	Nickname string
-	Grade    int
-	Phone    string
+	Nickname string `json:"nickname"`
+	Grade    int    `json:"grade"`
+	Phone    string `json:"phone"`
+	Avatar   string `json:"avatar"`
+	Email    string `json:"email"`
 	// 0 未知， 1 男， 2 女
-	Gender int
+	Gender int `json:"gender"`
 }

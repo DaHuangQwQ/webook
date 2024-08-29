@@ -122,6 +122,7 @@ func (h *ArticleHandler) GetList(ctx *gin.Context) {
 			Code: 5,
 			Msg:  "系统错误",
 		})
+		h.l.Info("获取列表失败", logger.Field{Key: "err", Val: err})
 		return
 	}
 	ctx.JSON(http.StatusOK, Result{

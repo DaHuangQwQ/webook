@@ -20,6 +20,7 @@ func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
 			"/users/login",
 			"/users/login_sms",
 			"/users/login_sms/code/send",
+			"/users/refresh_token",
 			"/hello",
 			"/oauth2/wechat/authurl",
 			"/oauth2/wechat/callback",
@@ -56,7 +57,7 @@ func (m *LoginJwtMiddleware) Build(jwtHandler ijwt.Handler) gin.HandlerFunc {
 			// 在这里发现 access_token 过期了，生成一个新的 access_token
 			// token 解析出来了，但是 token 可能是非法的，或者过期了的
 			m.l.Info("token过期")
-			c.AbortWithStatus(http.StatusUnauthorized)
+			c.AbortWithStatus(http.StatusPaymentRequired)
 			return
 		}
 		if claims.UserAgent != c.Request.UserAgent() {

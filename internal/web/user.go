@@ -403,6 +403,8 @@ func (h *UserHandler) GetInfo(ctx *gin.Context) {
 			Phone:    phoneRes,
 			Grade:    UserInfo.Grade,
 			Gender:   UserInfo.Gender,
+			Avatar:   UserInfo.Avatar,
+			Email:    UserInfo.Email,
 		},
 	})
 }
