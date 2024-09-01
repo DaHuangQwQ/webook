@@ -1,13 +1,12 @@
 package web
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"webook/pkg/ginx"
+)
 
-type handler interface {
+type Handler interface {
 	RegisterRoutes(router *gin.Engine)
 }
 
-type Result struct {
-	Code int    `json:"code"`
-	Msg  string `json:"msg"`
-	Data any    `json:"data"`
-}
+type Result = ginx.Result

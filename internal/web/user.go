@@ -14,8 +14,8 @@ import (
 )
 import "github.com/gin-gonic/gin"
 
-// 确保实现了 handler 接口
-var _ handler = (*UserHandler)(nil)
+// 确保实现了 Handler 接口
+var _ Handler = (*UserHandler)(nil)
 
 type UserHandler struct {
 	ijwt.Handler
@@ -32,7 +32,7 @@ const biz = "login"
 
 func NewUserHandler(svc service.UserService, codeSvc service.CodeService, hdl ijwt.Handler, l logger.LoggerV1) *UserHandler {
 	const (
-		emailRegexPattern  = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
+		emailRegexPattern  = "^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\\.[a-zA-Z0-9-.]+$"
 		passwordExpPattern = `^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$`
 		phoneExpPattern    = "^1(3[0-9]|5[0-3,5-9]|7[1-3,5-8]|8[0-9])\\d{8}$"
 	)
@@ -170,14 +170,26 @@ func (h *UserHandler) LoginJWT(ctx *gin.Context) {
 	case nil:
 		err = h.SetLoginToken(ctx, u.Id)
 		if err != nil {
-			ctx.JSON(http.StatusOK, "系统错误")
+			ctx.JSON(http.StatusOK, Result{
+				Code: 5,
+				Msg:  "系统错误",
+			})
 			return
 		}
-		ctx.String(http.StatusOK, "登录成功")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 0,
+			Msg:  "登录成功",
+		})
 	case service.ErrInvalidUserOrPassword:
-		ctx.String(http.StatusOK, "用户名或者密码不对")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "用户名或者密码不对",
+		})
 	default:
-		ctx.String(http.StatusOK, "系统错误")
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
 	}
 	return
 }
@@ -341,6 +353,7 @@ func (h *UserHandler) LogoutJWT(ctx *gin.Context) {
 func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 	type Req struct {
 		Name   string `json:"name"`
+		Email  string `json:"email"`
 		Grade  int    `json:"grade"`
 		Gender int    `json:"gender"`
 	}
@@ -360,12 +373,29 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 		})
 		return
 	}
+	isEmail, err := h.emailExp.MatchString(req.Email)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	if !isEmail {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "非法邮箱格式",
+		})
+		return
+	}
+	h.l.Info("信息更新", logger.Field{Key: "info", Val: req})
 	userId := ctx.MustGet("claims").(ijwt.UserClaims)
-	var err = h.svc.UpdateByID(ctx, domain.User{
+	err = h.svc.UpdateByID(ctx, domain.User{
 		Id:       userId.Uid,
 		Nickname: req.Name,
 		Grade:    req.Grade,
 		Gender:   req.Gender,
+		Email:    req.Email,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{

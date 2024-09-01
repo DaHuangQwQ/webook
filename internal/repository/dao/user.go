@@ -83,14 +83,23 @@ type User struct {
 	WechatOpenId  sql.NullString `json:"wechat_open_id" gorm:"type:varchar(255);unique;"`
 	WechatUnionId sql.NullString `json:"wechat_union_id" gorm:"type:varchar(255);unique;"`
 
-	Email    sql.NullString `json:"email" gorm:"type:varchar(100);unique;sql:null"`
-	Phone    sql.NullString `json:"phone" gorm:"type:varchar(100);unique;sql:null"`
-	Password string         `json:"password" gorm:"type:varchar(100);not null"`
-	Nickname string         `json:"nickname" gorm:"type:varchar(100)"`
-	Grade    int            `json:"grade" gorm:"type:int(11)"`
-	Gender   int            `json:"gender" gorm:"type:int(11)"`
+	Email      sql.NullString `json:"email" gorm:"type:varchar(100);unique;sql:null"`
+	Phone      sql.NullString `json:"phone" gorm:"type:varchar(100);unique;sql:null"`
+	Password   string         `json:"password" gorm:"type:varchar(100);not null"`
+	Nickname   string         `json:"nickname" gorm:"type:varchar(100)"`
+	Birthday   int            `gorm:"type:int(11);not null;default:0;comment:'生日'"`
+	UserStatus uint8          `gorm:"type:tinyint unsigned;not null;default:1;comment:'用户状态;0:禁用,1:正常,2:未验证'"`
 
-	AvatarUrl string `json:"avatar_url" gorm:"type:varchar(100)"`
+	Grade  int `json:"grade" gorm:"type:int(11)"`
+	Gender int `json:"gender" gorm:"type:int(11)"`
+
+	DeptID      uint64 `gorm:"type:bigint unsigned;not null;default:0;comment:'部门id'"`
+	Remark      string `gorm:"type:varchar(255);not null;comment:'备注'"`
+	IsAdmin     bool   `gorm:"type:tinyint;not null;default:1;comment:'是否后台管理员 1 是  0   否'"` // 注意：这里使用了bool类型，根据实际情况可能需要转换为tinyint
+	Address     string `gorm:"type:varchar(255);not null;comment:'联系地址'"`
+	Describe    string `gorm:"type:varchar(255);not null;comment:'描述信息'"` // 注意：Go中通常使用Description而不是Describe
+	LastLoginIP string `gorm:"type:varchar(15);not null;comment:'最后登录ip'"`
+	AvatarUrl   string `json:"avatar_url" gorm:"type:varchar(100)"`
 
 	CTime int64 `json:"ctime" gorm:"autoCreateTime:milli"`
 	UTime int64 `json:"utime" gorm:"autoUpdateTime:milli"`

@@ -218,7 +218,7 @@ func TestUserHandler_SignUp(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
-			// 构造 handler
+			// 构造 Handler
 			userSvc, codeSvc := tc.mock(ctrl)
 			hdl := NewUserHandler(userSvc, codeSvc)
 

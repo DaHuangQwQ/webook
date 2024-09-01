@@ -9,6 +9,7 @@ import (
 	"webook/internal/web"
 	"webook/internal/web/jwt"
 	"webook/internal/web/middleware"
+	"webook/internal/web/system"
 	"webook/pkg/ginx/middleware/ratelimit"
 	"webook/pkg/logger"
 	limit "webook/pkg/ratelimit"
@@ -18,12 +19,20 @@ func InitWebServer(mdls []gin.HandlerFunc,
 	userHdl *web.UserHandler,
 	wechatHdl *web.OAuth2WechatHandler,
 	articleHdl *web.ArticleHandler,
+	authHdl *system.AuthHandler,
+	roleHdl *system.RoleHandler,
+	sysUserHdl *system.UserHandler,
+	deptHdl *system.DeptHandler,
 ) *gin.Engine {
 	server := gin.Default()
 	server.Use(mdls...)
 	userHdl.RegisterRoutes(server)
 	wechatHdl.RegisterRoutes(server)
 	articleHdl.RegisterRoutes(server)
+	authHdl.RegisterRoutes(server)
+	roleHdl.RegisterRoutes(server)
+	sysUserHdl.RegisterRoutes(server)
+	deptHdl.RegisterRoutes(server)
 	return server
 }
 
@@ -37,7 +46,7 @@ func InitGinMiddlewares(redisClient redis.Cmdable, l logger.LoggerV1) []gin.Hand
 			// 这个是允许前端访问你的后端响应中带的头部
 			ExposeHeaders: []string{"x-jwt-token"},
 			//AllowHeaders: []string{"content-type"},
-			//AllowMethods: []string{"POST"},
+			AllowMethods: []string{"POST", "PUT", "DELETE", "OPTIONS", "GET"},
 			AllowOriginFunc: func(origin string) bool {
 				if strings.HasPrefix(origin, "http://localhost") {
 					//if strings.Contains(origin, "localhost") {
