@@ -15,6 +15,9 @@ type ArticleDao interface {
 	Sync(ctx context.Context, article Article) (int64, error)
 	SyncStatus(ctx context.Context, articleID int64, authorId int64, status uint8) error
 	GetList(ctx context.Context) ([]PublishedArticle, error)
+	FindById(ctx context.Context, uid int64, articleId int64) (Article, error)
+	GetListByAuthor(ctx context.Context, uid int64, offset int, limit int) ([]Article, error)
+	ListAll(ctx context.Context, PageNum int, PageSize int) ([]PublishedArticle, error)
 }
 
 type GormArticleDao struct {
@@ -25,6 +28,18 @@ func NewGormArticleDao(db *gorm.DB) ArticleDao {
 	return &GormArticleDao{
 		db: db,
 	}
+}
+
+func (dao *GormArticleDao) ListAll(ctx context.Context, PageNum int, PageSize int) ([]PublishedArticle, error) {
+	var articles []PublishedArticle
+	err := dao.db.WithContext(ctx).Offset(PageNum).Limit(PageSize).Find(&articles).Error
+	return articles, err
+}
+
+func (dao *GormArticleDao) GetListByAuthor(ctx context.Context, uid int64, offset int, limit int) ([]Article, error) {
+	var articles []Article
+	err := dao.db.WithContext(ctx).Where("author_id = ?", uid).Offset(offset).Limit(limit).Find(&articles).Error
+	return articles, err
 }
 
 func (dao *GormArticleDao) Insert(ctx context.Context, article Article) (int64, error) {
@@ -47,6 +62,8 @@ func (dao *GormArticleDao) UpdateById(ctx context.Context, article Article) erro
 			"content": article.Content,
 			"u_time":  article.UTime,
 			"status":  article.Status,
+			"img_url": article.ImgUrl,
+			"type":    article.Type,
 		})
 	if res.Error != nil {
 		return res.Error
@@ -57,6 +74,16 @@ func (dao *GormArticleDao) UpdateById(ctx context.Context, article Article) erro
 	return nil
 }
 
+func (dao *GormArticleDao) FindById(ctx context.Context, uid int64, articleId int64) (Article, error) {
+	article := Article{}
+	err := dao.db.WithContext(ctx).Model(&Article{}).Where("id = ? AND uid = ?", articleId, uid).
+		First(&article).Error
+	if err != nil {
+		return Article{}, err
+	}
+	return article, nil
+}
+
 func (dao *GormArticleDao) Sync(ctx context.Context, article Article) (int64, error) {
 	// 先操作 制作库 后操作 线上库
 	var (
@@ -65,9 +92,11 @@ func (dao *GormArticleDao) Sync(ctx context.Context, article Article) (int64, er
 	err := dao.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
 		var (
 			err error
+			//articleInfo Article
 		)
 		txDao := NewGormArticleDao(tx)
 		if id > 0 {
+			//articleInfo, err = txDao.FindById(ctx, article.Id, article.AuthorId)
 			err = txDao.UpdateById(ctx, article)
 			if err != nil {
 				return err
@@ -121,6 +150,8 @@ func (dao *GormArticleDao) Upsert(ctx context.Context, article PublishedArticle)
 			"content": article.Content,
 			"u_time":  now,
 			"status":  article.Status,
+			"img_url": article.ImgUrl,
+			"type":    article.Type,
 		}),
 	}).Create(&article).Error
 	return err
@@ -143,7 +174,9 @@ type Article struct {
 
 	// 按照这个索引, 创建时间倒序排序
 	// 最佳实践是 在 AuthorId 和 CTime 创建联合索引
-	AuthorId int64 `gorm:"index=aid_ctime"`
+	AuthorId int64  `gorm:"index=aid_ctime"`
+	ImgUrl   string `json:"img_url" gorm:"varchar(255)"`
+	Type     string `json:"type" gorm:"varchar(255)"`
 
 	Status uint8
 

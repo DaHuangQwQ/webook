@@ -6,7 +6,18 @@ type Article struct {
 	Content string
 	Author  Author
 
+	ImgUrl string
+	Type   string
+
 	Status ArticleStatus
+}
+
+func (a Article) Abstract() string {
+	cs := []rune(a.Content)
+	if len(cs) > 100 {
+		return string(cs[:100])
+	}
+	return string(cs)
 }
 
 const (
