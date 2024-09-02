@@ -77,3 +77,7 @@ type SysDeptTreeRes struct {
 	*SysDept
 	Children []*SysDeptTreeRes `json:"children"`
 }
+
+type DeptTreeSelectRes struct {
+	Deps []*SysDeptTreeRes `json:"deps"`
+}
