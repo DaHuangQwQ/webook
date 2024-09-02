@@ -31,11 +31,13 @@ func InitWebServer() *gin.Engine {
 		systemDao.NewGormAuthDao,
 		systemDao.NewGormRoleDao,
 		systemDao.NewGormDeptDao,
+		dao.NewGormInteractiveDao,
 
 		// cache 部分
 		cache.NewCodeCache,
 		cache.NewUserCache,
 		cache.NewArticleRedisCache,
+		cache.NewRedisInteractiveCache,
 
 		// repository 部分
 		repository.NewUserRepository,
@@ -45,16 +47,19 @@ func InitWebServer() *gin.Engine {
 		systemRepository.NewCachedUserRepository,
 		systemRepository.NewCachedDeptRepository,
 		repository.NewCachedArticleRepository,
+		repository.NewCachedInteractiveRepository,
 
 		// Service 部分
 		ioc.InitSMSService,
 		service.NewUserService,
 		service.NewCodeService,
 		service.NewArticleService,
+		service.NewInteractiveService,
 		systemService.NewAuthService,
 		systemService.NewRoleService,
 		systemService.NewSystemService,
 		systemService.NewDeptService,
+		systemService.NewSysMonitorService,
 
 		ioc.InitWechat,
 
@@ -67,6 +72,7 @@ func InitWebServer() *gin.Engine {
 		system.NewRoleHandler,
 		system.NewUserHandler,
 		system.NewDeptHandler,
+		system.NewMonitorHandler,
 
 		ioc.InitGinMiddlewares,
 		ioc.InitWebServer,

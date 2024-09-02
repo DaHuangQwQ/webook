@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+	"strings"
 	ijwt "webook/internal/web/jwt"
 	"webook/pkg/logger"
 )
@@ -26,6 +27,8 @@ func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
 			"/oauth2/wechat/callback",
 			"/oauth2/wechat/code2session",
 			"/articles/getlist",
+			"/articles/list",
+			"/swagger",
 		},
 		l: l,
 	}
@@ -34,7 +37,7 @@ func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
 func (m *LoginJwtMiddleware) Build(jwtHandler ijwt.Handler) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		for _, path := range m.paths {
-			if c.Request.URL.Path == path {
+			if strings.HasPrefix(c.Request.URL.Path, path) {
 				return
 			}
 		}

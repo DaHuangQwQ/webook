@@ -23,6 +23,7 @@ func InitWebServer(mdls []gin.HandlerFunc,
 	roleHdl *system.RoleHandler,
 	sysUserHdl *system.UserHandler,
 	deptHdl *system.DeptHandler,
+	monitorHdl *system.MonitorHandler,
 ) *gin.Engine {
 	server := gin.Default()
 	server.Use(mdls...)
@@ -33,6 +34,7 @@ func InitWebServer(mdls []gin.HandlerFunc,
 	roleHdl.RegisterRoutes(server)
 	sysUserHdl.RegisterRoutes(server)
 	deptHdl.RegisterRoutes(server)
+	monitorHdl.RegisterRoutes(server)
 	return server
 }
 
@@ -52,7 +54,7 @@ func InitGinMiddlewares(redisClient redis.Cmdable, l logger.LoggerV1) []gin.Hand
 					//if strings.Contains(origin, "localhost") {
 					return true
 				}
-				return strings.Contains(origin, "your_company.com")
+				return strings.Contains(origin, "ceitlab.top")
 			},
 			MaxAge: 12 * time.Hour,
 		}),
