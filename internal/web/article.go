@@ -16,15 +16,19 @@ import (
 var _ Handler = (*ArticleHandler)(nil)
 
 type ArticleHandler struct {
-	svc service.ArticleService
+	svc      service.ArticleService
+	interSvc service.InteractiveService
 
-	l logger.LoggerV1
+	biz string
+	l   logger.LoggerV1
 }
 
-func NewArticleHandler(articleSvc service.ArticleService, l logger.LoggerV1) *ArticleHandler {
+func NewArticleHandler(articleSvc service.ArticleService, l logger.LoggerV1, interSvc service.InteractiveService) *ArticleHandler {
 	return &ArticleHandler{
-		svc: articleSvc,
-		l:   l,
+		svc:      articleSvc,
+		l:        l,
+		interSvc: interSvc,
+		biz:      "articles",
 	}
 }
 
@@ -37,6 +41,8 @@ func (h *ArticleHandler) RegisterRoutes(router *gin.Engine) {
 	server.POST("/img_update", h.Img_Update)
 	server.GET("/list", ginx.Warp[api.PageReq](h.List))
 	server.GET("/detail/:id")
+	server.GET("/pub_detail")
+	server.POST("/like", ginx.WarpWithToken[api.LikeReq](h.Like))
 }
 
 func (h *ArticleHandler) List(ctx *gin.Context, req api.PageReq) (Result, error) {
@@ -205,6 +211,25 @@ func (h *ArticleHandler) GetList(ctx *gin.Context) {
 		Msg:  "ok",
 		Data: articles,
 	})
+}
+
+func (h *ArticleHandler) Like(ctx *gin.Context, req api.LikeReq, u ijwt.UserClaims) (ginx.Result, error) {
+	var err error
+	if req.Like {
+		err = h.interSvc.Like(ctx, h.biz, req.ArticleID, u.Uid)
+	} else {
+		err = h.interSvc.CancelLike(ctx, h.biz, req.ArticleID, u.Uid)
+	}
+	if err != nil {
+		return ginx.Result{
+			Code: 5,
+			Msg:  "系统错误",
+		}, err
+	}
+	return ginx.Result{
+		Code: 0,
+		Msg:  "ok",
+	}, nil
 }
 
 type ArticleReq struct {
