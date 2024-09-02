@@ -4,8 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"time"
+	"webook/internal/api"
 )
 import "gorm.io/gorm"
 
@@ -16,6 +18,9 @@ type UserDao interface {
 	FindById(ctx context.Context, id int64) (User, error)
 	FindByWechat(ctx context.Context, openId string) (User, error)
 	Update(ctx context.Context, user User) error
+	FindAll(ctx context.Context, req api.UserSearchReq) (total int, userList []User, err error)
+	InsertAndGetId(ctx context.Context, user User) (int64, error)
+	DeleteByIds(ctx *gin.Context, ids []int) error
 }
 
 type GormUserDao struct {
@@ -29,6 +34,21 @@ var (
 
 func NewUserDao(db *gorm.DB) UserDao {
 	return &GormUserDao{db: db}
+}
+
+func (dao *GormUserDao) DeleteByIds(ctx *gin.Context, ids []int) error {
+	return dao.db.WithContext(ctx).Delete(&User{}, "id in (?)", ids).Error
+}
+
+func (dao *GormUserDao) InsertAndGetId(ctx context.Context, user User) (int64, error) {
+	err := dao.db.WithContext(ctx).Create(&user).Error
+	return user.Id, err
+}
+
+func (dao *GormUserDao) FindAll(ctx context.Context, req api.UserSearchReq) (total int, userList []User, err error) {
+	err = dao.db.WithContext(ctx).Offset(req.PageNum).Limit(req.PageSize).Order(req.OrderBy).Find(&userList).Error
+	total = len(userList)
+	return
 }
 
 func (dao *GormUserDao) Insert(ctx context.Context, user User) error {
@@ -95,11 +115,12 @@ type User struct {
 
 	DeptID      uint64 `gorm:"type:bigint unsigned;not null;default:0;comment:'部门id'"`
 	Remark      string `gorm:"type:varchar(255);not null;comment:'备注'"`
-	IsAdmin     bool   `gorm:"type:tinyint;not null;default:1;comment:'是否后台管理员 1 是  0   否'"` // 注意：这里使用了bool类型，根据实际情况可能需要转换为tinyint
+	IsAdmin     uint8  `gorm:"type:tinyint;not null;default:1;comment:'是否后台管理员 1 是  0   否'"` // 注意：这里使用了bool类型，根据实际情况可能需要转换为tinyint
 	Address     string `gorm:"type:varchar(255);not null;comment:'联系地址'"`
 	Describe    string `gorm:"type:varchar(255);not null;comment:'描述信息'"` // 注意：Go中通常使用Description而不是Describe
 	LastLoginIP string `gorm:"type:varchar(15);not null;comment:'最后登录ip'"`
 	AvatarUrl   string `json:"avatar_url" gorm:"type:varchar(100)"`
+	Status      uint   `json:"status"`
 
 	CTime int64 `json:"ctime" gorm:"autoCreateTime:milli"`
 	UTime int64 `json:"utime" gorm:"autoUpdateTime:milli"`

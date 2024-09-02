@@ -49,6 +49,7 @@ func (c *CachedArticleRepository) ListAll(ctx context.Context, req api.PageReq) 
 	articles := make([]domain.Article, len(res))
 	for i, v := range res {
 		articles[i] = c.toPubDomain(v)
+		articles[i].Content = articles[i].Abstract()
 	}
 	return articles, err
 }

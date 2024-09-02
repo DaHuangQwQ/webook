@@ -32,7 +32,7 @@ func NewGormArticleDao(db *gorm.DB) ArticleDao {
 
 func (dao *GormArticleDao) ListAll(ctx context.Context, PageNum int, PageSize int) ([]PublishedArticle, error) {
 	var articles []PublishedArticle
-	err := dao.db.WithContext(ctx).Offset(PageNum).Limit(PageSize).Find(&articles).Error
+	err := dao.db.WithContext(ctx).Offset(PageNum).Limit(PageSize).Order("id desc").Find(&articles).Error
 	return articles, err
 }
 

@@ -3,7 +3,9 @@ package system
 import (
 	"context"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"strings"
+	"webook/internal/api"
 	"webook/internal/domain"
 	"webook/internal/repository/system"
 )
@@ -17,20 +19,92 @@ type UserService interface {
 	NotCheckAuthAdminIds(ctx context.Context)
 	GetAllMenus(ctx context.Context) ([]*domain.UserMenus, error)
 	GetAdminRoleIds(ctx context.Context, userId int64) (roleIds []uint, err error)
+	GetUserSearch(ctx context.Context, req api.UserSearchReq) (api.UserSearchRes, error)
+	Add(ctx *gin.Context, req api.SetUserReq) error
+	Delete(ctx *gin.Context, ids []int) error
+	GetParams(ctx *gin.Context) (api.UserGetParamsRes, error)
+	GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error)
 }
 
 type userService struct {
 	roleSvc RoleService
 	authSvc AuthService
+	deptSvc DeptService
 	repo    system.UserRepository
 }
 
-func NewSystemService(roleSvc RoleService, authSvc AuthService, repo system.UserRepository) UserService {
+func NewSystemService(roleSvc RoleService, authSvc AuthService, repo system.UserRepository, deptSvc DeptService) UserService {
 	return &userService{
 		roleSvc: roleSvc,
 		authSvc: authSvc,
 		repo:    repo,
+		deptSvc: deptSvc,
 	}
+}
+
+func (svc *userService) GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error) {
+	//svc.repo.GetUserInfoById(ctx, id)
+	return api.UserGetEditRes{}, nil
+}
+
+func (svc *userService) GetParams(ctx *gin.Context) (res api.UserGetParamsRes, err error) {
+	roleList, err := svc.roleSvc.GetRoleList(ctx)
+	res.RoleList = roleList
+	return
+}
+
+func (svc *userService) Delete(ctx *gin.Context, ids []int) error {
+	return svc.repo.DeleteByIds(ctx, ids)
+}
+
+func (svc *userService) Add(ctx *gin.Context, req api.SetUserReq) error {
+	return svc.repo.Add(ctx, req)
+}
+
+func (svc *userService) GetUserSearch(ctx context.Context, req api.UserSearchReq) (res api.UserSearchRes, err error) {
+	total, userList, err := svc.repo.List(ctx, req)
+	if err != nil || total == 0 {
+		return
+	}
+	res.Total = total
+	allRoles, err := svc.roleSvc.GetRoleList(ctx)
+	if err != nil {
+		return
+	}
+	allRolesTemp := make([]*domain.Role, len(allRoles))
+	for k, r := range allRoles {
+		allRolesTemp[k] = &r
+	}
+
+	allDepts, err := svc.deptSvc.GetDeptList(ctx)
+	if err != nil {
+		return
+	}
+	users := make([]api.SysUserRoleDeptRes, len(userList))
+
+	for k, u := range userList {
+		var dept domain.SysDept
+		users[k] = api.SysUserRoleDeptRes{
+			User: u,
+		}
+		for _, d := range allDepts {
+			if u.DeptId == d.DeptId {
+				dept = d
+			}
+		}
+		users[k].Dept = dept
+
+		//roles, err := svc.GetAdminRole(ctx, u.Id, allRolesTemp)
+
+		//if err != nil {
+		//	return res, err
+		//}
+		for _, r := range allRolesTemp {
+			users[k].RoleInfo = append(users[k].RoleInfo, api.SysUserRoleInfoRes{RoleId: uint(r.Id), Name: r.Name})
+		}
+	}
+	res.UserList = users
+	return
 }
 
 func (svc *userService) GetAdminRoleIds(ctx context.Context, userId int64) (roleIds []uint, err error) {
@@ -128,8 +202,7 @@ func (svc *userService) GetAdminRules(ctx context.Context, userId int64) (menuLi
 }
 
 func (svc *userService) GetAdminRole(ctx context.Context, userId int64, allRoleList []*domain.Role) (roles []*domain.Role, err error) {
-	var roleIds []uint
-	roleIds, err = svc.GetAdminRoleIds(ctx, userId)
+	roleIds, err := svc.GetAdminRoleIds(ctx, userId)
 	if err != nil {
 		err = fmt.Errorf("GetAdminRoleIds失败 %w", err)
 		return
