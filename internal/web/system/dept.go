@@ -108,5 +108,16 @@ func (h *DeptHandler) Delete(ctx *gin.Context) {
 	})
 }
 func (h *DeptHandler) TreeSelect(ctx *gin.Context) {
-
+	res, err := h.svc.TreeSelect(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusOK, web.Result{
+			Code: 5,
+			Msg:  "系统错误" + err.Error(),
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, web.Result{
+		Msg:  "ok",
+		Data: res,
+	})
 }

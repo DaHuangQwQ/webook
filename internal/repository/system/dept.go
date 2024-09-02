@@ -8,6 +8,7 @@ import (
 
 type DeptRepository interface {
 	GetList(ctx context.Context, deptName string, status uint, pageNum, pageSize int) ([]domain.SysDept, error)
+	GetAllList(ctx context.Context) ([]domain.SysDept, error)
 }
 
 type CachedDeptRepository struct {
@@ -18,6 +19,15 @@ func NewCachedDeptRepository(dao system.DeptDao) DeptRepository {
 	return &CachedDeptRepository{
 		dao: dao,
 	}
+}
+
+func (repo *CachedDeptRepository) GetAllList(ctx context.Context) ([]domain.SysDept, error) {
+	res, err := repo.dao.FindAll(ctx)
+	depts := make([]domain.SysDept, len(res))
+	for i, dept := range res {
+		depts[i] = repo.toDomain(dept)
+	}
+	return depts, err
 }
 
 func (repo *CachedDeptRepository) GetList(ctx context.Context, deptName string, status uint, pageNum, pageSize int) ([]domain.SysDept, error) {
