@@ -15,7 +15,7 @@ type ArticleDao interface {
 	Sync(ctx context.Context, article Article) (int64, error)
 	SyncStatus(ctx context.Context, articleID int64, authorId int64, status uint8) error
 	GetList(ctx context.Context) ([]PublishedArticle, error)
-	FindById(ctx context.Context, uid int64, articleId int64) (Article, error)
+	FindById(ctx context.Context, articleId int64) (PublishedArticle, error)
 	GetListByAuthor(ctx context.Context, uid int64, offset int, limit int) ([]Article, error)
 	ListAll(ctx context.Context, PageNum int, PageSize int) ([]PublishedArticle, error)
 }
@@ -74,12 +74,12 @@ func (dao *GormArticleDao) UpdateById(ctx context.Context, article Article) erro
 	return nil
 }
 
-func (dao *GormArticleDao) FindById(ctx context.Context, uid int64, articleId int64) (Article, error) {
-	article := Article{}
-	err := dao.db.WithContext(ctx).Model(&Article{}).Where("id = ? AND uid = ?", articleId, uid).
+func (dao *GormArticleDao) FindById(ctx context.Context, articleId int64) (PublishedArticle, error) {
+	article := PublishedArticle{}
+	err := dao.db.WithContext(ctx).Model(&PublishedArticle{}).Where("id = ?", articleId).
 		First(&article).Error
 	if err != nil {
-		return Article{}, err
+		return PublishedArticle{}, err
 	}
 	return article, nil
 }

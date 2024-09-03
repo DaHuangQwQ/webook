@@ -46,9 +46,10 @@ func (dao *GormUserDao) InsertAndGetId(ctx context.Context, user User) (int64, e
 }
 
 func (dao *GormUserDao) FindAll(ctx context.Context, req api.UserSearchReq) (total int, userList []User, err error) {
+	var tol int64
+	err = dao.db.WithContext(ctx).Model(&User{}).Count(&tol).Error
 	err = dao.db.WithContext(ctx).Offset(req.PageNum).Limit(req.PageSize).Order(req.OrderBy).Find(&userList).Error
-	total = len(userList)
-	return
+	return int(tol), userList, err
 }
 
 func (dao *GormUserDao) Insert(ctx context.Context, user User) error {

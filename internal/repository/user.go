@@ -72,18 +72,18 @@ func (repo *CachedUserRepository) FindByPhone(ctx context.Context, phone string)
 }
 
 func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domain.User, error) {
-	//u, err := repo.cache.Get(ctx, id)
-	//
-	//switch err {
-	//case nil:
-	//	// cache 命中
-	//	return u, err
-	//case cache.ErrUserKeyNotExist:
-	//	// cache 未命中
-	//default:
-	//	// redis 出错
-	//
-	//}
+	u, err := repo.cache.Get(ctx, id)
+
+	switch err {
+	case nil:
+		// cache 命中
+		return u, err
+	case cache.ErrUserKeyNotExist:
+		// cache 未命中
+	default:
+		// redis 出错
+
+	}
 
 	ue, err := repo.dao.FindById(ctx, id)
 	if err != nil {
@@ -91,14 +91,14 @@ func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domai
 	}
 	user := repo.entityToDomain(ue)
 
-	//go func() {
-	//	err = repo.cache.Set(ctx, user)
-	//	if err != nil {
-	//		// 写入缓存
-	//		// 监控
-	//		//return domain.User{}, err
-	//	}
-	//}()
+	go func() {
+		err = repo.cache.Set(ctx, user)
+		if err != nil {
+			// 写入缓存
+			// 监控
+			//return domain.User{}, err
+		}
+	}()
 
 	return user, nil
 }

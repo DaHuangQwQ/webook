@@ -3,9 +3,8 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/google/wire"
-	"webook/internal/ioc"
+	"webook/internal/events/article"
 	"webook/internal/repository"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
@@ -16,15 +15,22 @@ import (
 	"webook/internal/web"
 	"webook/internal/web/jwt"
 	"webook/internal/web/system"
+	"webook/ioc"
 )
 
-func InitWebServer() *gin.Engine {
+func InitWebServer() *App {
 	wire.Build(
 		// 第三方依赖
 		ioc.InitRedis, ioc.InitDB,
 		ioc.InitLogger,
 		ioc.InitOssService,
 		ioc.InitCasbinService,
+		ioc.InitConsumers,
+		ioc.InitSyncProducer,
+		ioc.InitSaramaClient,
+		// events
+		article.NewKafkaProducer,
+		article.NewInteractiveReadEventConsumer,
 		// DAO 部分
 		dao.NewUserDao,
 		dao.NewGormArticleDao,
@@ -80,6 +86,7 @@ func InitWebServer() *gin.Engine {
 
 		ioc.InitGinMiddlewares,
 		ioc.InitWebServer,
+		wire.Struct(new(App), "*"),
 	)
-	return gin.Default()
+	return new(App)
 }

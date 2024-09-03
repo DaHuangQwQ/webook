@@ -6,18 +6,22 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	_ "github.com/spf13/viper/remote"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 	"go.uber.org/zap"
 	"net/http"
 )
 
 func main() {
 	initViper()
-	server := InitWebServer()
-	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	app := InitWebServer()
+	for _, c := range app.consumers {
+		err := c.Start()
+		if err != nil {
+			panic(err)
+		}
+	}
+	server := app.server
 	server.GET("/hello", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "hello world")
+		ctx.String(http.StatusOK, "hello，启动成功了！")
 	})
 	err := server.Run(":8090")
 	if err != nil {

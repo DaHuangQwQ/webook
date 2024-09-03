@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"webook/internal/api"
 	"webook/internal/domain"
+	events "webook/internal/events/article"
 	"webook/internal/repository"
 )
 
@@ -18,16 +19,36 @@ type ArticleService interface {
 	Publish(ctx context.Context, article domain.Article) (int64, error)
 	GetList(ctx context.Context) (list []domain.Article, err error)
 	List(ctx context.Context, req api.PageReq) (list []domain.Article, err error)
+	GetPublishedById(ctx context.Context, uid, articleId int64) (domain.Article, error)
 }
 
 type articleService struct {
-	repo repository.ArticleRepository
+	repo     repository.ArticleRepository
+	producer events.Producer
 }
 
-func NewArticleService(repo repository.ArticleRepository) ArticleService {
+func NewArticleService(repo repository.ArticleRepository, producer events.Producer) ArticleService {
 	return &articleService{
-		repo: repo,
+		repo:     repo,
+		producer: producer,
 	}
+}
+
+func (s *articleService) GetPublishedById(ctx context.Context, uid, articleId int64) (domain.Article, error) {
+	article, err := s.repo.GetById(ctx, articleId)
+	if err == nil {
+		go func() {
+			er := s.producer.ProduceReadEvent(ctx, events.ReadEvent{
+				Uid: uid,
+				Aid: articleId,
+			})
+			if er != nil {
+				// log
+				return
+			}
+		}()
+	}
+	return article, err
 }
 
 func (s *articleService) List(ctx context.Context, req api.PageReq) (list []domain.Article, err error) {

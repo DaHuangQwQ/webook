@@ -20,7 +20,7 @@ type ArticleRepository interface {
 	SyncStatus(ctx context.Context, articleId int64, authorId int64, status domain.ArticleStatus) error
 	GetList(ctx context.Context) ([]domain.Article, error)
 	ListById(ctx context.Context, uid int64, offset int, limit int) ([]domain.Article, error)
-	GetById(ctx context.Context, uid int64, articleId int64) (domain.Article, error)
+	GetById(ctx context.Context, articleId int64) (domain.Article, error)
 
 	Img_Update(ctx context.Context, file []byte, fileType string) (string, error)
 	ListAll(ctx context.Context, req api.PageReq) ([]domain.Article, error)
@@ -54,9 +54,9 @@ func (c *CachedArticleRepository) ListAll(ctx context.Context, req api.PageReq) 
 	return articles, err
 }
 
-func (c *CachedArticleRepository) GetById(ctx context.Context, uid, articleId int64) (domain.Article, error) {
-	res, err := c.dao.FindById(ctx, uid, articleId)
-	return c.toDomain(res), err
+func (c *CachedArticleRepository) GetById(ctx context.Context, articleId int64) (domain.Article, error) {
+	res, err := c.dao.FindById(ctx, articleId)
+	return c.toPubDomain(res), err
 }
 
 func (c *CachedArticleRepository) ListById(ctx context.Context, uid int64, offset int, limit int) ([]domain.Article, error) {
