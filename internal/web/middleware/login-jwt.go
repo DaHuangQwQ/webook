@@ -66,9 +66,9 @@ func (m *LoginJwtMiddleware) Build(jwtHandler ijwt.Handler) gin.HandlerFunc {
 		if claims.UserAgent != c.Request.UserAgent() {
 			// token 被窃取
 			// 监控
-			m.l.Warn("userAgent不同")
-			c.AbortWithStatus(http.StatusUnauthorized)
-			return
+			//m.l.Warn("userAgent不同")
+			//c.AbortWithStatus(http.StatusUnauthorized)
+			//return
 		}
 		err = jwtHandler.CheckSession(c, claims.Ssid)
 		if err != nil {

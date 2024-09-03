@@ -24,6 +24,7 @@ func InitWebServer(mdls []gin.HandlerFunc,
 	sysUserHdl *system.UserHandler,
 	deptHdl *system.DeptHandler,
 	monitorHdl *system.MonitorHandler,
+	orderHdl *web.OrderHandler,
 ) *gin.Engine {
 	server := gin.Default()
 	server.Use(mdls...)
@@ -35,6 +36,7 @@ func InitWebServer(mdls []gin.HandlerFunc,
 	sysUserHdl.RegisterRoutes(server)
 	deptHdl.RegisterRoutes(server)
 	monitorHdl.RegisterRoutes(server)
+	orderHdl.RegisterRoutes(server)
 	return server
 }
 

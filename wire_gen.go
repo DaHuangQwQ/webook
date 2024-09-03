@@ -72,6 +72,10 @@ func InitWebServer() *gin.Engine {
 	deptHandler := system4.NewDeptHandler(deptService, loggerV1)
 	monitorService := system3.NewSysMonitorService()
 	monitorHandler := system4.NewMonitorHandler(monitorService)
-	engine := ioc.InitWebServer(v, userHandler, oAuth2WechatHandler, articleHandler, authHandler, roleHandler, systemUserHandler, deptHandler, monitorHandler)
+	orderDao := dao.NewGormOrderDao(db)
+	orderRepository := repository.NewCachedOrderRepository(orderDao)
+	orderService := service.NewOrderService(orderRepository)
+	orderHandler := web.NewOrderHandler(orderService)
+	engine := ioc.InitWebServer(v, userHandler, oAuth2WechatHandler, articleHandler, authHandler, roleHandler, systemUserHandler, deptHandler, monitorHandler, orderHandler)
 	return engine
 }
