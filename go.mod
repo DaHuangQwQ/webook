@@ -5,6 +5,7 @@ go 1.22
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/DaHuangQwQ/gutil v0.0.0-20240804061315-1140de3ad9b8
+	github.com/IBM/sarama v1.43.3
 	github.com/alibabacloud-go/darabonba-openapi/v2 v2.0.9
 	github.com/alibabacloud-go/dysmsapi-20170525/v4 v4.0.0
 	github.com/aliyun/aliyun-oss-go-sdk v3.0.2+incompatible
@@ -24,8 +25,6 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.19.0
 	github.com/stretchr/testify v1.9.0
-	github.com/swaggo/files v1.0.1
-	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.3
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.975
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.0.975
@@ -45,7 +44,6 @@ require (
 	cloud.google.com/go/firestore v1.15.0 // indirect
 	cloud.google.com/go/longrunning v0.5.5 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/IBM/sarama v1.43.3 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/alibabacloud-go/alibabacloud-gateway-spi v0.0.4 // indirect
 	github.com/alibabacloud-go/debug v1.0.0 // indirect
