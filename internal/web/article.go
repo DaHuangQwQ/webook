@@ -213,24 +213,3 @@ func (h *ArticleHandler) GetPubArticle(ctx *gin.Context, req api.GetPubArticleDe
 		Data: article,
 	}, nil
 }
-
-type ArticleReq struct {
-	Id      int64  `json:"id"`
-	ImgUrl  string `json:"imgUrl"`
-	Title   string `json:"title"`
-	Type    string `json:"type"`
-	Content string `json:"content"`
-}
-
-func (art *ArticleReq) toDomain(uid int64) domain.Article {
-	return domain.Article{
-		Id:      art.Id,
-		Title:   art.Title,
-		Content: art.Content,
-		Author: domain.Author{
-			Id: uid,
-		},
-		ImgUrl: art.ImgUrl,
-		Type:   art.Type,
-	}
-}

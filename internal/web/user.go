@@ -356,6 +356,7 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 		Email  string `json:"email"`
 		Grade  int    `json:"grade"`
 		Gender int    `json:"gender"`
+		Phone  string `json:"phone"`
 	}
 	var req Req
 	if err := ctx.Bind(&req); err != nil {
@@ -396,6 +397,7 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 		Grade:    req.Grade,
 		Gender:   req.Gender,
 		Email:    req.Email,
+		Phone:    req.Phone,
 	})
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{
