@@ -29,6 +29,7 @@ func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
 			"/articles/getlist",
 			"/articles/list",
 			"/swagger",
+			"/metrics",
 		},
 		l: l,
 	}

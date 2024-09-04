@@ -10,6 +10,7 @@ import (
 	"webook/internal/web/jwt"
 	"webook/internal/web/middleware"
 	"webook/internal/web/system"
+	"webook/pkg/ginx/middleware/prometheus"
 	"webook/pkg/ginx/middleware/ratelimit"
 	"webook/pkg/logger"
 	limit "webook/pkg/ratelimit"
@@ -41,7 +42,15 @@ func InitWebServer(mdls []gin.HandlerFunc,
 }
 
 func InitGinMiddlewares(redisClient redis.Cmdable, l logger.LoggerV1) []gin.HandlerFunc {
+	pb := &prometheus.Builder{
+		Namespace: "DaHuang",
+		Subsystem: "webook",
+		Name:      "gin_http",
+		Help:      "统计 GIN 的HTTP接口数据",
+	}
 	return []gin.HandlerFunc{
+		pb.BuildResponseTime(),
+		pb.BuildActiveRequest(),
 		cors.New(cors.Config{
 			//AllowAllOrigins: true,
 			//AllowOrigins:     []string{"http://localhost:3000"},
