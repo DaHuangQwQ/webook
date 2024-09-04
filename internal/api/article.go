@@ -11,6 +11,11 @@ type GetListRes struct {
 	ListRes
 }
 
+type GetPubArticleDetail struct {
+	Meta      `path:"/articles/pub_detail" method:"get"`
+	ArticleId int64 `json:"article_id"`
+}
+
 type LikeReq struct {
 	Meta      `path:"/articles/like" method:"post"`
 	ArticleID int64 `json:"article_id"`

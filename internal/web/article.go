@@ -41,7 +41,7 @@ func (h *ArticleHandler) RegisterRoutes(router *gin.Engine) {
 	server.POST("/img_update", h.Img_Update)
 	router.GET(ginx.Warp[api.GetListReq](h.List))
 	server.GET("/detail/:id")
-	server.GET("/pub_detail")
+	router.POST(ginx.WarpWithToken[api.GetPubArticleDetail](h.GetPubArticle))
 	router.POST(ginx.WarpWithToken[api.LikeReq](h.Like))
 }
 
@@ -196,6 +196,21 @@ func (h *ArticleHandler) Like(ctx *gin.Context, req api.LikeReq, u ijwt.UserClai
 	return ginx.Result{
 		Code: 0,
 		Msg:  "ok",
+	}, nil
+}
+
+func (h *ArticleHandler) GetPubArticle(ctx *gin.Context, req api.GetPubArticleDetail, u ijwt.UserClaims) (ginx.Result, error) {
+	article, err := h.svc.GetPublishedById(ctx, u.Uid, req.ArticleId)
+	if err != nil {
+		return ginx.Result{
+			Code: 5,
+			Msg:  "系统错误",
+		}, err
+	}
+	return ginx.Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: article,
 	}, nil
 }
 
