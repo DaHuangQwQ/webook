@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/pflag"
@@ -8,6 +9,9 @@ import (
 	_ "github.com/spf13/viper/remote"
 	"go.uber.org/zap"
 	"net/http"
+	"os"
+	"webook/internal/api"
+	"webook/pkg/ginx"
 )
 
 func main() {
@@ -23,10 +27,38 @@ func main() {
 	server.GET("/hello", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "hello，启动成功了！")
 	})
+	initDoc()
 	err := server.Run(":8090")
 	if err != nil {
 		return
 	}
+}
+
+func initDoc() {
+	spec := api.OpenAPISpec{
+		OpenAPI: "3.0.0",
+		Info: api.Info{
+			Title:       "Sample API",
+			Description: "This is a sample API to demonstrate OpenAPI generation in Go",
+			Version:     "1.0.0",
+		},
+		Paths: ginx.Paths,
+	}
+	data, err := json.MarshalIndent(spec, "", "  ")
+	if err != nil {
+		panic(err)
+	}
+	file, err := os.Create("./docs/doc.json")
+	if err != nil {
+		// 如果打开（或创建）文件时发生错误，则 panic
+		panic(err)
+	}
+	_, err = file.Write(data)
+	if err != nil {
+		// 如果写入文件时发生错误，则 panic
+		panic(err)
+	}
+	defer file.Close() // 确保在函数结束时关闭文件
 }
 
 func initViper() {

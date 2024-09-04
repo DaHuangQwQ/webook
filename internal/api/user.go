@@ -16,6 +16,7 @@ type UserMenusRes struct {
 // UserSearchReq 用户搜索请求参数
 // path:"/user/list" tags:"用户管理" method:"get" summary:"用户列表"
 type UserSearchReq struct {
+	Meta     `path:"/user/list" method:"get"`
 	DeptId   string `json:"deptId"` //部门id
 	Mobile   string `json:"mobile"`
 	Status   string `json:"status"`
@@ -32,6 +33,7 @@ type UserSearchRes struct {
 // UserGetParamsReq
 // path:"/user/params" tags:"用户管理" method:"get" summary:"用户维护参数获取"
 type UserGetParamsReq struct {
+	Meta `path:"/user/params" method:"get"`
 }
 
 type UserGetParamsRes struct {
@@ -41,6 +43,7 @@ type UserGetParamsRes struct {
 
 // SetUserReq 添加修改用户公用请求字段
 type SetUserReq struct {
+	Meta     `path:"/user/set" method:"post"`
 	DeptId   uint64 `json:"deptId" v:"required#用户部门不能为空"` //所属部门
 	Email    string `json:"email" v:"email#邮箱格式错误"`       //邮箱
 	NickName string `json:"nickName" v:"required#用户昵称不能为空"`
@@ -56,6 +59,7 @@ type SetUserReq struct {
 // UserAddReq 添加用户参数
 // path:"/user/add" tags:"用户管理" method:"post" summary:"添加用户"
 type UserAddReq struct {
+	Meta `path:"/user/add" method:"post"`
 	*SetUserReq
 	UserName string `json:"userName" v:"required#用户账号不能为空"`
 	Password string `json:"password" v:"required|password#密码不能为空|密码以字母开头，只能包含字母、数字和下划线，长度在6~18之间"`
@@ -78,7 +82,8 @@ type UserEditRes struct {
 // UserGetEditReq
 // path:"/user/getEdit" tags:"用户管理" method:"get" summary:"获取用户信息"
 type UserGetEditReq struct {
-	Id uint64 `json:"id"`
+	Meta `path:"/user/getEdit" method:"get"`
+	Id   uint64 `json:"id"`
 }
 
 type UserGetEditRes struct {
@@ -111,7 +116,8 @@ type UserStatusRes struct {
 // UserDeleteReq
 // path:"/user/delete" tags:"用户管理" method:"delete" summary:"删除用户"
 type UserDeleteReq struct {
-	Ids []int `json:"ids"  v:"required#ids不能为空"`
+	Meta `path:"/user/delete" method:"delete"`
+	Ids  []int `json:"ids"  v:"required#ids不能为空"`
 }
 
 type UserDeleteRes struct {

@@ -21,11 +21,10 @@ func NewOrderHandler(svc service.OrderService) *OrderHandler {
 }
 
 func (h *OrderHandler) RegisterRoutes(router *gin.Engine) {
-	g := router.Group("/orders")
-	g.GET("/list", ginx.Warp[api.OrderListReq](h.List))
-	g.POST("/add", ginx.Warp[api.OrderAddReq](h.Add))
-	g.POST("/edit", ginx.Warp[api.OrderEditReq](h.Edit))
-	g.POST("/delete", ginx.Warp[api.OrderDeleteReq](h.Delete))
+	router.GET(ginx.Warp[api.OrderListReq](h.List))
+	router.POST(ginx.Warp[api.OrderAddReq](h.Add))
+	router.POST(ginx.Warp[api.OrderEditReq](h.Edit))
+	router.POST(ginx.Warp[api.OrderDeleteReq](h.Delete))
 }
 
 func (h *OrderHandler) List(ctx *gin.Context, req api.OrderListReq) (ginx.Result, error) {

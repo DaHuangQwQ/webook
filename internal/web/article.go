@@ -34,24 +34,27 @@ func NewArticleHandler(articleSvc service.ArticleService, l logger.LoggerV1, int
 
 func (h *ArticleHandler) RegisterRoutes(router *gin.Engine) {
 	server := router.Group("/articles")
-	server.POST("/edit", h.Edit)
-	server.POST("/publish", h.Publish)
-	server.POST("/withdraw", h.Withdraw)
-	server.GET("/getlist", h.GetList)
+	router.POST(ginx.WarpWithToken[api.ArticleEditReq](h.Edit))
+	router.POST(ginx.WarpWithToken[api.ArticlePublishReq](h.Publish))
+	router.POST(ginx.WarpWithToken[api.ArticleWithdrawReq](h.Withdraw))
+	router.GET(ginx.Warp[api.ArticleGetListReq](h.GetList))
 	server.POST("/img_update", h.Img_Update)
-	server.GET("/list", ginx.Warp[api.PageReq](h.List))
+	router.GET(ginx.Warp[api.GetListReq](h.List))
 	server.GET("/detail/:id")
 	server.GET("/pub_detail")
-	server.POST("/like", ginx.WarpWithToken[api.LikeReq](h.Like))
+	router.POST(ginx.WarpWithToken[api.LikeReq](h.Like))
 }
 
-func (h *ArticleHandler) List(ctx *gin.Context, req api.PageReq) (Result, error) {
+func (h *ArticleHandler) List(ctx *gin.Context, req api.GetListReq) (Result, error) {
 	//println(req.PageSize, req.PageNum)
 	parseInt, _ := strconv.ParseInt(ctx.Query("pageNum"), 10, 64)
 	req.PageNum = int(parseInt)
 	parseInt, _ = strconv.ParseInt(ctx.Query("pageSize"), 10, 64)
 	req.PageSize = int(parseInt)
-	list, err := h.svc.List(ctx, req)
+	list, err := h.svc.List(ctx, api.PageReq{
+		PageNum:  req.PageNum,
+		PageSize: req.PageSize,
+	})
 	if err != nil {
 		return Result{
 			Code: 5,
@@ -64,30 +67,20 @@ func (h *ArticleHandler) List(ctx *gin.Context, req api.PageReq) (Result, error)
 	}, nil
 }
 
-func (h *ArticleHandler) Edit(ctx *gin.Context) {
+func (h *ArticleHandler) Edit(ctx *gin.Context, req api.ArticleEditReq, u ijwt.UserClaims) (ginx.Result, error) {
 	// new or edit
-	var req ArticleReq
-	if err := ctx.Bind(&req); err != nil {
-		ctx.JSON(http.StatusOK, Result{
-			Msg: "参数错误",
-		})
-		return
-	}
-	claims := ctx.MustGet("claims").(ijwt.UserClaims)
-	id, err := h.svc.Save(ctx, req.toDomain(claims.Uid))
+	id, err := h.svc.Save(ctx, req.ToDomain(u.Uid))
 	if err != nil {
-		ctx.JSON(http.StatusOK, Result{
+		return ginx.Result{
 			Code: 5,
 			Msg:  "系统错误",
-		})
-		h.l.Info("文章保存失败", logger.Field{Key: "err", Val: err})
-		return
+		}, err
 	}
-	ctx.JSON(http.StatusOK, Result{
+	return ginx.Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: id,
-	})
+	}, nil
 }
 
 func (h *ArticleHandler) Img_Update(ctx *gin.Context) {
@@ -137,80 +130,54 @@ func (h *ArticleHandler) Img_Update(ctx *gin.Context) {
 	})
 }
 
-func (h *ArticleHandler) Publish(ctx *gin.Context) {
+func (h *ArticleHandler) Publish(ctx *gin.Context, req api.ArticlePublishReq, u ijwt.UserClaims) (ginx.Result, error) {
 	// new or edit
-	var req ArticleReq
-	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusOK, Result{
-			Code: 5,
-			Msg:  "参数错误" + err.Error(),
-		})
-		return
-	}
-	claims := ctx.MustGet("claims").(ijwt.UserClaims)
-	id, err := h.svc.Publish(ctx, req.toDomain(claims.Uid))
+	id, err := h.svc.Publish(ctx, req.ToDomain(u.Uid))
 	if err != nil {
-		ctx.JSON(http.StatusOK, Result{
+		return ginx.Result{
 			Code: 5,
 			Msg:  "系统错误" + err.Error(),
-		})
-		h.l.Info("发布文章失败", logger.Field{Key: "err", Val: err})
-		return
+		}, err
 	}
-	ctx.JSON(http.StatusOK, Result{
+	return ginx.Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: id,
-	})
+	}, nil
 }
 
-func (h *ArticleHandler) Withdraw(ctx *gin.Context) {
-	type Req struct {
-		Id int64 `json:"id"`
-	}
-	var req Req
-	if err := ctx.Bind(&req); err != nil {
-		ctx.JSON(http.StatusOK, Result{
-			Code: 5,
-			Msg:  "参数错误",
-		})
-		return
-	}
-	claims := ctx.MustGet("claims").(ijwt.UserClaims)
+func (h *ArticleHandler) Withdraw(ctx *gin.Context, req api.ArticleWithdrawReq, u ijwt.UserClaims) (ginx.Result, error) {
 	err := h.svc.Withdraw(ctx, domain.Article{
 		Id: req.Id,
 		Author: domain.Author{
-			Id: claims.Uid,
+			Id: u.Uid,
 		},
 	})
 	if err != nil {
-		ctx.JSON(http.StatusOK, Result{
+		return ginx.Result{
 			Code: 5,
 			Msg:  "系统错误",
-		})
-		return
+		}, err
 	}
-	ctx.JSON(http.StatusOK, Result{
+	return ginx.Result{
 		Code: 0,
 		Msg:  "ok",
-	})
+	}, nil
 }
 
-func (h *ArticleHandler) GetList(ctx *gin.Context) {
+func (h *ArticleHandler) GetList(ctx *gin.Context, req api.ArticleGetListReq) (Result, error) {
 	articles, err := h.svc.GetList(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusOK, Result{
+		return ginx.Result{
 			Code: 5,
 			Msg:  "系统错误",
-		})
-		h.l.Info("获取列表失败", logger.Field{Key: "err", Val: err})
-		return
+		}, err
 	}
-	ctx.JSON(http.StatusOK, Result{
+	return ginx.Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: articles,
-	})
+	}, nil
 }
 
 func (h *ArticleHandler) Like(ctx *gin.Context, req api.LikeReq, u ijwt.UserClaims) (ginx.Result, error) {

@@ -17,7 +17,7 @@ type UserRepository interface {
 	GetMenuIds(ctx context.Context, roleIds []uint) map[int64]int64
 	GetAdminRoleIds(ctx context.Context, userId int64) (roleIds []uint, err error)
 	List(ctx context.Context, req api.UserSearchReq) (total int, userList []domain.User, err error)
-	Add(ctx context.Context, req api.SetUserReq) error
+	Add(ctx context.Context, req api.UserAddReq) error
 	DeleteByIds(ctx *gin.Context, ids []int) error
 	//GetUserInfoById(ctx *gin.Context, id uint64)
 }
@@ -40,7 +40,7 @@ func (repo *CachedUserRepository) DeleteByIds(ctx *gin.Context, ids []int) error
 	return repo.dao.DeleteByIds(ctx, ids)
 }
 
-func (repo *CachedUserRepository) Add(ctx context.Context, req api.SetUserReq) error {
+func (repo *CachedUserRepository) Add(ctx context.Context, req api.UserAddReq) error {
 	userId, err := repo.dao.InsertAndGetId(ctx, dao.User{
 		DeptID: req.DeptId,
 		Email: sql.NullString{

@@ -20,7 +20,7 @@ type UserService interface {
 	GetAllMenus(ctx context.Context) ([]*domain.UserMenus, error)
 	GetAdminRoleIds(ctx context.Context, userId int64) (roleIds []uint, err error)
 	GetUserSearch(ctx context.Context, req api.UserSearchReq) (api.UserSearchRes, error)
-	Add(ctx *gin.Context, req api.SetUserReq) error
+	Add(ctx *gin.Context, req api.UserAddReq) error
 	Delete(ctx *gin.Context, ids []int) error
 	GetParams(ctx *gin.Context) (api.UserGetParamsRes, error)
 	GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error)
@@ -57,7 +57,7 @@ func (svc *userService) Delete(ctx *gin.Context, ids []int) error {
 	return svc.repo.DeleteByIds(ctx, ids)
 }
 
-func (svc *userService) Add(ctx *gin.Context, req api.SetUserReq) error {
+func (svc *userService) Add(ctx *gin.Context, req api.UserAddReq) error {
 	return svc.repo.Add(ctx, req)
 }
 

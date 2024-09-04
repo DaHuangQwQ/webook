@@ -29,14 +29,14 @@ func NewUserHandler(svc system.UserService, l logger.LoggerV1) *UserHandler {
 func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	g := router.Group("/user")
 	g.GET("/getUserMenus", h.GetUserMenus)
-	g.GET("/list", ginx.Warp[api.UserSearchReq](h.List))
-	g.GET("/params", ginx.Warp[api.UserGetParamsReq](h.GetParams))
-	g.POST("/add", ginx.Warp[api.SetUserReq](h.Add))
+	router.GET(ginx.Warp[api.UserSearchReq](h.List))
+	router.GET(ginx.Warp[api.UserGetParamsReq](h.GetParams))
+	router.POST(ginx.Warp[api.UserAddReq](h.Add))
 	g.PUT("/edit")
-	g.GET("/getEdit", ginx.Warp[api.UserGetEditReq](h.GetEdit))
+	router.GET(ginx.Warp[api.UserGetEditReq](h.GetEdit))
 	g.PUT("/resetPwd")
 	g.PUT("/setStatus")
-	g.DELETE("/delete", ginx.Warp[api.UserDeleteReq](h.Delete))
+	router.DELETE(ginx.Warp[api.UserDeleteReq](h.Delete))
 	g.GET("/getUsers")
 }
 
@@ -80,7 +80,7 @@ func (h *UserHandler) List(ctx *gin.Context, req api.UserSearchReq) (ginx.Result
 	}, nil
 }
 
-func (h *UserHandler) Add(ctx *gin.Context, req api.SetUserReq) (ginx.Result, error) {
+func (h *UserHandler) Add(ctx *gin.Context, req api.UserAddReq) (ginx.Result, error) {
 	err := h.svc.Add(ctx, req)
 	if err != nil {
 		return ginx.Result{

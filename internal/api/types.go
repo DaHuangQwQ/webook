@@ -1,5 +1,7 @@
 package api
 
+type Meta struct{}
+
 // PageReq 公共请求参数
 type PageReq struct {
 	DateRange []string `json:"dateRange"` //日期范围

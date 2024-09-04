@@ -3,6 +3,7 @@ package ginx
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"reflect"
 	ijwt "webook/internal/web/jwt"
 	"webook/pkg/logger"
 )
@@ -13,8 +14,20 @@ var L logger.LoggerV1
 //	L = ioc.InitLogger()
 //}
 
-func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u ijwt.UserClaims) (Result, error)) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u ijwt.UserClaims) (Result, error)) (string, gin.HandlerFunc) {
+	var (
+		path string
+		req  Req
+	)
+	t := reflect.TypeOf(req)
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		if field.Name == "Meta" {
+			path = field.Tag.Get("path")
+		}
+	}
+	DocGen(req)
+	return path, func(ctx *gin.Context) {
 		var req Req
 		if err := ctx.Bind(&req); err != nil {
 			ctx.JSON(http.StatusOK, Result{
@@ -43,8 +56,20 @@ func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u ijwt.UserClaims
 	}
 }
 
-func Warp[Req any](fn func(ctx *gin.Context, req Req) (Result, error)) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func Warp[Req any](fn func(ctx *gin.Context, req Req) (Result, error)) (string, gin.HandlerFunc) {
+	var (
+		path string
+		req  Req
+	)
+	t := reflect.TypeOf(req)
+	for i := 0; i < t.NumField(); i++ {
+		field := t.Field(i)
+		if field.Name == "Meta" {
+			path = field.Tag.Get("path")
+		}
+	}
+	DocGen(req)
+	return path, func(ctx *gin.Context) {
 		var req Req
 		if err := ctx.Bind(&req); err != nil {
 			ctx.JSON(http.StatusOK, Result{
