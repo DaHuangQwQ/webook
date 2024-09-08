@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"webook/internal/api"
+	"webook/ioc"
 	"webook/pkg/ginx"
 )
 
@@ -30,6 +31,7 @@ func main() {
 		ctx.String(http.StatusOK, "hello，启动成功了！")
 	})
 	initDoc()
+	ginx.NewWarpLogger(ioc.InitLogger())
 	err := server.Run(":8090")
 	if err != nil {
 		return

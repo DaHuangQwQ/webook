@@ -10,9 +10,9 @@ import (
 
 var L logger.LoggerV1
 
-//func init() {
-//	L = ioc.InitLogger()
-//}
+func NewWarpLogger(l logger.LoggerV1) {
+	L = l
+}
 
 func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u ijwt.UserClaims) (Result, error)) (string, gin.HandlerFunc) {
 	var (
@@ -49,7 +49,7 @@ func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u ijwt.UserClaims
 		result, err := fn(ctx, req, user)
 		if err != nil {
 			ctx.JSON(http.StatusOK, result)
-			//L.Info("系统错误", logger.Field{Key: "err", Val: err})
+			L.Info("系统错误", logger.Field{Key: "err", Val: err})
 			return
 		}
 		ctx.JSON(http.StatusOK, result)
@@ -82,7 +82,7 @@ func Warp[Req any](fn func(ctx *gin.Context, req Req) (Result, error)) (string, 
 		result, err := fn(ctx, req)
 		if err != nil {
 			ctx.JSON(http.StatusOK, result)
-			//L.Info("系统错误", logger.Field{Key: "err", Val: err})
+			L.Info("系统错误", logger.Field{Key: "err", Val: err})
 			return
 		}
 		ctx.JSON(http.StatusOK, result)
