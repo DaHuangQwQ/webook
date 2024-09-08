@@ -43,6 +43,7 @@ func (h *ArticleHandler) RegisterRoutes(router *gin.Engine) {
 	server.GET("/detail/:id")
 	router.POST(ginx.WarpWithToken[api.GetPubArticleDetail](h.GetPubArticle))
 	router.POST(ginx.WarpWithToken[api.LikeReq](h.Like))
+	router.POST(ginx.Warp[api.ArticleDeleteReq](h.Delete))
 }
 
 func (h *ArticleHandler) List(ctx *gin.Context, req api.GetListReq) (Result, error) {
@@ -211,5 +212,19 @@ func (h *ArticleHandler) GetPubArticle(ctx *gin.Context, req api.GetPubArticleDe
 		Code: 0,
 		Msg:  "ok",
 		Data: article,
+	}, nil
+}
+
+func (h *ArticleHandler) Delete(ctx *gin.Context, req api.ArticleDeleteReq) (ginx.Result, error) {
+	err := h.svc.DeleteByIds(ctx, req.Ids)
+	if err != nil {
+		return ginx.Result{
+			Code: 5,
+			Msg:  "系统错误",
+		}, err
+	}
+	return ginx.Result{
+		Code: 0,
+		Msg:  "ok",
 	}, nil
 }
