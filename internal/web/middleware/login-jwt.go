@@ -22,6 +22,8 @@ func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
 			"/users/login_sms",
 			"/users/login_sms/code/send",
 			"/users/refresh_token",
+			"/user/list",
+			"/order/list",
 			"/hello",
 			"/oauth2/wechat/authurl",
 			"/oauth2/wechat/callback",

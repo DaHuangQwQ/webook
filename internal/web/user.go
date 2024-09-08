@@ -374,6 +374,21 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 		})
 		return
 	}
+	isPhone, err := h.phoneExp.MatchString(req.Phone)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "系统错误",
+		})
+		return
+	}
+	if !isPhone {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "非法手机格式",
+		})
+		return
+	}
 	isEmail, err := h.emailExp.MatchString(req.Email)
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{
@@ -423,16 +438,16 @@ func (h *UserHandler) GetInfo(ctx *gin.Context) {
 		})
 		return
 	}
-	phoneRes := ""
-	if UserInfo.Phone != "" {
-		phoneRes = UserInfo.Phone[:3] + "****" + UserInfo.Phone[7:]
-	}
+	//phoneRes := ""
+	//if UserInfo.Phone != "" {
+	//	phoneRes = UserInfo.Phone[:3] + "****" + UserInfo.Phone[7:]
+	//}
 	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: domain.UserInfo{
 			Nickname: UserInfo.Nickname,
-			Phone:    phoneRes,
+			Phone:    UserInfo.Phone,
 			Grade:    UserInfo.Grade,
 			Gender:   UserInfo.Gender,
 			Avatar:   UserInfo.Avatar,
