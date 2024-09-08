@@ -39,6 +39,7 @@ func InitWebServer() *App {
 		systemDao.NewGormDeptDao,
 		dao.NewGormInteractiveDao,
 		dao.NewGormOrderDao,
+		dao.NewGormRecruitmentDao,
 
 		// cache 部分
 		cache.NewCodeCache,
@@ -56,6 +57,7 @@ func InitWebServer() *App {
 		repository.NewCachedArticleRepository,
 		repository.NewCachedInteractiveRepository,
 		repository.NewCachedOrderRepository,
+		repository.NewCachedRecruitmentRepository,
 
 		// Service 部分
 		ioc.InitSMSService,
@@ -64,6 +66,7 @@ func InitWebServer() *App {
 		service.NewArticleService,
 		service.NewInteractiveService,
 		service.NewOrderService,
+		service.NewRecruitmentService,
 		systemService.NewAuthService,
 		systemService.NewRoleService,
 		systemService.NewSystemService,
@@ -78,6 +81,7 @@ func InitWebServer() *App {
 		web.NewOAuth2WechatHandler,
 		web.NewArticleHandler,
 		web.NewOrderHandler,
+		web.NewRecruitmentHandler,
 		system.NewAuthHandler,
 		system.NewRoleHandler,
 		system.NewUserHandler,
