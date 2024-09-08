@@ -60,6 +60,12 @@ func initDoc() {
 	if err != nil {
 		panic(err)
 	}
+	if _, err := os.Stat("./docs"); os.IsNotExist(err) {
+		err = os.Mkdir("./docs", 0755)
+		if err != nil {
+			panic(err)
+		}
+	}
 	file, err := os.Create("./docs/doc.json")
 	if err != nil {
 		// 如果打开（或创建）文件时发生错误，则 panic

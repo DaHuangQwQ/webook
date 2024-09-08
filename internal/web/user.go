@@ -352,7 +352,7 @@ func (h *UserHandler) LogoutJWT(ctx *gin.Context) {
 
 func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 	type Req struct {
-		Name   string `json:"name"`
+		Name   string `json:"username"`
 		Email  string `json:"email"`
 		Grade  int    `json:"grade"`
 		Gender int    `json:"gender"`
