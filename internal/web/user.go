@@ -10,6 +10,7 @@ import (
 	"webook/internal/repository/cache"
 	"webook/internal/service"
 	ijwt "webook/internal/web/jwt"
+	"webook/pkg/ginx"
 	"webook/pkg/logger"
 )
 import "github.com/gin-gonic/gin"
@@ -72,6 +73,8 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 
 	ug.POST("/avatar_update", h.AvatarUpdate)
 	ug.GET("/get_avatar", h.GetAvatar)
+
+	ug.GET("/demo", h.Demo)
 }
 
 func (h *UserHandler) SignUp(ctx *gin.Context) {
@@ -374,39 +377,44 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 		})
 		return
 	}
-	isPhone, err := h.phoneExp.MatchString(req.Phone)
-	if err != nil {
-		ctx.JSON(http.StatusOK, Result{
-			Code: 5,
-			Msg:  "系统错误",
-		})
-		return
+	if req.Phone != "" {
+		isPhone, err := h.phoneExp.MatchString(req.Phone)
+		if err != nil {
+			ctx.JSON(http.StatusOK, Result{
+				Code: 5,
+				Msg:  "系统错误",
+			})
+			return
+		}
+		if !isPhone {
+			ctx.JSON(http.StatusOK, Result{
+				Code: 5,
+				Msg:  "非法手机格式",
+			})
+			return
+		}
 	}
-	if !isPhone {
-		ctx.JSON(http.StatusOK, Result{
-			Code: 5,
-			Msg:  "非法手机格式",
-		})
-		return
+	if req.Email != "" {
+		isEmail, err := h.emailExp.MatchString(req.Email)
+		if err != nil {
+			ctx.JSON(http.StatusOK, Result{
+				Code: 5,
+				Msg:  "系统错误",
+			})
+			return
+		}
+		if !isEmail {
+			ctx.JSON(http.StatusOK, Result{
+				Code: 5,
+				Msg:  "非法邮箱格式",
+			})
+			return
+		}
 	}
-	isEmail, err := h.emailExp.MatchString(req.Email)
-	if err != nil {
-		ctx.JSON(http.StatusOK, Result{
-			Code: 5,
-			Msg:  "系统错误",
-		})
-		return
-	}
-	if !isEmail {
-		ctx.JSON(http.StatusOK, Result{
-			Code: 5,
-			Msg:  "非法邮箱格式",
-		})
-		return
-	}
+
 	h.l.Info("信息更新", logger.Field{Key: "info", Val: req})
 	userId := ctx.MustGet("claims").(ijwt.UserClaims)
-	err = h.svc.UpdateByID(ctx, domain.User{
+	err := h.svc.UpdateByID(ctx, domain.User{
 		Id:       userId.Uid,
 		Nickname: req.Name,
 		Grade:    req.Grade,
@@ -569,5 +577,201 @@ func (h *UserHandler) PhoneUpdate(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
+	})
+}
+
+func (h *UserHandler) Demo(ctx *gin.Context) {
+	str := `
+{
+"userList": [
+{
+"id": 25,
+"email": "2195921486@qq.com",
+"mobile": "13029375111",
+"password": "",
+"userName": "DaHuang",
+"grade": 2023,
+"gender": 1,
+"avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725809043994.jpeg",
+"ctime": "2024-09-08T23:23:30.374+08:00",
+"WechatInfo": {
+"UnionId": "",
+"OpenId": "oZ7s043gWIyjR_W0f5qhZ6avje9k"
+},
+"birthday": 0,
+"userStatus": 1,
+"deptId": 0,
+"remark": "",
+"isAdmin": 1,
+"address": "",
+"describe": "",
+"lastLoginIp": "",
+"dept": {
+"deptId": 0,
+"parentId": 0,
+"ancestors": "",
+"deptName": "",
+"orderNum": 0,
+"leader": "",
+"phone": "",
+"email": "",
+"status": 0
+},
+"roleInfo": [
+{
+"roleId": 1,
+"name": "root"
+},
+{
+"roleId": 2,
+"name": "root"
+}
+]
+},
+{
+"id": 26,
+"email": "1623929456@qq.com",
+"mobile": "15655440534",
+"password": "",
+"userName": "城猫",
+"grade": 2022,
+"gender": 1,
+"avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725810736043.jpeg",
+"ctime": "2024-09-08T23:29:14.809+08:00",
+"WechatInfo": {
+"UnionId": "",
+"OpenId": "oZ7s044EqiPnrbbHeILelQL00Oss"
+},
+"birthday": 0,
+"userStatus": 1,
+"deptId": 0,
+"remark": "",
+"isAdmin": 1,
+"address": "",
+"describe": "",
+"lastLoginIp": "",
+"dept": {
+"deptId": 0,
+"parentId": 0,
+"ancestors": "",
+"deptName": "",
+"orderNum": 0,
+"leader": "",
+"phone": "",
+"email": "",
+"status": 0
+},
+"roleInfo": [
+{
+"roleId": 1,
+"name": "root"
+},
+{
+"roleId": 2,
+"name": "root"
+}
+]
+},
+{
+"id": 30,
+"email": "2195921481@qq.com",
+"mobile": "",
+"password": "$2a$10$ItQPeBXtoTA2BMg.41drIO9vbslG2jRr.coChOvpEhwuuCv9/Pct.",
+"userName": "",
+"grade": 0,
+"gender": 0,
+"avatar": "",
+"ctime": "2024-09-08T23:39:48.937+08:00",
+"WechatInfo": {
+"UnionId": "",
+"OpenId": ""
+},
+"birthday": 0,
+"userStatus": 1,
+"deptId": 0,
+"remark": "",
+"isAdmin": 1,
+"address": "",
+"describe": "",
+"lastLoginIp": "",
+"dept": {
+"deptId": 0,
+"parentId": 0,
+"ancestors": "",
+"deptName": "",
+"orderNum": 0,
+"leader": "",
+"phone": "",
+"email": "",
+"status": 0
+},
+"roleInfo": [
+{
+"roleId": 1,
+"name": "root"
+},
+{
+"roleId": 2,
+"name": "root"
+}
+]
+},
+{
+"id": 31,
+"email": "",
+"mobile": "",
+"password": "",
+"userName": "",
+"grade": 0,
+"gender": 0,
+"avatar": "",
+"ctime": "2024-09-08T23:46:56.975+08:00",
+"WechatInfo": {
+"UnionId": "",
+"OpenId": "oZ7s048EKnAjql6Zr9NklXUOxmo0"
+},
+"birthday": 0,
+"userStatus": 1,
+"deptId": 0,
+"remark": "",
+"isAdmin": 1,
+"address": "",
+"describe": "",
+"lastLoginIp": "",
+"dept": {
+"deptId": 0,
+"parentId": 0,
+"ancestors": "",
+"deptName": "",
+"orderNum": 0,
+"leader": "",
+"phone": "",
+"email": "",
+"status": 0
+},
+"roleInfo": [
+{
+"roleId": 1,
+"name": "root"
+},
+{
+"roleId": 2,
+"name": "root"
+}
+]
+}
+],
+"currentPage": 0,
+"total": 4,
+"list": null
+}
+
+`
+	//strs := strings.Replace(str, "\n", "", -1)
+	//strs = strings.Replace(strs, "\\", "", -1)
+	ctx.JSON(http.StatusOK, ginx.Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: str,
 	})
 }

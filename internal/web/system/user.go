@@ -32,7 +32,7 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.GET(ginx.Warp[api.UserSearchReq](h.List))
 	router.GET(ginx.Warp[api.UserGetParamsReq](h.GetParams))
 	router.POST(ginx.Warp[api.UserAddReq](h.Add))
-	g.PUT("/edit")
+	g.PUT(ginx.Warp[api.UserEditReq](h.Edit))
 	router.GET(ginx.Warp[api.UserGetEditReq](h.GetEdit))
 	g.PUT("/resetPwd")
 	g.PUT("/setStatus")
@@ -121,6 +121,27 @@ func (h *UserHandler) GetParams(ctx *gin.Context, req api.UserGetParamsReq) (gin
 }
 
 func (h *UserHandler) GetEdit(ctx *gin.Context, req api.UserGetEditReq) (ginx.Result, error) {
-	h.svc.GetEdit(ctx, req.Id)
-	return ginx.Result{}, nil
+	userId := ctx.Query("id")
+	parsedUserId, err := strconv.ParseInt(userId, 10, 64)
+	req.Id = uint64(parsedUserId)
+	UserAndRoleIds, err := h.svc.GetEdit(ctx, req.Id)
+	if err != nil {
+		return ginx.Result{
+			Code: 5,
+			Msg:  "系统错误" + err.Error(),
+		}, err
+	}
+	return ginx.Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: UserAndRoleIds,
+	}, nil
+}
+
+func (h *UserHandler) Edit(ctx *gin.Context, req api.UserEditReq) (ginx.Result, error) {
+
+	return ginx.Result{
+		Code: 0,
+		Msg:  "ok",
+	}, nil
 }

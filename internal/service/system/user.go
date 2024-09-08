@@ -43,8 +43,18 @@ func NewSystemService(roleSvc RoleService, authSvc AuthService, repo system.User
 }
 
 func (svc *userService) GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error) {
-	//svc.repo.GetUserInfoById(ctx, id)
-	return api.UserGetEditRes{}, nil
+	user, err := svc.repo.GetUserInfoById(ctx, id)
+	if err != nil {
+		return api.UserGetEditRes{}, err
+	}
+	roleIds, err := svc.GetAdminRoleIds(ctx, user.Id)
+	if err != nil {
+		return api.UserGetEditRes{}, err
+	}
+	return api.UserGetEditRes{
+		User:           &user,
+		CheckedRoleIds: roleIds,
+	}, nil
 }
 
 func (svc *userService) GetParams(ctx *gin.Context) (res api.UserGetParamsRes, err error) {

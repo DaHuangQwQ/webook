@@ -72,6 +72,7 @@ type UserAddRes struct {
 // UserEditReq 修改用户参数
 // path:"/user/edit" tags:"用户管理" method:"put" summary:"修改用户"
 type UserEditReq struct {
+	Meta `path:"/user/edit" method:"post"`
 	*SetUserReq
 	UserId int64 `json:"userId" v:"required#用户id不能为空"`
 }

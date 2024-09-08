@@ -19,7 +19,7 @@ type UserRepository interface {
 	List(ctx context.Context, req api.UserSearchReq) (total int, userList []domain.User, err error)
 	Add(ctx context.Context, req api.UserAddReq) error
 	DeleteByIds(ctx *gin.Context, ids []int) error
-	//GetUserInfoById(ctx *gin.Context, id uint64)
+	GetUserInfoById(ctx *gin.Context, id uint64) (domain.User, error)
 }
 
 type CachedUserRepository struct {
@@ -34,6 +34,13 @@ func NewCachedUserRepository(casbin casbin.IEnforcer, dao dao.UserDao) UserRepos
 		casBinUserPrefix: "u_",
 		dao:              dao,
 	}
+}
+func (repo *CachedUserRepository) GetUserInfoById(ctx *gin.Context, id uint64) (domain.User, error) {
+	user, err := repo.dao.FindById(ctx, int64(id))
+	if err != nil {
+		return domain.User{}, err
+	}
+	return repo.toDomain(user), nil
 }
 
 func (repo *CachedUserRepository) DeleteByIds(ctx *gin.Context, ids []int) error {
