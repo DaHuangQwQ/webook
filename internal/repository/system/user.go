@@ -20,6 +20,8 @@ type UserRepository interface {
 	Add(ctx context.Context, req api.UserAddReq) error
 	DeleteByIds(ctx *gin.Context, ids []int) error
 	GetUserInfoById(ctx *gin.Context, id uint64) (domain.User, error)
+	EditUser(ctx *gin.Context, user domain.User) error
+	EditUserRole(ctx *gin.Context, roleIds []int64, userId int64) error
 }
 
 type CachedUserRepository struct {
@@ -35,6 +37,25 @@ func NewCachedUserRepository(casbin casbin.IEnforcer, dao dao.UserDao) UserRepos
 		dao:              dao,
 	}
 }
+
+func (repo *CachedUserRepository) EditUser(ctx *gin.Context, user domain.User) error {
+	return repo.dao.Update(ctx, repo.toEntity(user))
+}
+
+func (repo *CachedUserRepository) EditUserRole(ctx *gin.Context, roleIds []int64, userId int64) error {
+	_, err := repo.casbin.RemoveFilteredGroupingPolicy(0, fmt.Sprintf("%s%d", repo.casBinUserPrefix, userId))
+	if err != nil {
+		return fmt.Errorf("删除用户旧的角色: %w", err)
+	}
+	for _, v := range roleIds {
+		_, err = repo.casbin.AddGroupingPolicy(fmt.Sprintf("%s%d", repo.casBinUserPrefix, userId), strconv.FormatInt(v, 10))
+		if err != nil {
+			return fmt.Errorf("添加用户新的角色: %w", err)
+		}
+	}
+	return nil
+}
+
 func (repo *CachedUserRepository) GetUserInfoById(ctx *gin.Context, id uint64) (domain.User, error) {
 	user, err := repo.dao.FindById(ctx, int64(id))
 	if err != nil {
@@ -131,6 +152,41 @@ func (repo *CachedUserRepository) toDomain(user dao.User) domain.User {
 		Address:     user.Address,
 		Describe:    user.Describe,
 		LastLoginIp: user.LastLoginIP,
+	}
+}
+
+func (repo *CachedUserRepository) toEntity(user domain.User) dao.User {
+	return dao.User{
+		Id:       user.Id,
+		Nickname: user.Nickname,
+		Email: sql.NullString{
+			String: user.Email,
+			Valid:  user.Email != "",
+		},
+		Password: user.Password,
+		Phone: sql.NullString{
+			String: user.Phone,
+			Valid:  user.Phone != "",
+		},
+		WechatOpenId: sql.NullString{
+			String: user.WechatInfo.OpenId,
+			Valid:  user.WechatInfo.OpenId != "",
+		},
+		WechatUnionId: sql.NullString{
+			String: user.WechatInfo.UnionId,
+			Valid:  user.WechatInfo.UnionId != "",
+		},
+		Grade:     user.Grade,
+		Gender:    user.Gender,
+		AvatarUrl: user.Avatar,
+
+		Birthday:   user.Birthday,
+		UserStatus: uint8(user.UserStatus),
+		DeptID:     user.DeptId,
+		Remark:     user.Remark,
+		IsAdmin:    uint8(user.IsAdmin),
+		Address:    user.Address,
+		Describe:   user.Describe,
 	}
 }
 

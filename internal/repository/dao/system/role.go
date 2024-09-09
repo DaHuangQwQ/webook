@@ -2,6 +2,7 @@ package system
 
 import (
 	"context"
+	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +13,7 @@ type RoleDao interface {
 	FindById(ctx context.Context, roleId int64) (SysRole, error)
 	DeleteByIds(ctx context.Context, roleIds []int64) error
 	CreateAndGetId(ctx context.Context, role SysRole) (id int64, err error)
-	GetRoleListSearch(ctx context.Context, role SysRole, pageNum int, pageSize int) ([]SysRole, error)
+	GetRoleListSearch(ctx context.Context, role SysRole, pageNum int, pageSize int) (int64, []SysRole, error)
 }
 
 type GormRoleDao struct {
@@ -25,16 +26,21 @@ func NewGormRoleDao(db *gorm.DB) RoleDao {
 	}
 }
 
-func (g *GormRoleDao) GetRoleListSearch(ctx context.Context, role SysRole, pageNum int, pageSize int) ([]SysRole, error) {
+func (g *GormRoleDao) GetRoleListSearch(ctx context.Context, role SysRole, pageNum int, pageSize int) (int64, []SysRole, error) {
 	var (
-		dateBase = g.db.WithContext(ctx).Offset(pageNum).Limit(pageSize)
+		total    int64
+		dateBase = g.db.WithContext(ctx).Offset(pageNum - 1).Limit(pageSize)
 		roles    []SysRole
 	)
+	err := g.db.WithContext(ctx).Model(SysRole{}).Count(&total).Error
+	if err != nil {
+		return 0, nil, fmt.Errorf("count role list error: %w", err)
+	}
 	if role.Name != "" {
 		dateBase = dateBase.Where("name like ?", "%"+role.Name+"%")
 	}
-	err := dateBase.Find(&roles).Error
-	return roles, err
+	err = dateBase.Find(&roles).Error
+	return total, roles, err
 }
 
 func (g *GormRoleDao) FindById(ctx context.Context, roleId int64) (SysRole, error) {

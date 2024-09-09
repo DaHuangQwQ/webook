@@ -8,7 +8,7 @@ import (
 )
 
 type RoleService interface {
-	GetRoleListSearch(ctx context.Context, role domain.Role, page api.PageReq) ([]domain.Role, error)
+	GetRoleListSearch(ctx context.Context, role domain.Role, page api.PageReq) (int64, []domain.Role, error)
 	GetRoleList(ctx context.Context) ([]domain.Role, error)
 	AddRoleRule(ctx context.Context, ruleIds []int64, roleId int64) (err error)
 	DelRoleRule(ctx context.Context, roleId int64) error
@@ -36,8 +36,12 @@ func (r *role) GetParams(ctx context.Context) ([]domain.SysAuthRule, error) {
 	return r.authRepo.FindAll(ctx)
 }
 
-func (r *role) GetRoleListSearch(ctx context.Context, role domain.Role, page api.PageReq) ([]domain.Role, error) {
-	return r.repo.GetRoleListSearch(ctx, role, page.PageNum, page.PageSize)
+func (r *role) GetRoleListSearch(ctx context.Context, role domain.Role, page api.PageReq) (int64, []domain.Role, error) {
+	total, roles, err := r.repo.GetRoleListSearch(ctx, role, page.PageNum, page.PageSize)
+	if err != nil {
+		return 0, nil, err
+	}
+	return total, roles, err
 }
 
 func (r *role) GetRoleList(ctx context.Context) ([]domain.Role, error) {

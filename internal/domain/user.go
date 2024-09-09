@@ -17,8 +17,7 @@ type User struct {
 
 	CTime time.Time `json:"ctime"`
 
-	WechatInfo WechatInfo
-
+	WechatInfo  WechatInfo
 	Birthday    int    `json:"birthday"      description:"生日"`
 	UserStatus  uint   `json:"userStatus"    description:"用户状态;0:禁用,1:正常,2:未验证"`
 	DeptId      uint64 `json:"deptId"        description:"部门id"`

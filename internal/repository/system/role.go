@@ -19,7 +19,7 @@ type RoleRepository interface {
 	GetRole(ctx context.Context, id int64) (domain.Role, error)
 	EditRole(ctx context.Context, role domain.Role) error
 	DeleteByIds(ctx context.Context, ids []int64) error
-	GetRoleListSearch(ctx context.Context, role domain.Role, pageNum int, pageSize int) ([]domain.Role, error)
+	GetRoleListSearch(ctx context.Context, role domain.Role, pageNum int, pageSize int) (int64, []domain.Role, error)
 	GetFilteredNamedPolicy(ctx context.Context, id int64) (gpSlice []int, err error)
 }
 
@@ -45,13 +45,13 @@ func (c *CachedRoleRepository) GetFilteredNamedPolicy(ctx context.Context, id in
 	return
 }
 
-func (c *CachedRoleRepository) GetRoleListSearch(ctx context.Context, role domain.Role, pageNum int, pageSize int) ([]domain.Role, error) {
-	res, err := c.dao.GetRoleListSearch(ctx, c.toRole(role), pageNum, pageSize)
+func (c *CachedRoleRepository) GetRoleListSearch(ctx context.Context, role domain.Role, pageNum int, pageSize int) (int64, []domain.Role, error) {
+	total, res, err := c.dao.GetRoleListSearch(ctx, c.toRole(role), pageNum, pageSize)
 	Role := make([]domain.Role, len(res))
 	for i, v := range res {
 		Role[i] = c.toDomain(v)
 	}
-	return Role, err
+	return total, Role, err
 }
 
 func (c *CachedRoleRepository) DeleteByIds(ctx context.Context, ids []int64) error {
@@ -117,8 +117,8 @@ func (c *CachedRoleRepository) FindAll(ctx context.Context) ([]domain.Role, erro
 }
 
 func (c *CachedRoleRepository) Save(ctx context.Context, role domain.Role) error {
-	//res, err := c.casbin.AddPolicy(strconv.FormatInt(role.Id, 10), strconv.FormatInt(role.Ids, 10), "All")
-	res, err := c.casbin.AddPolicy("1", "2", "All")
+	res, err := c.casbin.AddPolicy(strconv.FormatInt(role.Id, 10), strconv.FormatInt(role.Ids, 10), "All")
+	//res, err := c.casbin.AddPolicy("1", "2", "All")
 	if err != nil {
 		return err
 	}

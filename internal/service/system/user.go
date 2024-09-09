@@ -24,6 +24,7 @@ type UserService interface {
 	Delete(ctx *gin.Context, ids []int) error
 	GetParams(ctx *gin.Context) (api.UserGetParamsRes, error)
 	GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error)
+	Edit(ctx *gin.Context, req api.UserEditReq) error
 }
 
 type userService struct {
@@ -40,6 +41,28 @@ func NewSystemService(roleSvc RoleService, authSvc AuthService, repo system.User
 		repo:    repo,
 		deptSvc: deptSvc,
 	}
+}
+
+func (svc *userService) Edit(ctx *gin.Context, req api.UserEditReq) error {
+	err := svc.repo.EditUser(ctx, domain.User{
+		Id:         req.UserId,
+		Phone:      req.Mobile,
+		Email:      req.Email,
+		Nickname:   req.NickName,
+		UserStatus: req.Status,
+		Gender:     req.Sex,
+		DeptId:     req.DeptId,
+		Remark:     req.Remark,
+		IsAdmin:    req.IsAdmin,
+	})
+	if err != nil {
+		return fmt.Errorf("修改用户信息失败: %w", err)
+	}
+	err = svc.repo.EditUserRole(ctx, req.RoleIds, req.UserId)
+	if err != nil {
+		return fmt.Errorf("设置用户权限失败: %w", err)
+	}
+	return nil
 }
 
 func (svc *userService) GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error) {
@@ -104,12 +127,12 @@ func (svc *userService) GetUserSearch(ctx context.Context, req api.UserSearchReq
 		}
 		users[k].Dept = dept
 
-		//roles, err := svc.GetAdminRole(ctx, u.Id, allRolesTemp)
+		roles, err := svc.GetAdminRole(ctx, u.Id, allRolesTemp)
 
-		//if err != nil {
-		//	return res, err
-		//}
-		for _, r := range allRolesTemp {
+		if err != nil {
+			return res, err
+		}
+		for _, r := range roles {
 			users[k].RoleInfo = append(users[k].RoleInfo, api.SysUserRoleInfoRes{RoleId: uint(r.Id), Name: r.Name})
 		}
 	}

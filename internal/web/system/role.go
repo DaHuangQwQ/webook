@@ -36,7 +36,6 @@ func (h *RoleHandler) RegisterRoutes(router *gin.Engine) {
 }
 
 func (h *RoleHandler) GetList(ctx *gin.Context) {
-
 	RoleName := ctx.Query("roleName")
 	Status := ctx.Query("roleStatus")
 	pageNum := ctx.Query("pageNum")
@@ -44,7 +43,13 @@ func (h *RoleHandler) GetList(ctx *gin.Context) {
 	PageNum, _ := strconv.Atoi(pageNum)
 	PageSize, _ := strconv.Atoi(pageSize)
 	ui8, _ := strconv.ParseUint(Status, 10, 64)
-	search, err := h.svc.GetRoleListSearch(ctx, domain.Role{
+	if PageNum == 0 {
+		PageNum = 1
+	}
+	if PageSize == 0 {
+		PageSize = 10
+	}
+	total, search, err := h.svc.GetRoleListSearch(ctx, domain.Role{
 		Name:   RoleName,
 		Status: uint8(ui8),
 	}, api.PageReq{
@@ -56,8 +61,11 @@ func (h *RoleHandler) GetList(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, web.Result{
 		Code: 0,
-		Data: map[string]any{
-			"list": search,
+		Data: api.RoleListRes{
+			ListRes: api.ListRes{
+				Total: total,
+			},
+			List: search,
 		},
 	})
 }
