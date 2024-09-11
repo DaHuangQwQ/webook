@@ -114,7 +114,7 @@ func (h *UserHandler) SignUp(ctx *gin.Context) {
 		return
 	}
 
-	err = h.svc.Signup(ctx, domain.User{
+	err = h.svc.Signup(ctx.Request.Context(), domain.User{
 		Email:    req.Email,
 		Password: req.Password,
 	})
@@ -137,7 +137,7 @@ func (h *UserHandler) LoginSession(ctx *gin.Context) {
 	if err := ctx.Bind(&req); err != nil {
 		return
 	}
-	u, err := h.svc.Login(ctx, req.Email, req.Password)
+	u, err := h.svc.Login(ctx.Request.Context(), req.Email, req.Password)
 	switch err {
 	case nil:
 		sess := sessions.Default(ctx)
@@ -168,7 +168,7 @@ func (h *UserHandler) LoginJWT(ctx *gin.Context) {
 	if err := ctx.Bind(&req); err != nil {
 		return
 	}
-	u, err := h.svc.Login(ctx, req.Email, req.Password)
+	u, err := h.svc.Login(ctx.Request.Context(), req.Email, req.Password)
 	switch err {
 	case nil:
 		err = h.SetLoginToken(ctx, u.Id)
@@ -236,7 +236,7 @@ func (h *UserHandler) SendLoginSmsCode(ctx *gin.Context) {
 	//	return
 	//}
 
-	err = h.codeSvc.Send(ctx, biz, req.Phone)
+	err = h.codeSvc.Send(ctx.Request.Context(), biz, req.Phone)
 	switch err {
 	case nil:
 		ctx.JSON(http.StatusOK, Result{
@@ -276,7 +276,7 @@ func (h *UserHandler) LoginSms(ctx *gin.Context) {
 		})
 		return
 	}
-	verify, err := h.codeSvc.Verify(ctx, biz, req.Phone, req.Code)
+	verify, err := h.codeSvc.Verify(ctx.Request.Context(), biz, req.Phone, req.Code)
 	switch err {
 	case nil:
 	case cache.ErrCodeVerifyTooMany:
@@ -299,7 +299,7 @@ func (h *UserHandler) LoginSms(ctx *gin.Context) {
 		})
 		return
 	}
-	user, err := h.svc.FindOrCreate(ctx, req.Phone)
+	user, err := h.svc.FindOrCreate(ctx.Request.Context(), req.Phone)
 	if err != nil {
 		ctx.String(http.StatusOK, err.Error())
 		return
@@ -414,7 +414,7 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 
 	h.l.Info("信息更新", logger.Field{Key: "info", Val: req})
 	userId := ctx.MustGet("claims").(ijwt.UserClaims)
-	err := h.svc.UpdateByID(ctx, domain.User{
+	err := h.svc.UpdateByID(ctx.Request.Context(), domain.User{
 		Id:       userId.Uid,
 		Nickname: req.Name,
 		Grade:    req.Grade,
@@ -437,7 +437,7 @@ func (h *UserHandler) InfoUpdate(ctx *gin.Context) {
 
 func (h *UserHandler) GetInfo(ctx *gin.Context) {
 	UserId := ctx.MustGet("claims").(ijwt.UserClaims)
-	UserInfo, err := h.svc.FindByID(ctx, UserId.Uid)
+	UserInfo, err := h.svc.FindByID(ctx.Request.Context(), UserId.Uid)
 	h.l.Info("UserInfo", logger.Field{Key: "err", Val: UserInfo})
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{
@@ -482,7 +482,7 @@ func (h *UserHandler) AvatarUpdate(ctx *gin.Context) {
 	}
 	fileType := strings.Split(fileTypes.Header.Get("Content-Type"), "/")[1]
 	user := ctx.MustGet("claims").(ijwt.UserClaims)
-	ossAdress, err := h.svc.AvatarUpdate(ctx, user.Uid, file, fileType)
+	ossAdress, err := h.svc.AvatarUpdate(ctx.Request.Context(), user.Uid, file, fileType)
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
@@ -501,7 +501,7 @@ func (h *UserHandler) AvatarUpdate(ctx *gin.Context) {
 
 func (h *UserHandler) GetAvatar(ctx *gin.Context) {
 	userId := ctx.MustGet("claims").(ijwt.UserClaims)
-	avatar, err := h.svc.GetAvatar(ctx, userId.Uid)
+	avatar, err := h.svc.GetAvatar(ctx.Request.Context(), userId.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
@@ -537,7 +537,7 @@ func (h *UserHandler) PhoneUpdate(ctx *gin.Context) {
 		})
 		return
 	}
-	verify, err := h.codeSvc.Verify(ctx, biz, req.Phone, req.Code)
+	verify, err := h.codeSvc.Verify(ctx.Request.Context(), biz, req.Phone, req.Code)
 	switch err {
 	case nil:
 	case cache.ErrCodeVerifyTooMany:
@@ -562,7 +562,7 @@ func (h *UserHandler) PhoneUpdate(ctx *gin.Context) {
 		return
 	}
 	UserId := ctx.MustGet("claims").(ijwt.UserClaims)
-	err = h.svc.UpdateByID(ctx, domain.User{
+	err = h.svc.UpdateByID(ctx.Request.Context(), domain.User{
 		Id:    UserId.Uid,
 		Phone: req.Phone,
 	})

@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"time"
 	"webook/internal/api"
@@ -25,7 +24,7 @@ type ArticleRepository interface {
 
 	Img_Update(ctx context.Context, file []byte, fileType string) (string, error)
 	ListAll(ctx context.Context, req api.PageReq) ([]domain.Article, error)
-	DeleteByIds(ctx *gin.Context, ids []int64) error
+	DeleteByIds(ctx context.Context, ids []int64) error
 }
 
 type CachedArticleRepository struct {
@@ -46,7 +45,7 @@ func NewCachedArticleRepository(dao dao.ArticleDao, oss oss.Client, userRepo Use
 	}
 }
 
-func (c *CachedArticleRepository) DeleteByIds(ctx *gin.Context, ids []int64) error {
+func (c *CachedArticleRepository) DeleteByIds(ctx context.Context, ids []int64) error {
 	return c.dao.DeleteByIds(ctx, ids)
 }
 

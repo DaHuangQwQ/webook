@@ -42,7 +42,7 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 
 func (h *UserHandler) GetUserMenus(ctx *gin.Context) {
 	claims := ctx.MustGet("claims").(ijwt.UserClaims)
-	userMenus, permissions, err := h.svc.GetAdminRules(ctx, claims.Uid)
+	userMenus, permissions, err := h.svc.GetAdminRules(ctx.Request.Context(), claims.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -70,7 +70,7 @@ func (h *UserHandler) List(ctx *gin.Context, req api.UserSearchReq) (ginx.Result
 	req.Mobile = ctx.Query("mobile")
 	req.Status = ctx.Query("status")
 	req.KeyWords = ctx.Query("keyWords")
-	search, err := h.svc.GetUserSearch(ctx, req)
+	search, err := h.svc.GetUserSearch(ctx.Request.Context(), req)
 	if err != nil {
 		return ginx.Result{}, err
 	}
@@ -81,7 +81,7 @@ func (h *UserHandler) List(ctx *gin.Context, req api.UserSearchReq) (ginx.Result
 }
 
 func (h *UserHandler) Add(ctx *gin.Context, req api.UserAddReq) (ginx.Result, error) {
-	err := h.svc.Add(ctx, req)
+	err := h.svc.Add(ctx.Request.Context(), req)
 	if err != nil {
 		return ginx.Result{
 			Msg: "系统错误",
@@ -93,7 +93,7 @@ func (h *UserHandler) Add(ctx *gin.Context, req api.UserAddReq) (ginx.Result, er
 }
 
 func (h *UserHandler) Delete(ctx *gin.Context, req api.UserDeleteReq) (ginx.Result, error) {
-	err := h.svc.Delete(ctx, req.Ids)
+	err := h.svc.Delete(ctx.Request.Context(), req.Ids)
 	if err != nil {
 		return ginx.Result{
 			Code: 5,
@@ -106,7 +106,7 @@ func (h *UserHandler) Delete(ctx *gin.Context, req api.UserDeleteReq) (ginx.Resu
 }
 
 func (h *UserHandler) GetParams(ctx *gin.Context, req api.UserGetParamsReq) (ginx.Result, error) {
-	params, err := h.svc.GetParams(ctx)
+	params, err := h.svc.GetParams(ctx.Request.Context())
 	if err != nil {
 		return ginx.Result{
 			Code: 5,
@@ -124,7 +124,7 @@ func (h *UserHandler) GetEdit(ctx *gin.Context, req api.UserGetEditReq) (ginx.Re
 	userId := ctx.Query("id")
 	parsedUserId, err := strconv.ParseInt(userId, 10, 64)
 	req.Id = uint64(parsedUserId)
-	UserAndRoleIds, err := h.svc.GetEdit(ctx, req.Id)
+	UserAndRoleIds, err := h.svc.GetEdit(ctx.Request.Context(), req.Id)
 	if err != nil {
 		return ginx.Result{
 			Code: 5,
@@ -139,7 +139,7 @@ func (h *UserHandler) GetEdit(ctx *gin.Context, req api.UserGetEditReq) (ginx.Re
 }
 
 func (h *UserHandler) Edit(ctx *gin.Context, req api.UserEditReq) (ginx.Result, error) {
-	err := h.svc.Edit(ctx, req)
+	err := h.svc.Edit(ctx.Request.Context(), req)
 	if err != nil {
 		return ginx.Result{
 			Code: 5,
@@ -153,7 +153,7 @@ func (h *UserHandler) Edit(ctx *gin.Context, req api.UserEditReq) (ginx.Result, 
 }
 
 func (h *UserHandler) SetStatus(ctx *gin.Context, req api.UserStatusReq) (ginx.Result, error) {
-	err := h.svc.ChangeUserStatus(ctx, req.Id, req.UserStatus)
+	err := h.svc.ChangeUserStatus(ctx.Request.Context(), req.Id, req.UserStatus)
 	if err != nil {
 		return ginx.Result{
 			Code: 5,

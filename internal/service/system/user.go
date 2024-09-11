@@ -3,7 +3,6 @@ package system
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"strings"
 	"webook/internal/api"
@@ -21,12 +20,12 @@ type UserService interface {
 	GetAllMenus(ctx context.Context) ([]*domain.UserMenus, error)
 	GetAdminRoleIds(ctx context.Context, userId int64) (roleIds []uint, err error)
 	GetUserSearch(ctx context.Context, req api.UserSearchReq) (api.UserSearchRes, error)
-	Add(ctx *gin.Context, req api.UserAddReq) error
-	Delete(ctx *gin.Context, ids []int) error
-	GetParams(ctx *gin.Context) (api.UserGetParamsRes, error)
-	GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error)
-	Edit(ctx *gin.Context, req api.UserEditReq) error
-	ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error
+	Add(ctx context.Context, req api.UserAddReq) error
+	Delete(ctx context.Context, ids []int) error
+	GetParams(ctx context.Context) (api.UserGetParamsRes, error)
+	GetEdit(ctx context.Context, id uint64) (api.UserGetEditRes, error)
+	Edit(ctx context.Context, req api.UserEditReq) error
+	ChangeUserStatus(ctx context.Context, id uint64, status uint) error
 }
 
 type userService struct {
@@ -45,11 +44,11 @@ func NewSystemService(roleSvc RoleService, authSvc AuthService, repo system.User
 	}
 }
 
-func (svc *userService) ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error {
+func (svc *userService) ChangeUserStatus(ctx context.Context, id uint64, status uint) error {
 	return svc.repo.ChangeUserStatus(ctx, id, status)
 }
 
-func (svc *userService) Edit(ctx *gin.Context, req api.UserEditReq) error {
+func (svc *userService) Edit(ctx context.Context, req api.UserEditReq) error {
 	err := svc.repo.EditUser(ctx, domain.User{
 		Id:         req.UserId,
 		Phone:      req.Mobile,
@@ -71,7 +70,7 @@ func (svc *userService) Edit(ctx *gin.Context, req api.UserEditReq) error {
 	return nil
 }
 
-func (svc *userService) GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error) {
+func (svc *userService) GetEdit(ctx context.Context, id uint64) (api.UserGetEditRes, error) {
 	user, err := svc.repo.GetUserInfoById(ctx, id)
 	if err != nil {
 		return api.UserGetEditRes{}, err
@@ -86,17 +85,17 @@ func (svc *userService) GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes
 	}, nil
 }
 
-func (svc *userService) GetParams(ctx *gin.Context) (res api.UserGetParamsRes, err error) {
+func (svc *userService) GetParams(ctx context.Context) (res api.UserGetParamsRes, err error) {
 	roleList, err := svc.roleSvc.GetRoleList(ctx)
 	res.RoleList = roleList
 	return
 }
 
-func (svc *userService) Delete(ctx *gin.Context, ids []int) error {
+func (svc *userService) Delete(ctx context.Context, ids []int) error {
 	return svc.repo.DeleteByIds(ctx, ids)
 }
 
-func (svc *userService) Add(ctx *gin.Context, req api.UserAddReq) error {
+func (svc *userService) Add(ctx context.Context, req api.UserAddReq) error {
 	return svc.repo.Add(ctx, req)
 }
 

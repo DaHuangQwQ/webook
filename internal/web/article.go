@@ -52,7 +52,7 @@ func (h *ArticleHandler) List(ctx *gin.Context, req api.GetListReq) (Result, err
 	req.PageNum = int(parseInt)
 	parseInt, _ = strconv.ParseInt(ctx.Query("pageSize"), 10, 64)
 	req.PageSize = int(parseInt)
-	list, err := h.svc.List(ctx, api.PageReq{
+	list, err := h.svc.List(ctx.Request.Context(), api.PageReq{
 		PageNum:  req.PageNum,
 		PageSize: req.PageSize,
 	})
@@ -70,7 +70,7 @@ func (h *ArticleHandler) List(ctx *gin.Context, req api.GetListReq) (Result, err
 
 func (h *ArticleHandler) Edit(ctx *gin.Context, req api.ArticleEditReq, u ijwt.UserClaims) (ginx.Result, error) {
 	// new or edit
-	id, err := h.svc.Save(ctx, req.ToDomain(u.Uid))
+	id, err := h.svc.Save(ctx.Request.Context(), req.ToDomain(u.Uid))
 	if err != nil {
 		return ginx.Result{
 			Code: 5,
@@ -112,7 +112,7 @@ func (h *ArticleHandler) Img_Update(ctx *gin.Context) {
 			})
 			return
 		}
-		ossAdress, err := h.svc.Img_Update(ctx, fileOpen, fileType)
+		ossAdress, err := h.svc.Img_Update(ctx.Request.Context(), fileOpen, fileType)
 		ossAdrs = append(ossAdrs, ossAdress)
 	}
 
@@ -133,7 +133,7 @@ func (h *ArticleHandler) Img_Update(ctx *gin.Context) {
 
 func (h *ArticleHandler) Publish(ctx *gin.Context, req api.ArticlePublishReq, u ijwt.UserClaims) (ginx.Result, error) {
 	// new or edit
-	id, err := h.svc.Publish(ctx, req.ToDomain(u.Uid))
+	id, err := h.svc.Publish(ctx.Request.Context(), req.ToDomain(u.Uid))
 	if err != nil {
 		return ginx.Result{
 			Code: 5,
@@ -148,7 +148,7 @@ func (h *ArticleHandler) Publish(ctx *gin.Context, req api.ArticlePublishReq, u 
 }
 
 func (h *ArticleHandler) Withdraw(ctx *gin.Context, req api.ArticleWithdrawReq, u ijwt.UserClaims) (ginx.Result, error) {
-	err := h.svc.Withdraw(ctx, domain.Article{
+	err := h.svc.Withdraw(ctx.Request.Context(), domain.Article{
 		Id: req.Id,
 		Author: domain.Author{
 			Id: u.Uid,
@@ -184,9 +184,9 @@ func (h *ArticleHandler) GetList(ctx *gin.Context, req api.ArticleGetListReq) (R
 func (h *ArticleHandler) Like(ctx *gin.Context, req api.LikeReq, u ijwt.UserClaims) (ginx.Result, error) {
 	var err error
 	if req.Like {
-		err = h.interSvc.Like(ctx, h.biz, req.ArticleID, u.Uid)
+		err = h.interSvc.Like(ctx.Request.Context(), h.biz, req.ArticleID, u.Uid)
 	} else {
-		err = h.interSvc.CancelLike(ctx, h.biz, req.ArticleID, u.Uid)
+		err = h.interSvc.CancelLike(ctx.Request.Context(), h.biz, req.ArticleID, u.Uid)
 	}
 	if err != nil {
 		return ginx.Result{
@@ -201,7 +201,7 @@ func (h *ArticleHandler) Like(ctx *gin.Context, req api.LikeReq, u ijwt.UserClai
 }
 
 func (h *ArticleHandler) GetPubArticle(ctx *gin.Context, req api.GetPubArticleDetail, u ijwt.UserClaims) (ginx.Result, error) {
-	article, err := h.svc.GetPublishedById(ctx, u.Uid, req.ArticleId)
+	article, err := h.svc.GetPublishedById(ctx.Request.Context(), u.Uid, req.ArticleId)
 	if err != nil {
 		return ginx.Result{
 			Code: 5,
@@ -216,7 +216,7 @@ func (h *ArticleHandler) GetPubArticle(ctx *gin.Context, req api.GetPubArticleDe
 }
 
 func (h *ArticleHandler) Delete(ctx *gin.Context, req api.ArticleDeleteReq) (ginx.Result, error) {
-	err := h.svc.DeleteByIds(ctx, req.Ids)
+	err := h.svc.DeleteByIds(ctx.Request.Context(), req.Ids)
 	if err != nil {
 		return ginx.Result{
 			Code: 5,

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -11,6 +12,7 @@ import (
 	"go.uber.org/zap"
 	"net/http"
 	"os"
+	"time"
 	"webook/internal/api"
 	"webook/ioc"
 	"webook/pkg/ginx"
@@ -18,6 +20,12 @@ import (
 
 func main() {
 	initViper()
+	tpCancel := ioc.InitOTEL()
+	defer func() {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+		tpCancel(ctx)
+	}()
 	initPrometheus()
 	app := InitWebServer()
 	for _, c := range app.consumers {

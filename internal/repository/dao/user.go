@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"github.com/gin-gonic/gin"
 	"github.com/go-sql-driver/mysql"
 	"time"
 	"webook/internal/api"
@@ -20,8 +19,8 @@ type UserDao interface {
 	Update(ctx context.Context, user User) error
 	FindAll(ctx context.Context, req api.UserSearchReq) (total int, userList []User, err error)
 	InsertAndGetId(ctx context.Context, user User) (int64, error)
-	DeleteByIds(ctx *gin.Context, ids []int) error
-	UpdateStatus(ctx *gin.Context, user User) error
+	DeleteByIds(ctx context.Context, ids []int) error
+	UpdateStatus(ctx context.Context, user User) error
 }
 
 type GormUserDao struct {
@@ -37,11 +36,11 @@ func NewUserDao(db *gorm.DB) UserDao {
 	return &GormUserDao{db: db}
 }
 
-func (dao *GormUserDao) UpdateStatus(ctx *gin.Context, user User) error {
+func (dao *GormUserDao) UpdateStatus(ctx context.Context, user User) error {
 	return dao.db.WithContext(ctx).Model(&user).Update("user_status", user.Status).Error
 }
 
-func (dao *GormUserDao) DeleteByIds(ctx *gin.Context, ids []int) error {
+func (dao *GormUserDao) DeleteByIds(ctx context.Context, ids []int) error {
 	return dao.db.WithContext(ctx).Delete(&User{}, "id in (?)", ids).Error
 }
 

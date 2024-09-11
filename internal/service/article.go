@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"io"
 	"mime/multipart"
 	"webook/internal/api"
@@ -21,7 +20,7 @@ type ArticleService interface {
 	GetList(ctx context.Context) (list []domain.Article, err error)
 	List(ctx context.Context, req api.PageReq) (list []domain.Article, err error)
 	GetPublishedById(ctx context.Context, uid, articleId int64) (domain.Article, error)
-	DeleteByIds(ctx *gin.Context, ids []int64) error
+	DeleteByIds(ctx context.Context, ids []int64) error
 }
 
 type articleService struct {
@@ -36,7 +35,7 @@ func NewArticleService(repo repository.ArticleRepository, producer events.Produc
 	}
 }
 
-func (s *articleService) DeleteByIds(ctx *gin.Context, ids []int64) error {
+func (s *articleService) DeleteByIds(ctx context.Context, ids []int64) error {
 	return s.repo.DeleteByIds(ctx, ids)
 }
 

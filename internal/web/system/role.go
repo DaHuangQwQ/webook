@@ -49,7 +49,7 @@ func (h *RoleHandler) GetList(ctx *gin.Context) {
 	if PageSize == 0 {
 		PageSize = 10
 	}
-	total, search, err := h.svc.GetRoleListSearch(ctx, domain.Role{
+	total, search, err := h.svc.GetRoleListSearch(ctx.Request.Context(), domain.Role{
 		Name:   RoleName,
 		Status: uint8(ui8),
 	}, api.PageReq{
@@ -72,7 +72,7 @@ func (h *RoleHandler) GetList(ctx *gin.Context) {
 
 // GetRoles ok
 func (h *RoleHandler) GetParams(ctx *gin.Context) {
-	list, err := h.svc.GetParams(ctx)
+	list, err := h.svc.GetParams(ctx.Request.Context())
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -106,7 +106,7 @@ func (h *RoleHandler) AddRole(ctx *gin.Context) {
 		})
 		return
 	}
-	err := h.svc.AddRole(ctx, domain.Role{
+	err := h.svc.AddRole(ctx.Request.Context(), domain.Role{
 		Name:      req.Name,
 		Status:    req.Status,
 		ListOrder: req.ListOrder,
@@ -138,7 +138,7 @@ func (h *RoleHandler) GetRole(ctx *gin.Context) {
 		return
 	}
 	Id, _ := strconv.ParseInt(id, 10, 64)
-	roleInfo, err := h.svc.Get(ctx, Id)
+	roleInfo, err := h.svc.Get(ctx.Request.Context(), Id)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -146,7 +146,7 @@ func (h *RoleHandler) GetRole(ctx *gin.Context) {
 		})
 		return
 	}
-	menuIds, err := h.svc.GetFilteredNamedPolicy(ctx, Id)
+	menuIds, err := h.svc.GetFilteredNamedPolicy(ctx.Request.Context(), Id)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -181,7 +181,7 @@ func (h *RoleHandler) EditRole(ctx *gin.Context) {
 		})
 		return
 	}
-	err := h.svc.EditRole(ctx, domain.Role{
+	err := h.svc.EditRole(ctx.Request.Context(), domain.Role{
 		Id:        req.Id,
 		Name:      req.Name,
 		Status:    req.Status,
@@ -215,7 +215,7 @@ func (h *RoleHandler) DeleteRole(ctx *gin.Context) {
 		})
 		return
 	}
-	err := h.svc.DeleteByIds(ctx, req.Ids)
+	err := h.svc.DeleteByIds(ctx.Request.Context(), req.Ids)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,

@@ -41,7 +41,7 @@ func (h *AuthHandler) List(ctx *gin.Context) {
 		Title     string `json:"menuName" `
 		Component string `json:"component"`
 	}
-	authList, err := h.svc.List(ctx)
+	authList, err := h.svc.List(ctx.Request.Context())
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -69,7 +69,7 @@ func (h *AuthHandler) Add(ctx *gin.Context) {
 		return
 	}
 	req.Id = 0
-	err := h.svc.Add(ctx, req)
+	err := h.svc.Add(ctx.Request.Context(), req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -93,7 +93,7 @@ func (h *AuthHandler) Update(ctx *gin.Context) {
 		})
 		return
 	}
-	err := h.svc.Update(ctx, req)
+	err := h.svc.Update(ctx.Request.Context(), req)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -120,7 +120,7 @@ func (h *AuthHandler) Delete(ctx *gin.Context) {
 		})
 		return
 	}
-	err := h.svc.Delete(ctx, req.Ids)
+	err := h.svc.Delete(ctx.Request.Context(), req.Ids)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -136,7 +136,7 @@ func (h *AuthHandler) Delete(ctx *gin.Context) {
 }
 
 func (h *AuthHandler) GetParams(ctx *gin.Context) {
-	menuList, err := h.svc.GetIsMenuList(ctx)
+	menuList, err := h.svc.GetIsMenuList(ctx.Request.Context())
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -145,7 +145,7 @@ func (h *AuthHandler) GetParams(ctx *gin.Context) {
 		h.l.Info("GetIsMenuList 错误", logger.Field{Key: "err", Val: err})
 		return
 	}
-	roleList, err := h.roleSvc.GetRoleList(ctx)
+	roleList, err := h.roleSvc.GetRoleList(ctx.Request.Context())
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -167,7 +167,7 @@ func (h *AuthHandler) GetParams(ctx *gin.Context) {
 func (h *AuthHandler) Get(ctx *gin.Context) {
 	id := ctx.Query("id")
 	i64, _ := strconv.ParseInt(id, 10, 64)
-	auth, err := h.svc.Get(ctx, i64)
+	auth, err := h.svc.Get(ctx.Request.Context(), i64)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -176,7 +176,7 @@ func (h *AuthHandler) Get(ctx *gin.Context) {
 		h.l.Info("Get 错误", logger.Field{Key: "err", Val: err})
 		return
 	}
-	roles, err := h.svc.GetMenuRoles(ctx, i64)
+	roles, err := h.svc.GetMenuRoles(ctx.Request.Context(), i64)
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,

@@ -58,6 +58,13 @@ services:
       - ./prometheus.yaml:/etc/prometheus/prometheus.yml
     ports:
       - 9090:9090
+
+  zipkin:
+    #    用的是不支持 Kafka 之类的简化版本
+    image: openzipkin/zipkin-slim:2.24
+    ports:
+      - '9411:9411'
+
   grafana:
     image: grafana/grafana-enterprise:10.2.0
     ports:

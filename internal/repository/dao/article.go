@@ -3,7 +3,6 @@ package dao
 import (
 	"context"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"
@@ -19,7 +18,7 @@ type ArticleDao interface {
 	FindById(ctx context.Context, articleId int64) (PublishedArticle, error)
 	GetListByAuthor(ctx context.Context, uid int64, offset int, limit int) ([]Article, error)
 	ListAll(ctx context.Context, PageNum int, PageSize int) ([]PublishedArticle, error)
-	DeleteByIds(ctx *gin.Context, ids []int64) error
+	DeleteByIds(ctx context.Context, ids []int64) error
 }
 
 type GormArticleDao struct {
@@ -32,7 +31,7 @@ func NewGormArticleDao(db *gorm.DB) ArticleDao {
 	}
 }
 
-func (dao *GormArticleDao) DeleteByIds(ctx *gin.Context, ids []int64) error {
+func (dao *GormArticleDao) DeleteByIds(ctx context.Context, ids []int64) error {
 	return dao.db.WithContext(ctx).Where("id in (?)", ids).Delete(&PublishedArticle{}).Error
 }
 

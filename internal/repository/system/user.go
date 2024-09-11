@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/casbin/casbin/v2"
-	"github.com/gin-gonic/gin"
 	"strconv"
 	"time"
 	"webook/internal/api"
@@ -18,11 +17,11 @@ type UserRepository interface {
 	GetAdminRoleIds(ctx context.Context, userId int64) (roleIds []uint, err error)
 	List(ctx context.Context, req api.UserSearchReq) (total int, userList []domain.User, err error)
 	Add(ctx context.Context, req api.UserAddReq) error
-	DeleteByIds(ctx *gin.Context, ids []int) error
-	GetUserInfoById(ctx *gin.Context, id uint64) (domain.User, error)
-	EditUser(ctx *gin.Context, user domain.User) error
-	EditUserRole(ctx *gin.Context, roleIds []int64, userId int64) error
-	ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error
+	DeleteByIds(ctx context.Context, ids []int) error
+	GetUserInfoById(ctx context.Context, id uint64) (domain.User, error)
+	EditUser(ctx context.Context, user domain.User) error
+	EditUserRole(ctx context.Context, roleIds []int64, userId int64) error
+	ChangeUserStatus(ctx context.Context, id uint64, status uint) error
 }
 
 type CachedUserRepository struct {
@@ -39,18 +38,18 @@ func NewCachedUserRepository(casbin casbin.IEnforcer, dao dao.UserDao) UserRepos
 	}
 }
 
-func (repo *CachedUserRepository) ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error {
+func (repo *CachedUserRepository) ChangeUserStatus(ctx context.Context, id uint64, status uint) error {
 	return repo.dao.UpdateStatus(ctx, dao.User{
 		Id:     int64(id),
 		Status: status,
 	})
 }
 
-func (repo *CachedUserRepository) EditUser(ctx *gin.Context, user domain.User) error {
+func (repo *CachedUserRepository) EditUser(ctx context.Context, user domain.User) error {
 	return repo.dao.Update(ctx, repo.toEntity(user))
 }
 
-func (repo *CachedUserRepository) EditUserRole(ctx *gin.Context, roleIds []int64, userId int64) error {
+func (repo *CachedUserRepository) EditUserRole(ctx context.Context, roleIds []int64, userId int64) error {
 	_, err := repo.casbin.RemoveFilteredGroupingPolicy(0, fmt.Sprintf("%s%d", repo.casBinUserPrefix, userId))
 	if err != nil {
 		return fmt.Errorf("删除用户旧的角色: %w", err)
@@ -64,7 +63,7 @@ func (repo *CachedUserRepository) EditUserRole(ctx *gin.Context, roleIds []int64
 	return nil
 }
 
-func (repo *CachedUserRepository) GetUserInfoById(ctx *gin.Context, id uint64) (domain.User, error) {
+func (repo *CachedUserRepository) GetUserInfoById(ctx context.Context, id uint64) (domain.User, error) {
 	user, err := repo.dao.FindById(ctx, int64(id))
 	if err != nil {
 		return domain.User{}, err
@@ -72,7 +71,7 @@ func (repo *CachedUserRepository) GetUserInfoById(ctx *gin.Context, id uint64) (
 	return repo.toDomain(user), nil
 }
 
-func (repo *CachedUserRepository) DeleteByIds(ctx *gin.Context, ids []int) error {
+func (repo *CachedUserRepository) DeleteByIds(ctx context.Context, ids []int) error {
 	return repo.dao.DeleteByIds(ctx, ids)
 }
 

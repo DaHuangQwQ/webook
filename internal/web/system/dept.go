@@ -41,7 +41,7 @@ func (h *DeptHandler) List(ctx *gin.Context) {
 	ui64, _ := strconv.ParseUint(status, 10, 64)
 	PageNum, _ := strconv.ParseUint(pageNum, 10, 64)
 	PageSize, _ := strconv.ParseUint(pageSize, 10, 64)
-	list, err := h.svc.List(ctx, deptName, uint(ui64), int(PageNum), int(PageSize))
+	list, err := h.svc.List(ctx.Request.Context(), deptName, uint(ui64), int(PageNum), int(PageSize))
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
@@ -108,7 +108,7 @@ func (h *DeptHandler) Delete(ctx *gin.Context) {
 	})
 }
 func (h *DeptHandler) TreeSelect(ctx *gin.Context) {
-	res, err := h.svc.TreeSelect(ctx)
+	res, err := h.svc.TreeSelect(ctx.Request.Context())
 	if err != nil {
 		ctx.JSON(http.StatusOK, web.Result{
 			Code: 5,
