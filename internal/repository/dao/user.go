@@ -21,6 +21,7 @@ type UserDao interface {
 	FindAll(ctx context.Context, req api.UserSearchReq) (total int, userList []User, err error)
 	InsertAndGetId(ctx context.Context, user User) (int64, error)
 	DeleteByIds(ctx *gin.Context, ids []int) error
+	UpdateStatus(ctx *gin.Context, user User) error
 }
 
 type GormUserDao struct {
@@ -34,6 +35,10 @@ var (
 
 func NewUserDao(db *gorm.DB) UserDao {
 	return &GormUserDao{db: db}
+}
+
+func (dao *GormUserDao) UpdateStatus(ctx *gin.Context, user User) error {
+	return dao.db.WithContext(ctx).Model(&user).Update("user_status", user.Status).Error
 }
 
 func (dao *GormUserDao) DeleteByIds(ctx *gin.Context, ids []int) error {
@@ -108,8 +113,8 @@ type User struct {
 	Phone      sql.NullString `json:"phone" gorm:"type:varchar(100);unique;sql:null"`
 	Password   string         `json:"password" gorm:"type:varchar(100);not null"`
 	Nickname   string         `json:"nickname" gorm:"type:varchar(100)"`
-	Birthday   int            `gorm:"type:int(11);not null;default:0;comment:'生日'"`
-	UserStatus uint8          `gorm:"type:tinyint unsigned;not null;default:1;comment:'用户状态;0:禁用,1:正常,2:未验证'"`
+	Birthday   int            `json:"birthday" gorm:"type:int(11);not null;default:0;comment:'生日'"`
+	UserStatus uint8          `json:"user_status" gorm:"type:tinyint unsigned;not null;default:1;comment:'用户状态;0:禁用,1:正常,2:未验证'"`
 
 	Grade  int `json:"grade" gorm:"type:int(11)"`
 	Gender int `json:"gender" gorm:"type:int(11)"`

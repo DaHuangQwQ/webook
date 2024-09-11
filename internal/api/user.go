@@ -107,6 +107,7 @@ type UserResetPwdRes struct {
 // UserStatusReq 设置用户状态参数
 // path:"/user/setStatus" tags:"用户管理" method:"put" summary:"设置用户状态"
 type UserStatusReq struct {
+	Meta       `path:"/user/setStatus" method:"post"`
 	Id         uint64 `json:"userId" v:"required#用户id不能为空"`
 	UserStatus uint   `json:"status" v:"required#用户状态不能为空"`
 }

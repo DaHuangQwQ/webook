@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"strings"
 	"webook/internal/api"
 	"webook/internal/domain"
@@ -16,7 +17,7 @@ type UserService interface {
 	GetAdminMenusByRoleIds(ctx context.Context, roleIds []uint) ([]*domain.UserMenus, error)
 	GetPermissions(ctx context.Context, roleIds []uint) (permissions []string, err error)
 	GetMenusTree(menus []*domain.UserMenus, pid uint) []*domain.UserMenus
-	NotCheckAuthAdminIds(ctx context.Context)
+	NotCheckAuthAdminIds(ctx context.Context, userId int64) bool
 	GetAllMenus(ctx context.Context) ([]*domain.UserMenus, error)
 	GetAdminRoleIds(ctx context.Context, userId int64) (roleIds []uint, err error)
 	GetUserSearch(ctx context.Context, req api.UserSearchReq) (api.UserSearchRes, error)
@@ -25,6 +26,7 @@ type UserService interface {
 	GetParams(ctx *gin.Context) (api.UserGetParamsRes, error)
 	GetEdit(ctx *gin.Context, id uint64) (api.UserGetEditRes, error)
 	Edit(ctx *gin.Context, req api.UserEditReq) error
+	ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error
 }
 
 type userService struct {
@@ -41,6 +43,10 @@ func NewSystemService(roleSvc RoleService, authSvc AuthService, repo system.User
 		repo:    repo,
 		deptSvc: deptSvc,
 	}
+}
+
+func (svc *userService) ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error {
+	return svc.repo.ChangeUserStatus(ctx, id, status)
 }
 
 func (svc *userService) Edit(ctx *gin.Context, req api.UserEditReq) error {
@@ -186,8 +192,21 @@ func (svc *userService) GetAllMenus(ctx context.Context) (menus []*domain.UserMe
 }
 
 // NotCheckAuthAdminIds super admin
-func (svc *userService) NotCheckAuthAdminIds(ctx context.Context) {
-	return
+func (svc *userService) NotCheckAuthAdminIds(ctx context.Context, userId int64) bool {
+	type Config struct {
+		Admins []int64 `yaml:"admins"`
+	}
+	var config Config
+	err := viper.UnmarshalKey("system", &config)
+	if err != nil {
+		panic(err)
+	}
+	for _, v := range config.Admins {
+		if v == userId {
+			return true
+		}
+	}
+	return false
 }
 
 func (svc *userService) GetAdminRules(ctx context.Context, userId int64) (menuList []*domain.UserMenus, permissions []string, err error) {

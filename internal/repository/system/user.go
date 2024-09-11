@@ -22,6 +22,7 @@ type UserRepository interface {
 	GetUserInfoById(ctx *gin.Context, id uint64) (domain.User, error)
 	EditUser(ctx *gin.Context, user domain.User) error
 	EditUserRole(ctx *gin.Context, roleIds []int64, userId int64) error
+	ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error
 }
 
 type CachedUserRepository struct {
@@ -36,6 +37,13 @@ func NewCachedUserRepository(casbin casbin.IEnforcer, dao dao.UserDao) UserRepos
 		casBinUserPrefix: "u_",
 		dao:              dao,
 	}
+}
+
+func (repo *CachedUserRepository) ChangeUserStatus(ctx *gin.Context, id uint64, status uint) error {
+	return repo.dao.UpdateStatus(ctx, dao.User{
+		Id:     int64(id),
+		Status: status,
+	})
 }
 
 func (repo *CachedUserRepository) EditUser(ctx *gin.Context, user domain.User) error {

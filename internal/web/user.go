@@ -583,187 +583,223 @@ func (h *UserHandler) PhoneUpdate(ctx *gin.Context) {
 func (h *UserHandler) Demo(ctx *gin.Context) {
 	str := `
 {
-"userList": [
-{
-"id": 25,
-"email": "2195921486@qq.com",
-"mobile": "13029375111",
-"password": "",
-"userName": "DaHuang",
-"grade": 2023,
-"gender": 1,
-"avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725809043994.jpeg",
-"ctime": "2024-09-08T23:23:30.374+08:00",
-"WechatInfo": {
-"UnionId": "",
-"OpenId": "oZ7s043gWIyjR_W0f5qhZ6avje9k"
-},
-"birthday": 0,
-"userStatus": 1,
-"deptId": 0,
-"remark": "",
-"isAdmin": 1,
-"address": "",
-"describe": "",
-"lastLoginIp": "",
-"dept": {
-"deptId": 0,
-"parentId": 0,
-"ancestors": "",
-"deptName": "",
-"orderNum": 0,
-"leader": "",
-"phone": "",
-"email": "",
-"status": 0
-},
-"roleInfo": [
-{
-"roleId": 1,
-"name": "root"
-},
-{
-"roleId": 2,
-"name": "root"
-}
-]
-},
-{
-"id": 26,
-"email": "1623929456@qq.com",
-"mobile": "15655440534",
-"password": "",
-"userName": "城猫",
-"grade": 2022,
-"gender": 1,
-"avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725810736043.jpeg",
-"ctime": "2024-09-08T23:29:14.809+08:00",
-"WechatInfo": {
-"UnionId": "",
-"OpenId": "oZ7s044EqiPnrbbHeILelQL00Oss"
-},
-"birthday": 0,
-"userStatus": 1,
-"deptId": 0,
-"remark": "",
-"isAdmin": 1,
-"address": "",
-"describe": "",
-"lastLoginIp": "",
-"dept": {
-"deptId": 0,
-"parentId": 0,
-"ancestors": "",
-"deptName": "",
-"orderNum": 0,
-"leader": "",
-"phone": "",
-"email": "",
-"status": 0
-},
-"roleInfo": [
-{
-"roleId": 1,
-"name": "root"
-},
-{
-"roleId": 2,
-"name": "root"
-}
-]
-},
-{
-"id": 30,
-"email": "2195921481@qq.com",
-"mobile": "",
-"password": "$2a$10$ItQPeBXtoTA2BMg.41drIO9vbslG2jRr.coChOvpEhwuuCv9/Pct.",
-"userName": "",
-"grade": 0,
-"gender": 0,
-"avatar": "",
-"ctime": "2024-09-08T23:39:48.937+08:00",
-"WechatInfo": {
-"UnionId": "",
-"OpenId": ""
-},
-"birthday": 0,
-"userStatus": 1,
-"deptId": 0,
-"remark": "",
-"isAdmin": 1,
-"address": "",
-"describe": "",
-"lastLoginIp": "",
-"dept": {
-"deptId": 0,
-"parentId": 0,
-"ancestors": "",
-"deptName": "",
-"orderNum": 0,
-"leader": "",
-"phone": "",
-"email": "",
-"status": 0
-},
-"roleInfo": [
-{
-"roleId": 1,
-"name": "root"
-},
-{
-"roleId": 2,
-"name": "root"
-}
-]
-},
-{
-"id": 31,
-"email": "",
-"mobile": "",
-"password": "",
-"userName": "",
-"grade": 0,
-"gender": 0,
-"avatar": "",
-"ctime": "2024-09-08T23:46:56.975+08:00",
-"WechatInfo": {
-"UnionId": "",
-"OpenId": "oZ7s048EKnAjql6Zr9NklXUOxmo0"
-},
-"birthday": 0,
-"userStatus": 1,
-"deptId": 0,
-"remark": "",
-"isAdmin": 1,
-"address": "",
-"describe": "",
-"lastLoginIp": "",
-"dept": {
-"deptId": 0,
-"parentId": 0,
-"ancestors": "",
-"deptName": "",
-"orderNum": 0,
-"leader": "",
-"phone": "",
-"email": "",
-"status": 0
-},
-"roleInfo": [
-{
-"roleId": 1,
-"name": "root"
-},
-{
-"roleId": 2,
-"name": "root"
-}
-]
-}
-],
-"currentPage": 0,
-"total": 4,
-"list": null
+  "userList": [
+    {
+    "id": 31,
+      "email": "2195921486@qq.com",
+      "mobile": "13029375111",
+       "userName": "黄俊烨",
+      "grade": 2022,
+      "gender": 1,
+      "avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725809043994.jpeg"
+    },
+    {
+    "id": 27,
+      "email": "2195921486@qq.com",
+      "mobile": "13029375111",
+       "userName": "肖岳阳",
+      "grade": 2022,
+      "gender": 1,
+      "avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725871599659.jpeg"
+    },
+    {
+    "id": 28,
+      "email": "2195921486@qq.com",
+      "mobile": "13029375111",
+       "userName": "王博涵",
+      "grade": 2022,
+      "gender": 1,
+      "avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725871559060.jpeg"
+    },
+    {
+    "id": 29,
+      "email": "2195921486@qq.com",
+      "mobile": "13029375111",
+       "userName": "文博熙",
+      "grade": 2022,
+      "gender": 1,
+      "avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725871578342.jpeg"
+    },
+    {
+      "id": 25,
+      "email": "2195921486@qq.com",
+      "mobile": "13029375111",
+      "password": "",
+      "userName": "尹欣雨",
+      "grade": 2023,
+      "gender": 2,
+      "avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725871637021.jpeg",
+      "ctime": "2024-09-08T23:23:30.374+08:00",
+      "WechatInfo": {
+        "UnionId": "",
+        "OpenId": "oZ7s043gWIyjR_W0f5qhZ6avje9k"
+      },
+      "birthday": 0,
+      "userStatus": 1,
+      "deptId": 0,
+      "remark": "",
+      "isAdmin": 1,
+      "address": "",
+      "describe": "",
+      "lastLoginIp": "",
+      "dept": {
+        "deptId": 0,
+        "parentId": 0,
+        "ancestors": "",
+        "deptName": "",
+        "orderNum": 0,
+        "leader": "",
+        "phone": "",
+        "email": "",
+        "status": 0
+      },
+      "roleInfo": [
+        {
+          "roleId": 1,
+          "name": "root"
+        },
+        {
+          "roleId": 2,
+          "name": "root"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "email": "1623929456@qq.com",
+      "mobile": "15655440534",
+      "password": "",
+      "userName": "城猫",
+      "grade": 2022,
+      "gender": 1,
+      "avatar": "https://ceit.oss-cn-wulanchabu.aliyuncs.com/avatar/1725810736043.jpeg",
+      "ctime": "2024-09-08T23:29:14.809+08:00",
+      "WechatInfo": {
+        "UnionId": "",
+        "OpenId": "oZ7s044EqiPnrbbHeILelQL00Oss"
+      },
+      "birthday": 0,
+      "userStatus": 1,
+      "deptId": 0,
+      "remark": "",
+      "isAdmin": 1,
+      "address": "",
+      "describe": "",
+      "lastLoginIp": "",
+      "dept": {
+        "deptId": 0,
+        "parentId": 0,
+        "ancestors": "",
+        "deptName": "",
+        "orderNum": 0,
+        "leader": "",
+        "phone": "",
+        "email": "",
+        "status": 0
+      },
+      "roleInfo": [
+        {
+          "roleId": 1,
+          "name": "root"
+        },
+        {
+          "roleId": 2,
+          "name": "root"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "email": "2195921481@qq.com",
+      "mobile": "",
+      "password": "$2a$10$ItQPeBXtoTA2BMg.41drIO9vbslG2jRr.coChOvpEhwuuCv9/Pct.",
+      "userName": "",
+      "grade": 0,
+      "gender": 0,
+      "avatar": "",
+      "ctime": "2024-09-08T23:39:48.937+08:00",
+      "WechatInfo": {
+        "UnionId": "",
+        "OpenId": ""
+      },
+      "birthday": 0,
+      "userStatus": 1,
+      "deptId": 0,
+      "remark": "",
+      "isAdmin": 1,
+      "address": "",
+      "describe": "",
+      "lastLoginIp": "",
+      "dept": {
+        "deptId": 0,
+        "parentId": 0,
+        "ancestors": "",
+        "deptName": "",
+        "orderNum": 0,
+        "leader": "",
+        "phone": "",
+        "email": "",
+        "status": 0
+      },
+      "roleInfo": [
+        {
+          "roleId": 1,
+          "name": "root"
+        },
+        {
+          "roleId": 2,
+          "name": "root"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "email": "",
+      "mobile": "",
+      "password": "",
+      "userName": "",
+      "grade": 0,
+      "gender": 0,
+      "avatar": "",
+      "ctime": "2024-09-08T23:46:56.975+08:00",
+      "WechatInfo": {
+        "UnionId": "",
+        "OpenId": "oZ7s048EKnAjql6Zr9NklXUOxmo0"
+      },
+      "birthday": 0,
+      "userStatus": 1,
+      "deptId": 0,
+      "remark": "",
+      "isAdmin": 1,
+      "address": "",
+      "describe": "",
+      "lastLoginIp": "",
+      "dept": {
+        "deptId": 0,
+        "parentId": 0,
+        "ancestors": "",
+        "deptName": "",
+        "orderNum": 0,
+        "leader": "",
+        "phone": "",
+        "email": "",
+        "status": 0
+      },
+      "roleInfo": [
+        {
+          "roleId": 1,
+          "name": "root"
+        },
+        {
+          "roleId": 2,
+          "name": "root"
+        }
+      ]
+    }
+  ],
+  "currentPage": 0,
+  "total": 4,
+  "list": null
 }
 
 `

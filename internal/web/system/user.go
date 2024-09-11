@@ -35,7 +35,7 @@ func (h *UserHandler) RegisterRoutes(router *gin.Engine) {
 	router.PUT(ginx.Warp[api.UserEditReq](h.Edit))
 	router.GET(ginx.Warp[api.UserGetEditReq](h.GetEdit))
 	g.PUT("/resetPwd")
-	g.PUT("/setStatus")
+	router.POST(ginx.Warp[api.UserStatusReq](h.SetStatus))
 	router.DELETE(ginx.Warp[api.UserDeleteReq](h.Delete))
 	g.GET("/getUsers")
 }
@@ -140,6 +140,20 @@ func (h *UserHandler) GetEdit(ctx *gin.Context, req api.UserGetEditReq) (ginx.Re
 
 func (h *UserHandler) Edit(ctx *gin.Context, req api.UserEditReq) (ginx.Result, error) {
 	err := h.svc.Edit(ctx, req)
+	if err != nil {
+		return ginx.Result{
+			Code: 5,
+			Msg:  "系统错误" + err.Error(),
+		}, err
+	}
+	return ginx.Result{
+		Code: 0,
+		Msg:  "ok",
+	}, nil
+}
+
+func (h *UserHandler) SetStatus(ctx *gin.Context, req api.UserStatusReq) (ginx.Result, error) {
+	err := h.svc.ChangeUserStatus(ctx, req.Id, req.UserStatus)
 	if err != nil {
 		return ginx.Result{
 			Code: 5,

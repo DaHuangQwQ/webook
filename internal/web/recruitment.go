@@ -24,15 +24,15 @@ func (h *RecruitmentHandler) RegisterRoutes(router *gin.Engine) {
 }
 
 func (h *RecruitmentHandler) Add(ctx *gin.Context, req api.RecruitmentAddReq) (ginx.Result, error) {
-	err := h.svc.Add(ctx, req.Recruitment)
-	if err != nil {
-		return ginx.Result{
-			Code: 5,
-			Msg:  "系统错误" + err.Error(),
-		}, err
-	}
+	//err := h.svc.Add(ctx, req.Recruitment)
+	//if err != nil {
+	//	return ginx.Result{
+	//		Code: 5,
+	//		Msg:  "系统错误" + err.Error(),
+	//	}, err
+	//}
 	return ginx.Result{
-		Code: 0,
-		Msg:  "ok",
+		Code: 5,
+		Msg:  "纳新截止",
 	}, nil
 }

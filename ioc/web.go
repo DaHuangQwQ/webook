@@ -1,11 +1,13 @@
 package ioc
 
 import (
+	"github.com/casbin/casbin/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"strings"
 	"time"
+	systemSvc "webook/internal/service/system"
 	"webook/internal/web"
 	"webook/internal/web/jwt"
 	"webook/internal/web/middleware"
@@ -43,7 +45,13 @@ func InitWebServer(mdls []gin.HandlerFunc,
 	return server
 }
 
-func InitGinMiddlewares(redisClient redis.Cmdable, l logger.LoggerV1) []gin.HandlerFunc {
+func InitGinMiddlewares(
+	redisClient redis.Cmdable,
+	l logger.LoggerV1,
+	svc systemSvc.UserService,
+	authSvc systemSvc.AuthService,
+	casbin casbin.IEnforcer,
+) []gin.HandlerFunc {
 	pb := &prometheus.Builder{
 		Namespace: "DaHuang",
 		Subsystem: "webook",
@@ -73,5 +81,6 @@ func InitGinMiddlewares(redisClient redis.Cmdable, l logger.LoggerV1) []gin.Hand
 		}),
 		ratelimit.NewBuilder(limit.NewRedisSlidingWindowLimiter(redisClient, time.Second, 10)).Build(),
 		middleware.NewLoginJwtMiddleware(l).Build(jwt.NewRedisJWTHandler(redisClient)),
+		middleware.NewAuthMiddleware(svc, authSvc, casbin, l).Build(),
 	}
 }

@@ -32,10 +32,7 @@ func main() {
 	})
 	initDoc()
 	ginx.NewWarpLogger(ioc.InitLogger())
-	err := server.Run(":8090")
-	if err != nil {
-		return
-	}
+	_ = server.Run(":8090")
 }
 
 func initPrometheus() {
