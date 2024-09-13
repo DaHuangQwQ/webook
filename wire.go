@@ -35,6 +35,7 @@ func InitWebServer() *App {
 		ioc.InitConsumers,
 		ioc.InitSyncProducer,
 		ioc.InitSaramaClient,
+		ioc.InitRlockClient,
 
 		rankingSvcSet,
 		ioc.InitJobs,
