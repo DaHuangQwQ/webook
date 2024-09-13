@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"io"
 	"mime/multipart"
+	"time"
 	"webook/internal/api"
 	"webook/internal/domain"
 	events "webook/internal/events/article"
 	"webook/internal/repository"
 )
 
+//go:generate mockgen -source=article.go -package=svcmocks -destination=mocks/article.mock.go ArticleService
 type ArticleService interface {
 	Save(ctx context.Context, article domain.Article) (id int64, err error)
 	Img_Update(ctx context.Context, file multipart.File, fileType string) (string, error)
@@ -19,6 +21,7 @@ type ArticleService interface {
 	Publish(ctx context.Context, article domain.Article) (int64, error)
 	GetList(ctx context.Context) (list []domain.Article, err error)
 	List(ctx context.Context, req api.PageReq) (list []domain.Article, err error)
+	ListPub(ctx context.Context, start time.Time, pageNum, pageSize int) ([]domain.Article, error)
 	GetPublishedById(ctx context.Context, uid, articleId int64) (domain.Article, error)
 	DeleteByIds(ctx context.Context, ids []int64) error
 }
@@ -33,6 +36,11 @@ func NewArticleService(repo repository.ArticleRepository, producer events.Produc
 		repo:     repo,
 		producer: producer,
 	}
+}
+
+func (s *articleService) ListPub(ctx context.Context, start time.Time, pageNum, pageSize int) ([]domain.Article, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (s *articleService) DeleteByIds(ctx context.Context, ids []int64) error {

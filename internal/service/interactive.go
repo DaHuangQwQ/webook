@@ -7,6 +7,7 @@ import (
 	"webook/internal/repository"
 )
 
+//go:generate mockgen -source=interactive.go -package=svcmocks -destination=mocks/interactive.mock.go InteractiveService
 type InteractiveService interface {
 	Read(ctx context.Context, biz string, bizId int64) error
 	Like(ctx context.Context, biz string, id int64, uid int64) error
@@ -14,6 +15,7 @@ type InteractiveService interface {
 	// Collect cid 是收藏夹
 	Collect(ctx context.Context, biz string, bizId int64, cid int64, uid int64) error
 	Get(ctx context.Context, biz string, bizId int64, uid int64) (domain.Interactive, error)
+	GetByIds(ctx context.Context, biz string, bizIds []int64) (map[int64]domain.Interactive, error)
 }
 
 type interactiveService struct {
@@ -24,6 +26,11 @@ func NewInteractiveService(repo repository.InteractiveRepository) InteractiveSer
 	return &interactiveService{
 		repo: repo,
 	}
+}
+
+func (svc *interactiveService) GetByIds(ctx context.Context, biz string, bizIds []int64) (map[int64]domain.Interactive, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 func (svc *interactiveService) Get(ctx context.Context, biz string, bizId int64, uid int64) (domain.Interactive, error) {

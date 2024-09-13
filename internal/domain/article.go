@@ -1,5 +1,7 @@
 package domain
 
+import "time"
+
 type Article struct {
 	Id      int64
 	Title   string
@@ -10,6 +12,8 @@ type Article struct {
 	Type   string
 
 	Status ArticleStatus
+
+	UTime time.Time
 }
 
 func (a Article) Abstract() string {
