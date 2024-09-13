@@ -34,6 +34,7 @@ func main() {
 			panic(err)
 		}
 	}
+	app.cron.Start()
 	server := app.server
 	server.GET("/hello", func(ctx *gin.Context) {
 		ctx.String(http.StatusOK, "hello，启动成功了！")
@@ -41,6 +42,8 @@ func main() {
 	initDoc()
 	ginx.NewWarpLogger(ioc.InitLogger())
 	_ = server.Run(":8090")
+	ctx := app.cron.Stop()
+	<-ctx.Done()
 }
 
 func initPrometheus() {

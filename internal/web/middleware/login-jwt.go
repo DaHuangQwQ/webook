@@ -30,6 +30,7 @@ func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
 			"/oauth2/wechat/code2session",
 			"/articles/getlist",
 			"/articles/list",
+			"/articles/top",
 			"/swagger",
 			"/metrics",
 			"/recruit/add",

@@ -18,6 +18,13 @@ import (
 	"webook/ioc"
 )
 
+var rankingSvcSet = wire.NewSet(
+	cache.NewRedisRankingCache,
+	cache.NewRankingLocalCache,
+	repository.NewCachedRankingRepository,
+	service.NewBatchRankingService,
+)
+
 func InitWebServer() *App {
 	wire.Build(
 		// 第三方依赖
@@ -28,6 +35,11 @@ func InitWebServer() *App {
 		ioc.InitConsumers,
 		ioc.InitSyncProducer,
 		ioc.InitSaramaClient,
+
+		rankingSvcSet,
+		ioc.InitJobs,
+		ioc.InitRankingJob,
+
 		// events
 		article.NewKafkaProducer,
 		article.NewInteractiveReadEventConsumer,
