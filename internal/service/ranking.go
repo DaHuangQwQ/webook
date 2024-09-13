@@ -7,6 +7,7 @@ import (
 	"math"
 	"time"
 	"webook/internal/domain"
+	"webook/internal/repository"
 )
 
 type RankingService interface {
@@ -14,6 +15,7 @@ type RankingService interface {
 }
 
 type BatchRankingService struct {
+	repo      repository.RankingRepository
 	artSvc    ArticleService
 	intrSvc   InteractiveService
 	batchSize int
@@ -21,8 +23,9 @@ type BatchRankingService struct {
 	scoreFunc func(t time.Time, likeCnt int64) float64
 }
 
-func NewBatchRankingService(artSvc ArticleService, intrSvc InteractiveService) RankingService {
+func NewBatchRankingService(artSvc ArticleService, intrSvc InteractiveService, repo repository.RankingRepository) RankingService {
 	return &BatchRankingService{
+		repo:      repo,
 		artSvc:    artSvc,
 		intrSvc:   intrSvc,
 		batchSize: 100,
@@ -35,12 +38,12 @@ func NewBatchRankingService(artSvc ArticleService, intrSvc InteractiveService) R
 }
 
 func (svc *BatchRankingService) TopN(ctx context.Context) error {
-	_, err := svc.topN(ctx)
+	arts, err := svc.topN(ctx)
 	if err != nil {
 		return err
 	}
-	// redis
-	return nil
+	// redis 缓存
+	return svc.repo.ReplaceTopN(ctx, arts)
 }
 
 func (svc *BatchRankingService) topN(ctx context.Context) ([]domain.Article, error) {
