@@ -19,6 +19,7 @@ type ArticleDao interface {
 	GetListByAuthor(ctx context.Context, uid int64, offset int, limit int) ([]Article, error)
 	ListAll(ctx context.Context, PageNum int, PageSize int) ([]PublishedArticle, error)
 	DeleteByIds(ctx context.Context, ids []int64) error
+	ListPub(ctx context.Context, start time.Time, pageNum int, pageSize int) ([]PublishedArticle, error)
 }
 
 type GormArticleDao struct {
@@ -29,6 +30,18 @@ func NewGormArticleDao(db *gorm.DB) ArticleDao {
 	return &GormArticleDao{
 		db: db,
 	}
+}
+
+func (dao *GormArticleDao) ListPub(ctx context.Context, start time.Time, pageNum int, pageSize int) ([]PublishedArticle, error) {
+	var res []PublishedArticle
+	const ArticleStatusPublished = 2
+	err := dao.db.WithContext(ctx).
+		Where("u_time < ? AND status = ?",
+			start.UnixMilli(), ArticleStatusPublished).
+		Order("u_time DESC").
+		Offset(pageNum).Limit(pageSize).
+		First(&res).Error
+	return res, err
 }
 
 func (dao *GormArticleDao) DeleteByIds(ctx context.Context, ids []int64) error {

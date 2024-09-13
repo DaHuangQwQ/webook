@@ -46,6 +46,10 @@ type ArticleDeleteReq struct {
 	Ids  []int64 `json:"ids"`
 }
 
+type ArticleGetTopNReq struct {
+	Meta `path:"/articles/top" method:"get"`
+}
+
 type Article struct {
 	Id        int64  `json:"id"`
 	Title     string `json:"title"`

@@ -44,6 +44,7 @@ func (h *ArticleHandler) RegisterRoutes(router *gin.Engine) {
 	router.POST(ginx.WarpWithToken[api.GetPubArticleDetail](h.GetPubArticle))
 	router.POST(ginx.WarpWithToken[api.LikeReq](h.Like))
 	router.POST(ginx.Warp[api.ArticleDeleteReq](h.Delete))
+	router.GET(ginx.Warp[api.ArticleGetTopNReq](h.GetTopN))
 }
 
 func (h *ArticleHandler) List(ctx *gin.Context, req api.GetListReq) (Result, error) {
@@ -226,5 +227,20 @@ func (h *ArticleHandler) Delete(ctx *gin.Context, req api.ArticleDeleteReq) (gin
 	return ginx.Result{
 		Code: 0,
 		Msg:  "ok",
+	}, nil
+}
+
+func (h *ArticleHandler) GetTopN(ctx *gin.Context, req api.ArticleGetTopNReq) (ginx.Result, error) {
+	arts, err := h.svc.GetTopN(ctx.Request.Context())
+	if err != nil {
+		return ginx.Result{
+			Code: 5,
+			Msg:  "系统错误" + err.Error(),
+		}, err
+	}
+	return ginx.Result{
+		Code: 0,
+		Msg:  "ok",
+		Data: arts,
 	}, nil
 }

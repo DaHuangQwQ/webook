@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fmt"
+	"github.com/DaHuangQwQ/gutil/slice"
 	"github.com/spf13/viper"
 	"time"
 	"webook/internal/api"
@@ -25,6 +26,7 @@ type ArticleRepository interface {
 	Img_Update(ctx context.Context, file []byte, fileType string) (string, error)
 	ListAll(ctx context.Context, req api.PageReq) ([]domain.Article, error)
 	DeleteByIds(ctx context.Context, ids []int64) error
+	ListPub(ctx context.Context, start time.Time, pageNum int, pageSize int) ([]domain.Article, error)
 }
 
 type CachedArticleRepository struct {
@@ -43,6 +45,17 @@ func NewCachedArticleRepository(dao dao.ArticleDao, oss oss.Client, userRepo Use
 		userRepo: userRepo,
 		cache:    cache,
 	}
+}
+
+func (c *CachedArticleRepository) ListPub(ctx context.Context, start time.Time, pageNum int, pageSize int) ([]domain.Article, error) {
+	arts, err := c.dao.ListPub(ctx, start, pageNum, pageSize)
+	if err != nil {
+		return nil, err
+	}
+	return slice.Map[dao.PublishedArticle, domain.Article](arts,
+		func(idx int, src dao.PublishedArticle) domain.Article {
+			return c.toPubDomain(src)
+		}), nil
 }
 
 func (c *CachedArticleRepository) DeleteByIds(ctx context.Context, ids []int64) error {

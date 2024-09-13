@@ -24,23 +24,29 @@ type ArticleService interface {
 	ListPub(ctx context.Context, start time.Time, pageNum, pageSize int) ([]domain.Article, error)
 	GetPublishedById(ctx context.Context, uid, articleId int64) (domain.Article, error)
 	DeleteByIds(ctx context.Context, ids []int64) error
+	GetTopN(ctx context.Context) ([]domain.Article, error)
 }
 
 type articleService struct {
 	repo     repository.ArticleRepository
 	producer events.Producer
+	ranking  repository.RankingRepository
 }
 
-func NewArticleService(repo repository.ArticleRepository, producer events.Producer) ArticleService {
+func NewArticleService(repo repository.ArticleRepository, producer events.Producer, ranking repository.RankingRepository) ArticleService {
 	return &articleService{
 		repo:     repo,
 		producer: producer,
+		ranking:  ranking,
 	}
 }
 
+func (s *articleService) GetTopN(ctx context.Context) ([]domain.Article, error) {
+	return s.ranking.GetTopN(ctx)
+}
+
 func (s *articleService) ListPub(ctx context.Context, start time.Time, pageNum, pageSize int) ([]domain.Article, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.repo.ListPub(ctx, start, pageNum, pageSize)
 }
 
 func (s *articleService) DeleteByIds(ctx context.Context, ids []int64) error {

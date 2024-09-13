@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/gutil/slice"
 	"webook/internal/domain"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
@@ -17,6 +18,7 @@ type InteractiveRepository interface {
 	Get(ctx context.Context, biz string, id int64) (domain.Interactive, error)
 	Liked(ctx context.Context, biz string, id int64, uid int64) (bool, error)
 	Collected(ctx context.Context, biz string, id int64, uid int64) (bool, error)
+	GetByIds(ctx context.Context, biz string, bizIds []int64) ([]domain.Interactive, error)
 }
 
 type CachedInteractiveRepository struct {
@@ -29,6 +31,16 @@ func NewCachedInteractiveRepository(dao dao.InteractiveDao, cache cache.Interact
 		dao:   dao,
 		cache: cache,
 	}
+}
+
+func (repo *CachedInteractiveRepository) GetByIds(ctx context.Context, biz string, bizIds []int64) ([]domain.Interactive, error) {
+	intrs, err := repo.dao.GetByIds(ctx, biz, bizIds)
+	if err != nil {
+		return nil, err
+	}
+	return slice.Map(intrs, func(idx int, src dao.Interactive) domain.Interactive {
+		return repo.toDomain(src)
+	}), nil
 }
 
 func (repo *CachedInteractiveRepository) Liked(ctx context.Context, biz string, id int64, uid int64) (bool, error) {
@@ -134,6 +146,7 @@ func (repo *CachedInteractiveRepository) IncrReadCnt(ctx context.Context, biz st
 
 func (repo *CachedInteractiveRepository) toDomain(ie dao.Interactive) domain.Interactive {
 	return domain.Interactive{
+		BizId:      ie.BizId,
 		ReadCnt:    ie.ReadCnt,
 		LikeCnt:    ie.LikeCnt,
 		CollectCnt: ie.CollectCnt,
