@@ -33,3 +33,6 @@ remote:
 	@rm webook || true
 	@go mod tidy
 	@GOOS=linux GOARCH=amd64 go build -tags=k8s -o webook .
+.PHONY: gprc
+grpc:
+	@buf generate api/proto

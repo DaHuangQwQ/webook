@@ -1,6 +1,7 @@
 package domain
 
 type Interactive struct {
+	Biz        string
 	BizId      int64
 	ReadCnt    int64
 	LikeCnt    int64

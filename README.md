@@ -1,7 +1,7 @@
 # webook
 
 ## 技术栈
-Gin + Gorm + Kafka + Mysql + Redis + MongoDB
+Gin + Gorm + Kafka + Mysql + Redis + MongoDB + GRPC
 
 ## 项目描述
 
@@ -13,7 +13,11 @@ Gin + Gorm + Kafka + Mysql + Redis + MongoDB
 4. 使用Kafka消息队列改造了阅读计数功能，采用批量消费，提升性能和解藕，一定程度解决了消息积压的问题
    - 同步转异步 批量处理
    - 开启一个事务处理批次
-5. 通过Redis的ZSet实现生成热榜和点赞排行榜，再使用分布式任务调度定期调度热榜数据，确保时效性
+5. 通过Redis的ZSet实现生成热榜和点赞排行榜，再使用分布式任务调度定期调度热榜数据，实现了负载均衡，确保时效性
+   1. 全量ZSet，分而治之，有点像分库分表的order by
+   2. 部分ZSet，定时任务从数据库计算前M个，放redis里正常维护
+   3. 结合本地缓存
+   4. 更新点赞数批量更新
    - 本地缓存 + redis缓存 + mysql
    - 本地缓存 同步 给其他实例
    - 本地 或 redis 缓存预加载 id -> article
@@ -31,3 +35,12 @@ Gin + Gorm + Kafka + Mysql + Redis + MongoDB
    3. id取余分配， 兜底不加余数条件
    4. 乐观锁 CAS操作，compare and swap
    5. 用乐观锁 取代 for update（性能差，死锁）
+3. 本地缓存如何同步
+   1. 广播
+   2. 监听信号：etcd redis
+   3. 消息队列，所有节点属于不同的消费者组
+4. 微服务拆分&服务部署不停机方案
+   1. 单体 模块化 模块依赖化 微服务化
+   2. 做好测试 测试覆盖率 80% 以上
+   3. 线上灰度方案，随机数+阈值 或者 业务id的哈希值
+5. 不停机数据迁移 难点是数据始终在变化

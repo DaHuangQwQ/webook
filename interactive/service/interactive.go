@@ -3,13 +3,13 @@ package service
 import (
 	"context"
 	"golang.org/x/sync/errgroup"
-	"webook/internal/domain"
-	"webook/internal/repository"
+	"webook/interactive/domain"
+	"webook/interactive/repository"
 )
 
 //go:generate mockgen -source=interactive.go -package=svcmocks -destination=mocks/interactive.mock.go InteractiveService
 type InteractiveService interface {
-	Read(ctx context.Context, biz string, bizId int64) error
+	IncrReadCnt(ctx context.Context, biz string, bizId int64) error
 	Like(ctx context.Context, biz string, id int64, uid int64) error
 	CancelLike(ctx context.Context, biz string, id int64, uid int64) error
 	// Collect cid 是收藏夹
@@ -71,7 +71,7 @@ func (svc *interactiveService) Get(ctx context.Context, biz string, bizId int64,
 	return res, nil
 }
 
-func (svc *interactiveService) Read(ctx context.Context, biz string, bizId int64) error {
+func (svc *interactiveService) IncrReadCnt(ctx context.Context, biz string, bizId int64) error {
 	return svc.repo.IncrReadCnt(ctx, biz, bizId)
 }
 

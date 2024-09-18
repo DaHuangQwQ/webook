@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	interactivev1 "webook/api/proto/gen/interactive/v1"
 	"webook/internal/api"
 	"webook/internal/domain"
 	"webook/internal/service"
@@ -17,13 +18,13 @@ var _ Handler = (*ArticleHandler)(nil)
 
 type ArticleHandler struct {
 	svc      service.ArticleService
-	interSvc service.InteractiveService
+	interSvc interactivev1.InteractiveServiceClient
 
 	biz string
 	l   logger.LoggerV1
 }
 
-func NewArticleHandler(articleSvc service.ArticleService, l logger.LoggerV1, interSvc service.InteractiveService) *ArticleHandler {
+func NewArticleHandler(articleSvc service.ArticleService, l logger.LoggerV1, interSvc interactivev1.InteractiveServiceClient) *ArticleHandler {
 	return &ArticleHandler{
 		svc:      articleSvc,
 		l:        l,
@@ -185,9 +186,17 @@ func (h *ArticleHandler) GetList(ctx *gin.Context, req api.ArticleGetListReq) (R
 func (h *ArticleHandler) Like(ctx *gin.Context, req api.LikeReq, u ijwt.UserClaims) (ginx.Result, error) {
 	var err error
 	if req.Like {
-		err = h.interSvc.Like(ctx.Request.Context(), h.biz, req.ArticleID, u.Uid)
+		_, err = h.interSvc.Like(ctx.Request.Context(), &interactivev1.LikeRequest{
+			Biz:   h.biz,
+			BizId: req.ArticleID,
+			Uid:   u.Uid,
+		})
 	} else {
-		err = h.interSvc.CancelLike(ctx.Request.Context(), h.biz, req.ArticleID, u.Uid)
+		_, err = h.interSvc.CancelLike(ctx.Request.Context(), &interactivev1.CancelLikeRequest{
+			Biz:   h.biz,
+			BizId: req.ArticleID,
+			Uid:   u.Uid,
+		})
 	}
 	if err != nil {
 		return ginx.Result{

@@ -3,8 +3,8 @@ package ioc
 import (
 	"github.com/IBM/sarama"
 	"github.com/spf13/viper"
-	events2 "webook/interactive/events"
-	"webook/internal/events"
+	"webook/interactive/events"
+	"webook/pkg/saramax"
 )
 
 func InitSaramaClient() sarama.Client {
@@ -25,14 +25,6 @@ func InitSaramaClient() sarama.Client {
 	return client
 }
 
-func InitSyncProducer(c sarama.Client) sarama.SyncProducer {
-	p, err := sarama.NewSyncProducerFromClient(c)
-	if err != nil {
-		panic(err)
-	}
-	return p
-}
-
-func InitConsumers(c1 *events2.InteractiveReadEventConsumer) []events.Consumer {
-	return []events.Consumer{c1}
+func InitConsumers(c1 *events.InteractiveReadEventConsumer) []saramax.Consumer {
+	return []saramax.Consumer{c1}
 }

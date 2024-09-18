@@ -4,6 +4,10 @@ package main
 
 import (
 	"github.com/google/wire"
+	"webook/interactive/events"
+	repository2 "webook/interactive/repository"
+	cache2 "webook/interactive/repository/cache"
+	dao2 "webook/interactive/repository/dao"
 	"webook/internal/events/article"
 	"webook/internal/repository"
 	"webook/internal/repository/cache"
@@ -36,6 +40,7 @@ func InitWebServer() *App {
 		ioc.InitSyncProducer,
 		ioc.InitSaramaClient,
 		ioc.InitRlockClient,
+		ioc.InitIntrGRPCClient,
 
 		rankingSvcSet,
 		ioc.InitJobs,
@@ -43,14 +48,14 @@ func InitWebServer() *App {
 
 		// events
 		article.NewKafkaProducer,
-		article.NewInteractiveReadEventConsumer,
+		events.NewInteractiveReadEventConsumer,
 		// DAO 部分
 		dao.NewUserDao,
 		dao.NewGormArticleDao,
 		systemDao.NewGormAuthDao,
 		systemDao.NewGormRoleDao,
 		systemDao.NewGormDeptDao,
-		dao.NewGormInteractiveDao,
+		dao2.NewGormInteractiveDao,
 		dao.NewGormOrderDao,
 		dao.NewGormRecruitmentDao,
 
@@ -58,7 +63,7 @@ func InitWebServer() *App {
 		cache.NewCodeCache,
 		cache.NewUserCache,
 		cache.NewArticleRedisCache,
-		cache.NewRedisInteractiveCache,
+		cache2.NewRedisInteractiveCache,
 
 		// repository 部分
 		repository.NewUserRepository,
@@ -68,7 +73,7 @@ func InitWebServer() *App {
 		systemRepository.NewCachedUserRepository,
 		systemRepository.NewCachedDeptRepository,
 		repository.NewCachedArticleRepository,
-		repository.NewCachedInteractiveRepository,
+		repository2.NewCachedInteractiveRepository,
 		repository.NewCachedOrderRepository,
 		repository.NewCachedRecruitmentRepository,
 
@@ -77,7 +82,6 @@ func InitWebServer() *App {
 		service.NewUserService,
 		service.NewCodeService,
 		service.NewArticleService,
-		service.NewInteractiveService,
 		service.NewOrderService,
 		service.NewRecruitmentService,
 		systemService.NewAuthService,

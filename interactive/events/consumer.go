@@ -1,13 +1,15 @@
-package article
+package events
 
 import (
 	"context"
 	"github.com/IBM/sarama"
 	"time"
-	"webook/internal/repository"
+	"webook/interactive/repository"
 	"webook/pkg/logger"
 	"webook/pkg/saramax"
 )
+
+const TopicReadEvent = "read_article"
 
 type InteractiveReadEventConsumer struct {
 	client sarama.Client
@@ -46,4 +48,9 @@ func (k *InteractiveReadEventConsumer) Consume(msg *sarama.ConsumerMessage, even
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	return k.repo.IncrReadCnt(ctx, "article", event.Aid)
+}
+
+type ReadEvent struct {
+	Aid int64
+	Uid int64
 }

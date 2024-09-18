@@ -8,7 +8,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"strconv"
 	"time"
-	"webook/internal/domain"
+	"webook/interactive/domain"
 )
 
 var (

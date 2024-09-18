@@ -3,9 +3,10 @@ package repository
 import (
 	"context"
 	"github.com/DaHuangQwQ/gutil/slice"
-	"webook/internal/domain"
-	"webook/internal/repository/cache"
-	"webook/internal/repository/dao"
+	"webook/interactive/domain"
+	"webook/interactive/repository/cache"
+	"webook/interactive/repository/dao"
+	dao2 "webook/interactive/repository/dao"
 )
 
 type InteractiveRepository interface {
@@ -22,11 +23,11 @@ type InteractiveRepository interface {
 }
 
 type CachedInteractiveRepository struct {
-	dao   dao.InteractiveDao
+	dao   dao2.InteractiveDao
 	cache cache.InteractiveCache
 }
 
-func NewCachedInteractiveRepository(dao dao.InteractiveDao, cache cache.InteractiveCache) InteractiveRepository {
+func NewCachedInteractiveRepository(dao dao2.InteractiveDao, cache cache.InteractiveCache) InteractiveRepository {
 	return &CachedInteractiveRepository{
 		dao:   dao,
 		cache: cache,
@@ -38,7 +39,7 @@ func (repo *CachedInteractiveRepository) GetByIds(ctx context.Context, biz strin
 	if err != nil {
 		return nil, err
 	}
-	return slice.Map(intrs, func(idx int, src dao.Interactive) domain.Interactive {
+	return slice.Map(intrs, func(idx int, src dao2.Interactive) domain.Interactive {
 		return repo.toDomain(src)
 	}), nil
 }
@@ -91,7 +92,7 @@ func (repo *CachedInteractiveRepository) Get(ctx context.Context, biz string, id
 }
 
 func (repo *CachedInteractiveRepository) AddCollectionItem(ctx context.Context, biz string, bizId int64, cid int64, uid int64) error {
-	err := repo.dao.InsertCollectionBiz(ctx, dao.UserCollectionBiz{
+	err := repo.dao.InsertCollectionBiz(ctx, dao2.UserCollectionBiz{
 		Biz:   biz,
 		BizId: bizId,
 		Cid:   cid,
@@ -144,8 +145,9 @@ func (repo *CachedInteractiveRepository) IncrReadCnt(ctx context.Context, biz st
 	return err
 }
 
-func (repo *CachedInteractiveRepository) toDomain(ie dao.Interactive) domain.Interactive {
+func (repo *CachedInteractiveRepository) toDomain(ie dao2.Interactive) domain.Interactive {
 	return domain.Interactive{
+		Biz:        ie.Biz,
 		BizId:      ie.BizId,
 		ReadCnt:    ie.ReadCnt,
 		LikeCnt:    ie.LikeCnt,

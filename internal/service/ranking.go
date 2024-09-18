@@ -6,6 +6,7 @@ import (
 	"github.com/ecodeclub/ekit/queue"
 	"math"
 	"time"
+	interactivev1 "webook/api/proto/gen/interactive/v1"
 	"webook/internal/domain"
 	"webook/internal/repository"
 )
@@ -17,17 +18,17 @@ type RankingService interface {
 type BatchRankingService struct {
 	repo      repository.RankingRepository
 	artSvc    ArticleService
-	intrSvc   InteractiveService
+	intrSvc   interactivev1.InteractiveServiceClient
 	batchSize int
 	n         int
 	scoreFunc func(t time.Time, likeCnt int64) float64
 }
 
-func NewBatchRankingService(artSvc ArticleService, intrSvc InteractiveService, repo repository.RankingRepository) RankingService {
+func NewBatchRankingService(artSvc ArticleService, intr interactivev1.InteractiveServiceClient, repo repository.RankingRepository) RankingService {
 	return &BatchRankingService{
 		repo:      repo,
 		artSvc:    artSvc,
-		intrSvc:   intrSvc,
+		intrSvc:   intr,
 		batchSize: 100,
 		n:         100,
 		scoreFunc: func(t time.Time, likeCnt int64) float64 {
@@ -78,12 +79,15 @@ func (svc *BatchRankingService) topN(ctx context.Context) ([]domain.Article, err
 			return art.Id
 		})
 		// 取点赞数
-		intrMap, err := svc.intrSvc.GetByIds(ctx, "article", ids)
+		intrMap, err := svc.intrSvc.GetByIds(ctx, &interactivev1.GetByIdsRequest{
+			Biz:    "article",
+			BizIds: ids,
+		})
 		if err != nil {
 			return nil, err
 		}
 		for _, art := range arts {
-			intr := intrMap[art.Id]
+			intr := intrMap.Intrs[art.Id]
 			score := svc.scoreFunc(art.UTime, intr.LikeCnt)
 			ele := Score{
 				score: score,
