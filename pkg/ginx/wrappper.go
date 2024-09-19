@@ -94,3 +94,15 @@ type Result struct {
 	Msg  string `json:"msg"`
 	Data any    `json:"data"`
 }
+
+func Wrap(fn func(c *gin.Context) (Result, error)) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		result, err := fn(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusOK, result)
+			L.Info("系统错误", logger.Field{Key: "err", Val: err})
+			return
+		}
+		ctx.JSON(http.StatusOK, result)
+	}
+}

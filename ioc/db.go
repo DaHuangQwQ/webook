@@ -10,7 +10,7 @@ import (
 	"gorm.io/plugin/prometheus"
 	"time"
 	"webook/internal/repository/dao"
-	"webook/pkg/gormx"
+	prometheus3 "webook/pkg/gormx"
 	"webook/pkg/logger"
 )
 
@@ -50,7 +50,7 @@ func InitDB(logger logger.LoggerV1) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	cb := gormx.NewCallbacks(prometheus2.SummaryOpts{
+	cb := prometheus3.NewCallbacks(prometheus2.SummaryOpts{
 		Namespace: "DaHuang",
 		Subsystem: "webook",
 		Name:      "gorm_db",

@@ -5,15 +5,32 @@ import (
 	"errors"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
-	"webook/migrator"
-	"webook/migrator/events"
+	"webook/pkg/migrator"
+	"webook/pkg/migrator/events"
 )
 
-type Fixer[T migrator.Migration] struct {
+type Fixer[T migrator.Entity] struct {
 	base   *gorm.DB
 	target *gorm.DB
 
 	columns []string
+}
+
+func NewFixer[T migrator.Entity](base *gorm.DB, target *gorm.DB) (*Fixer[T], error) {
+	var t T
+	rows, err := target.Model(&t).Limit(1).Rows()
+	if err != nil {
+		return nil, err
+	}
+	columns, err := rows.Columns()
+	if err != nil {
+		return nil, err
+	}
+	return &Fixer[T]{
+		base:    base,
+		target:  target,
+		columns: columns,
+	}, nil
 }
 
 func (f *Fixer[T]) Fix(ctx context.Context, evt events.InconsistentEvent) error {

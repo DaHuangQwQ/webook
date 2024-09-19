@@ -5,6 +5,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"
+	"webook/pkg/migrator"
 )
 
 var (
@@ -170,6 +171,15 @@ type Interactive struct {
 	CollectCnt int64 `json:"collect_cnt"`
 	CTime      int64 `json:"c_time"`
 	UTime      int64 `json:"u_time"`
+}
+
+func (i Interactive) ID() int64 {
+	return i.Id
+}
+
+func (i Interactive) CompareTo(dst migrator.Entity) bool {
+	dstVal, ok := dst.(Interactive)
+	return ok && i == dstVal
 }
 
 type UserLikeBiz struct {

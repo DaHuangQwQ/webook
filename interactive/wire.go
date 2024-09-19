@@ -21,20 +21,34 @@ var interactiveServerProviderSet = wire.NewSet(
 )
 
 var thirdPartySet = wire.NewSet(
-	ioc.InitDB,
+	// ioc.InitDB,
+	ioc.InitDST,
+	ioc.InitSRC,
+	ioc.InitBizDB,
 	ioc.InitRedis,
 	ioc.InitLogger,
-	ioc.InitSaramaClient,
+	ioc.InitKafka,
+	//ioc.InitSaramaClient,
+	ioc.InitDoubleWritePool,
+	ioc.InitSyncProducer,
+)
+
+var migratorProviderSet = wire.NewSet(
+	ioc.InitMigratorWeb,
+	ioc.InitMigradatorProducer,
+	ioc.InitFixDataConsumer,
+	ioc.NewConsumers,
 )
 
 func InitAPP() *App {
 	wire.Build(
 		thirdPartySet,
 		interactiveServerProviderSet,
+		migratorProviderSet,
 		events.NewInteractiveReadEventConsumer,
 		grpc.NewInteractiveServiceServer,
 		ioc.NewGrpcxServer,
-		ioc.InitConsumers,
+		//ioc.InitConsumers,
 		wire.Struct(new(App), "*"),
 	)
 	return new(App)

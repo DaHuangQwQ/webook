@@ -15,6 +15,12 @@ func main() {
 			panic(err)
 		}
 	}
+	go func() {
+		err := app.webAdmin.Start()
+		if err != nil {
+			return
+		}
+	}()
 	err := app.server.Serve()
 	if err != nil {
 		panic(err)

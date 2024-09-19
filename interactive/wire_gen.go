@@ -20,8 +20,11 @@ import (
 // Injectors from wire.go:
 
 func InitAPP() *App {
+	srcDB := ioc.InitSRC()
+	dstDB := ioc.InitDST()
 	loggerV1 := ioc.InitLogger()
-	db := ioc.InitDB(loggerV1)
+	doubleWritePool := ioc.InitDoubleWritePool(srcDB, dstDB, loggerV1)
+	db := ioc.InitBizDB(doubleWritePool)
 	interactiveDao := dao.NewGormInteractiveDao(db)
 	cmdable := ioc.InitRedis()
 	interactiveCache := cache.NewRedisInteractiveCache(cmdable)
@@ -29,12 +32,17 @@ func InitAPP() *App {
 	interactiveService := service.NewInteractiveService(interactiveRepository)
 	interactiveServiceServer := grpc.NewInteractiveServiceServer(interactiveService)
 	server := ioc.NewGrpcxServer(interactiveServiceServer)
-	client := ioc.InitSaramaClient()
+	client := ioc.InitKafka()
 	interactiveReadEventConsumer := events.NewInteractiveReadEventConsumer(client, interactiveRepository, loggerV1)
-	v := ioc.InitConsumers(interactiveReadEventConsumer)
+	consumer := ioc.InitFixDataConsumer(loggerV1, srcDB, dstDB, client)
+	v := ioc.NewConsumers(interactiveReadEventConsumer, consumer)
+	syncProducer := ioc.InitSyncProducer(client)
+	producer := ioc.InitMigradatorProducer(syncProducer)
+	ginxServer := ioc.InitMigratorWeb(loggerV1, srcDB, dstDB, doubleWritePool, producer)
 	app := &App{
 		server:    server,
 		consumers: v,
+		webAdmin:  ginxServer,
 	}
 	return app
 }
@@ -43,4 +51,6 @@ func InitAPP() *App {
 
 var interactiveServerProviderSet = wire.NewSet(service.NewInteractiveService, repository.NewCachedInteractiveRepository, cache.NewRedisInteractiveCache, dao.NewGormInteractiveDao)
 
-var thirdPartySet = wire.NewSet(ioc.InitDB, ioc.InitRedis, ioc.InitLogger, ioc.InitSaramaClient)
+var thirdPartySet = wire.NewSet(ioc.InitDST, ioc.InitSRC, ioc.InitBizDB, ioc.InitRedis, ioc.InitLogger, ioc.InitKafka, ioc.InitDoubleWritePool, ioc.InitSyncProducer)
+
+var migratorProviderSet = wire.NewSet(ioc.InitMigratorWeb, ioc.InitMigradatorProducer, ioc.InitFixDataConsumer, ioc.NewConsumers)
