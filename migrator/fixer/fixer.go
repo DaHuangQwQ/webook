@@ -22,6 +22,7 @@ func (f *Fixer[T]) Fix(ctx context.Context, evt events.InconsistentEvent) error 
 	switch err {
 	case nil:
 		// base 有数据
+		// 可以考虑 WHERE base.u_time >= target.u_time
 		return f.target.WithContext(ctx).Clauses(clause.OnConflict{
 			DoUpdates: clause.AssignmentColumns(f.columns),
 		}).Create(&t).Error
