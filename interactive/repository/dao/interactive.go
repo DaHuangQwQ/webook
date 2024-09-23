@@ -35,7 +35,8 @@ func NewGormInteractiveDao(db *gorm.DB) InteractiveDao {
 
 func (dao *GormInteractiveDao) GetByIds(ctx context.Context, biz string, bizIds []int64) ([]Interactive, error) {
 	var res []Interactive
-	err := dao.db.WithContext(ctx).Where("biz = ? AND id IN (?)", biz, bizIds).Find(&res).Error
+	// TODO
+	err := dao.db.WithContext(ctx).Where("biz = ? AND biz_id IN (?)", biz, bizIds).Find(&res).Error
 	return res, err
 }
 

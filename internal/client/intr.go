@@ -46,19 +46,28 @@ func (i *InteractiveClient) selectClient() intrv1.InteractiveServiceClient {
 	if num < i.threshold.Load() {
 		return i.remote
 	}
-	return i.local
+	//return i.local
+	return i.remote
 }
 
 func (i *InteractiveClient) UpdateThreshold(val int32) {
 	i.threshold.Store(val)
 }
 
+func NewInteractiveRemoteClient(remote intrv1.InteractiveServiceClient) *InteractiveClient {
+	return &InteractiveClient{
+		remote:    remote,
+		threshold: atomicx.NewValueOf[int32](100),
+	}
+}
+
 func NewInteractiveClient(remote intrv1.InteractiveServiceClient,
 
 // local intrv1.InteractiveServiceClient,
 ) *InteractiveClient {
-	return &InteractiveClient{remote: remote,
-		threshold: atomicx.NewValue[int32](),
+	return &InteractiveClient{
+		remote:    remote,
+		threshold: atomicx.NewValueOf[int32](100),
 		//local:     local,
 	}
 }

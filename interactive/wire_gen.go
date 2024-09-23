@@ -31,12 +31,13 @@ func InitAPP() *App {
 	interactiveRepository := repository.NewCachedInteractiveRepository(interactiveDao, interactiveCache)
 	interactiveService := service.NewInteractiveService(interactiveRepository)
 	interactiveServiceServer := grpc.NewInteractiveServiceServer(interactiveService)
-	server := ioc.NewGrpcxServer(interactiveServiceServer)
-	client := ioc.InitKafka()
-	interactiveReadEventConsumer := events.NewInteractiveReadEventConsumer(client, interactiveRepository, loggerV1)
-	consumer := ioc.InitFixDataConsumer(loggerV1, srcDB, dstDB, client)
+	client := ioc.InitEtcdClient()
+	server := ioc.NewGrpcxServer(interactiveServiceServer, loggerV1, client)
+	saramaClient := ioc.InitKafka()
+	interactiveReadEventConsumer := events.NewInteractiveReadEventConsumer(saramaClient, interactiveRepository, loggerV1)
+	consumer := ioc.InitFixDataConsumer(loggerV1, srcDB, dstDB, saramaClient)
 	v := ioc.NewConsumers(interactiveReadEventConsumer, consumer)
-	syncProducer := ioc.InitSyncProducer(client)
+	syncProducer := ioc.InitSyncProducer(saramaClient)
 	producer := ioc.InitMigradatorProducer(syncProducer)
 	ginxServer := ioc.InitMigratorWeb(loggerV1, srcDB, dstDB, doubleWritePool, producer)
 	app := &App{
@@ -51,6 +52,6 @@ func InitAPP() *App {
 
 var interactiveServerProviderSet = wire.NewSet(service.NewInteractiveService, repository.NewCachedInteractiveRepository, cache.NewRedisInteractiveCache, dao.NewGormInteractiveDao)
 
-var thirdPartySet = wire.NewSet(ioc.InitDST, ioc.InitSRC, ioc.InitBizDB, ioc.InitRedis, ioc.InitLogger, ioc.InitKafka, ioc.InitDoubleWritePool, ioc.InitSyncProducer)
+var thirdPartySet = wire.NewSet(ioc.InitDST, ioc.InitSRC, ioc.InitBizDB, ioc.InitRedis, ioc.InitLogger, ioc.InitKafka, ioc.InitEtcdClient, ioc.InitDoubleWritePool, ioc.InitSyncProducer)
 
 var migratorProviderSet = wire.NewSet(ioc.InitMigratorWeb, ioc.InitMigradatorProducer, ioc.InitFixDataConsumer, ioc.NewConsumers)

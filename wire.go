@@ -32,6 +32,7 @@ var rankingSvcSet = wire.NewSet(
 func InitWebServer() *App {
 	wire.Build(
 		// 第三方依赖
+		ioc.InitEtcd,
 		ioc.InitRedis, ioc.InitDB,
 		ioc.InitLogger,
 		ioc.InitOssService,

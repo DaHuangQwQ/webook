@@ -28,6 +28,7 @@ var thirdPartySet = wire.NewSet(
 	ioc.InitRedis,
 	ioc.InitLogger,
 	ioc.InitKafka,
+	ioc.InitEtcdClient,
 	//ioc.InitSaramaClient,
 	ioc.InitDoubleWritePool,
 	ioc.InitSyncProducer,

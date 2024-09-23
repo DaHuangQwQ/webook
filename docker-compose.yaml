@@ -19,14 +19,14 @@ services:
     ports:
       - "6380:6379"
 
-#  etcd:
-#    image: "bitnami/etcd:latest"
-#    restart: always
-#    entrypoint:
-#      - ALLOW_NON_AUTHENTICATION=yes
-#    ports:
-#      - "12379:2379"
-#
+  etcd:
+    image: "bitnami/etcd:latest"
+    restart: always
+    environment:
+      - ALLOW_NONE_AUTHENTICATION=yes
+    ports:
+      - "12379:2379"
+
 #  mongo:
 #    image: mongo:6.0
 #    restart: always
