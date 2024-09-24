@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	interactivev1 "webook/api/proto/gen/interactive/v1"
 	"webook/internal/client"
+	_ "webook/pkg/grpcx/balancer/wrr"
 )
 
 func InitEtcd() *clientv3.Client {
@@ -38,7 +39,11 @@ func InitIntrGRPCClient(etcdClient *clientv3.Client) interactivev1.InteractiveSe
 	if err != nil {
 		panic(err)
 	}
-	opts := []grpc.DialOption{grpc.WithResolvers(bd)}
+	opts := []grpc.DialOption{
+		grpc.WithResolvers(bd),
+		// 负载均衡器(轮询)
+		grpc.WithDefaultServiceConfig(`{"loadBalancingConfig": [ { "custom_wrr": {} } ]}`),
+	}
 	if !config.Secure {
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	}
