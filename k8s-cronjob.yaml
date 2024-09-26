@@ -1,0 +1,15 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: webook
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: hello-world
+              image: flycash/cron_job:v0.0.1
+              imagePullPolicy: IfNotPresent
+          restartPolicy: OnFailure
+  schedule: "*/5 * * * *"

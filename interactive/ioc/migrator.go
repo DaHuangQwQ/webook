@@ -19,9 +19,9 @@ const topic = "migrator_interactives"
 func InitFixDataConsumer(l logger.LoggerV1,
 	src SrcDB,
 	dst DstDB,
-	client sarama.Client) *fixer.Consumer[dao.Interactive] {
-	res, err := fixer.NewConsumer[dao.Interactive](client, l,
-		topic, src, dst)
+	client sarama.Client,
+) *fixer.Consumer[dao.Interactive] {
+	res, err := fixer.NewConsumer[dao.Interactive](client, l, topic, src, dst)
 	if err != nil {
 		panic(err)
 	}
@@ -37,10 +37,11 @@ func InitMigratorWeb(
 	src SrcDB,
 	dst DstDB,
 	pool *connpool.DoubleWritePool,
-	producer events.Producer) *ginx.Server {
+	producer events.Producer,
+) *ginx.Server {
 	web := gin.Default()
 	ginx.InitCounter(prometheus2.CounterOpts{
-		Namespace: "geekbang_daming",
+		Namespace: "DaHuang",
 		Subsystem: "webook_intr",
 		Name:      "http_biz_code",
 		Help:      "GIN 中 HTTP 请求",

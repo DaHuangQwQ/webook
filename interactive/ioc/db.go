@@ -76,7 +76,7 @@ func initDB(key string, name string) *gorm.DB {
 	}
 
 	prom := prometheus2.Callbacks{
-		Namespace:  "geekbang_daming",
+		Namespace:  "DaHuang",
 		Subsystem:  "webook",
 		Name:       "gorm_" + name,
 		InstanceID: "my-instance-1",
