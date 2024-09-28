@@ -1,0 +1,47 @@
+syntax="proto3";
+
+// buf:lint:ignore PACKAGE_DIRECTORY_MATCH
+package payment.v1;
+option go_package="payment/v1";
+
+service WechatPaymentService {
+  //  这个设计是认为，Prepay 的请求应该是不同的支付方式都是一样的
+  // 但是我们认为响应会是不一样的
+  // buf:lint:ignore RPC_REQUEST_STANDARD_NAME
+  rpc NativePrePay(PrePayRequest) returns (NativePrePayResponse);
+  rpc GetPayment(GetPaymentRequest) returns(GetPaymentResponse);
+}
+
+message GetPaymentRequest {
+  string biz_trade_no = 1;
+}
+
+message GetPaymentResponse {
+  //  有需要再加字段
+  PaymentStatus status = 2;
+}
+
+message PrePayRequest {
+  Amount amt = 1;
+  string biz_trade_no = 2;
+  string description = 3;
+}
+
+message Amount {
+  int64 total = 1;
+  string currency = 2;
+}
+
+enum PaymentStatus {
+  PaymentStatusUnknown = 0;
+  PaymentStatusInit = 1;
+  PaymentStatusSuccess = 2;
+  PaymentStatusFailed = 3;
+  PaymentStatusRefund = 4;
+}
+
+// NativePrePayResponse 的 response 因为支付方式不同，
+// 所以响应的含义也会有不同。
+message NativePrePayResponse {
+  string code_url = 1;
+}

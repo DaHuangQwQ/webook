@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"time"
 	"webook/payment/domain"
 	"webook/payment/repository/dao"
@@ -18,8 +19,7 @@ func NewPaymentRepository(dao dao.PaymentDAO) PaymentRepository {
 }
 
 func (repo *paymentRepository) AddPayment(ctx context.Context, pmt domain.Payment) error {
-	//TODO implement me
-	panic("implement me")
+	return repo.dao.Insert(ctx, repo.toEntity(pmt))
 }
 
 func (repo *paymentRepository) UpdatePayment(ctx context.Context, pmt domain.Payment) error {
@@ -36,8 +36,8 @@ func (repo *paymentRepository) FindExpiredPayment(ctx context.Context, offset in
 }
 
 func (repo *paymentRepository) GetPayment(ctx context.Context, bizTradeNO string) (domain.Payment, error) {
-	//TODO implement me
-	panic("implement me")
+	payment, err := repo.dao.GetPayment(ctx, bizTradeNO)
+	return repo.toDomain(payment), err
 }
 
 func (repo *paymentRepository) toDomain(payment dao.Payment) domain.Payment {
@@ -50,5 +50,19 @@ func (repo *paymentRepository) toDomain(payment dao.Payment) domain.Payment {
 		Description: payment.Description,
 		Status:      domain.PaymentStatus(payment.Status),
 		TxnID:       payment.TxnID.String,
+	}
+}
+
+func (repo *paymentRepository) toEntity(payment domain.Payment) dao.Payment {
+	return dao.Payment{
+		Amt:         payment.Amt.Total,
+		Currency:    payment.Amt.Currency,
+		BizTradeNO:  payment.BizTradeNO,
+		Description: payment.Description,
+		Status:      payment.Status.AsUint8(),
+		TxnID: sql.NullString{
+			String: payment.TxnID,
+			Valid:  payment.TxnID != "",
+		},
 	}
 }

@@ -28,7 +28,7 @@ func NewNativePaymentService(
 	appID string, mchID string,
 	repo repository.PaymentRepository,
 	svc *native.NativeApiService,
-	producer events.Producer,
+	//producer events.Producer,
 	l logger.LoggerV1,
 ) *NativePaymentService {
 	return &NativePaymentService{
@@ -38,8 +38,8 @@ func NewNativePaymentService(
 		notifyURL: "http://wechat.dahuang.pro/pay/callback",
 		repo:      repo,
 		svc:       svc,
-		producer:  producer,
-		l:         l,
+		//producer:  producer,
+		l: l,
 		nativeCBTypeToStatus: map[string]domain.PaymentStatus{
 			"SUCCESS":    domain.PaymentStatusSuccess,
 			"PAYERROR":   domain.PaymentStatusFailed,
@@ -106,4 +106,17 @@ func (svc *NativePaymentService) updateByTxn(ctx context.Context, txn *payments.
 		Status:     status,
 		TxnID:      *txn.TransactionId,
 	})
+	// 在这发送 kafka 支付状态消息
+	// 这里有很多问题 核心就是部分失败 和 重复发送问题
+	// 可以考虑异步对比再补偿
+	//err1 := svc.producer.ProducePaymentEvent(ctx, events.PaymentEvent{
+	//	BizTradeNO: *txn.OutTradeNo,
+	//	Status:     status.AsUint8(),
+	//})
+}
+
+func (svc *NativePaymentService) GetPayment(ctx context.Context, bizTradeNo string) (domain.Payment, error) {
+	// 在这里设计一个慢路径 如果不知道支付结果 就去 微信里查一下
+	// 或者 异步 查一下
+	return svc.repo.GetPayment(ctx, bizTradeNo)
 }

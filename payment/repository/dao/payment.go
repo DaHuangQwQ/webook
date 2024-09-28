@@ -16,13 +16,20 @@ func NewPaymentGORMDAO(db *gorm.DB) PaymentDAO {
 }
 
 func (dao *PaymentGORMDAO) Insert(ctx context.Context, pmt Payment) error {
-	//TODO implement me
-	panic("implement me")
+	now := time.Now().UnixMilli()
+	pmt.UTime = now
+	pmt.CTime = now
+	return dao.db.WithContext(ctx).Create(&pmt).Error
 }
 
 func (dao *PaymentGORMDAO) UpdateTxnIDAndStatus(ctx context.Context, bizTradeNo string, txnID string, status domain.PaymentStatus) error {
-	//TODO implement me
-	panic("implement me")
+	now := time.Now().UnixMilli()
+	return dao.db.WithContext(ctx).Model(&Payment{}).
+		Where("biz_trade_no = ?", bizTradeNo).Updates(map[string]any{
+		"status": status,
+		"txn_id": txnID,
+		"u_time": now,
+	}).Error
 }
 
 func (dao *PaymentGORMDAO) FindExpiredPayment(ctx context.Context, offset int, limit int, t time.Time) ([]Payment, error) {
@@ -33,6 +40,7 @@ func (dao *PaymentGORMDAO) FindExpiredPayment(ctx context.Context, offset int, l
 }
 
 func (dao *PaymentGORMDAO) GetPayment(ctx context.Context, bizTradeNO string) (Payment, error) {
-	//TODO implement me
-	panic("implement me")
+	var res Payment
+	err := dao.db.WithContext(ctx).Where("biz_trade_no = ?", bizTradeNO).First(&res).Error
+	return res, err
 }

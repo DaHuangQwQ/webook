@@ -1,0 +1,25 @@
+redis:
+  addr: "localhost:6380"
+
+db:
+  src:
+    dsn: "root:root@tcp(localhost:3307)/dahuang"
+  dst:
+    dsn: "root:root@tcp(localhost:3307)/webook"
+  dsn: "root:root@tcp(localhost:3307)/dahuang"
+
+kafka:
+  addrs:
+    - "localhost:9094"
+
+migrator:
+  http:
+    addr: ":8091"
+
+grpc:
+  server:
+    port: 8091
+
+etcd:
+  endpoints:
+    - "localhost:12379"

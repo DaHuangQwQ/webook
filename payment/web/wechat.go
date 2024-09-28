@@ -13,10 +13,10 @@ import (
 type WechatHandler struct {
 	handler   *notify.Handler
 	l         logger.LoggerV1
-	nativeSvc wechat.NativePaymentService
+	nativeSvc *wechat.NativePaymentService
 }
 
-func NewWechatHandler(handler *notify.Handler, l logger.LoggerV1, nativeSvc wechat.NativePaymentService) *WechatHandler {
+func NewWechatHandler(handler *notify.Handler, l logger.LoggerV1, nativeSvc *wechat.NativePaymentService) *WechatHandler {
 	return &WechatHandler{handler: handler, l: l, nativeSvc: nativeSvc}
 }
 
