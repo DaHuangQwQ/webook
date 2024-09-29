@@ -2,14 +2,9 @@ package repository
 
 import (
 	"context"
-	"webook/internal/domain"
-	"webook/internal/repository/cache"
+	"webook/ranking/domain"
+	"webook/ranking/repository/cache"
 )
-
-type RankingRepository interface {
-	ReplaceTopN(ctx context.Context, arts []domain.Article) error
-	GetTopN(ctx context.Context) ([]domain.Article, error)
-}
 
 type CachedRankingRepository struct {
 	cache cache.RankingCache

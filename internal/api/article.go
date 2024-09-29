@@ -1,6 +1,8 @@
 package api
 
-import "webook/internal/domain"
+import (
+	"webook/article/domain"
+)
 
 type GetListReq struct {
 	Meta `path:"/articles/list" method:"get"`

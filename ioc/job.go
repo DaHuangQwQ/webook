@@ -6,8 +6,8 @@ import (
 	"github.com/robfig/cron/v3"
 	"time"
 	"webook/internal/job"
-	"webook/internal/service"
 	"webook/pkg/logger"
+	"webook/ranking/service"
 )
 
 func InitRankingJob(svc service.RankingService, rlock *rlock.Client, l logger.LoggerV1) *job.RankingJob {

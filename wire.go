@@ -4,11 +4,15 @@ package main
 
 import (
 	"github.com/google/wire"
+	events2 "webook/article/events"
+	repository3 "webook/article/repository"
+	cache3 "webook/article/repository/cache"
+	dao3 "webook/article/repository/dao"
+	service2 "webook/article/service"
 	"webook/interactive/events"
 	repository2 "webook/interactive/repository"
 	cache2 "webook/interactive/repository/cache"
 	dao2 "webook/interactive/repository/dao"
-	"webook/internal/events/article"
 	"webook/internal/repository"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
@@ -20,13 +24,16 @@ import (
 	"webook/internal/web/jwt"
 	"webook/internal/web/system"
 	"webook/ioc"
+	repository4 "webook/ranking/repository"
+	cache4 "webook/ranking/repository/cache"
+	service3 "webook/ranking/service"
 )
 
 var rankingSvcSet = wire.NewSet(
-	cache.NewRedisRankingCache,
-	cache.NewRankingLocalCache,
-	repository.NewCachedRankingRepository,
-	service.NewBatchRankingService,
+	cache4.NewRedisRankingCache,
+	cache4.NewRankingLocalCache,
+	repository4.NewCachedRankingRepository,
+	service3.NewBatchRankingService,
 )
 
 func InitWebServer() *App {
@@ -48,11 +55,11 @@ func InitWebServer() *App {
 		ioc.InitRankingJob,
 
 		// events
-		article.NewKafkaProducer,
+		events2.NewKafkaProducer,
 		events.NewInteractiveReadEventConsumer,
 		// DAO 部分
 		dao.NewUserDao,
-		dao.NewGormArticleDao,
+		dao3.NewGormArticleDao,
 		systemDao.NewGormAuthDao,
 		systemDao.NewGormRoleDao,
 		systemDao.NewGormDeptDao,
@@ -63,7 +70,7 @@ func InitWebServer() *App {
 		// cache 部分
 		cache.NewCodeCache,
 		cache.NewUserCache,
-		cache.NewArticleRedisCache,
+		cache3.NewArticleRedisCache,
 		cache2.NewRedisInteractiveCache,
 
 		// repository 部分
@@ -73,7 +80,7 @@ func InitWebServer() *App {
 		systemRepository.NewCachedRoleRepository,
 		systemRepository.NewCachedUserRepository,
 		systemRepository.NewCachedDeptRepository,
-		repository.NewCachedArticleRepository,
+		repository3.NewCachedArticleRepository,
 		repository2.NewCachedInteractiveRepository,
 		repository.NewCachedOrderRepository,
 		repository.NewCachedRecruitmentRepository,
@@ -82,7 +89,7 @@ func InitWebServer() *App {
 		ioc.InitSMSService,
 		service.NewUserService,
 		service.NewCodeService,
-		service.NewArticleService,
+		service2.NewArticleService,
 		service.NewOrderService,
 		service.NewRecruitmentService,
 		systemService.NewAuthService,

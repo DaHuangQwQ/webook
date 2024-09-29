@@ -7,6 +7,7 @@ import (
 	"webook/internal/job"
 	"webook/internal/service"
 	"webook/pkg/logger"
+	service2 "webook/ranking/service"
 )
 
 func InitScheduler(
@@ -19,7 +20,7 @@ func InitScheduler(
 	return res
 }
 
-func InitLocalFuncExecutor(svc service.RankingService) *job.LocalFuncExecutor {
+func InitLocalFuncExecutor(svc service2.RankingService) *job.LocalFuncExecutor {
 	res := job.NewLocalFuncExecutor()
 	// 要在数据库 插入一条记录 ranking job
 	res.RegisterFunc("ranking", func(ctx context.Context, j domain.Job) error {

@@ -22,7 +22,7 @@ type Comment struct {
 
 	// 这个是 NULL，也是根评论
 	PID sql.NullInt64 `gorm:"column:pid;index"`
-
+	// 级联删除
 	ParentComment *Comment `gorm:"ForeignKey:PID;AssociationForeignKey:ID;constraint:OnDelete:CASCADE"`
 
 	CTime int64

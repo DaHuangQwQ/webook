@@ -4,30 +4,28 @@ import (
 	"context"
 	"github.com/DaHuangQwQ/gutil/slice"
 	"github.com/ecodeclub/ekit/queue"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"math"
 	"time"
+	articlev1 "webook/api/proto/gen/article/v1"
 	interactivev1 "webook/api/proto/gen/interactive/v1"
-	"webook/internal/domain"
-	"webook/internal/repository"
+	"webook/ranking/domain"
+	"webook/ranking/repository"
 )
-
-type RankingService interface {
-	TopN(ctx context.Context) error
-}
 
 type BatchRankingService struct {
 	repo      repository.RankingRepository
-	artSvc    ArticleService
+	artClient articlev1.ArticleServiceClient
 	intrSvc   interactivev1.InteractiveServiceClient
 	batchSize int
 	n         int
 	scoreFunc func(t time.Time, likeCnt int64) float64
 }
 
-func NewBatchRankingService(artSvc ArticleService, intr interactivev1.InteractiveServiceClient, repo repository.RankingRepository) RankingService {
+func NewBatchRankingService(artClient articlev1.ArticleServiceClient, intr interactivev1.InteractiveServiceClient, repo repository.RankingRepository) RankingService {
 	return &BatchRankingService{
 		repo:      repo,
-		artSvc:    artSvc,
+		artClient: artClient,
 		intrSvc:   intr,
 		batchSize: 100,
 		n:         100,
@@ -68,13 +66,21 @@ func (svc *BatchRankingService) topN(ctx context.Context) ([]domain.Article, err
 	})
 	for {
 		// 取数据
-		arts, err := svc.artSvc.ListPub(ctx, start, offset, svc.batchSize)
+		artsRes, err := svc.artClient.ListPub(ctx, &articlev1.ListPubRequest{
+			StartTime: timestamppb.New(start),
+			Offset:    int32(offset),
+			Limit:     int32(svc.batchSize),
+		})
 		if err != nil {
 			return nil, err
 		}
 		//if len(arts) == 0 {
 		//	break
 		//}
+		arts := make([]domain.Article, len(artsRes.Articles))
+		for i, art := range artsRes.Articles {
+			arts[i] = articleToDomain(art)
+		}
 		ids := slice.Map(arts, func(idx int, art domain.Article) int64 {
 			return art.Id
 		})
@@ -124,4 +130,21 @@ func (svc *BatchRankingService) topN(ctx context.Context) ([]domain.Article, err
 		res[i] = val.art
 	}
 	return res, nil
+}
+
+func articleToDomain(article *articlev1.Article) domain.Article {
+	domainArticle := domain.Article{}
+	if article != nil {
+		domainArticle.Id = article.GetId()
+		domainArticle.Title = article.GetTitle()
+		domainArticle.Status = domain.ArticleStatus(article.Status)
+		domainArticle.Content = article.Content
+		domainArticle.Author = domain.Author{
+			Id:   article.GetAuthor().GetId(),
+			Name: article.GetAuthor().GetName(),
+		}
+		//domainArticle.CTime = article.Ctime.AsTime()
+		domainArticle.UTime = article.Utime.AsTime()
+	}
+	return domainArticle
 }

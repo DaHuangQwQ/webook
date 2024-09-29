@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/ecodeclub/ekit/syncx/atomicx"
 	"time"
-	"webook/internal/domain"
+	"webook/ranking/domain"
 )
 
 type RankingLocalCache struct {
