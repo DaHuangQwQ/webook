@@ -1,0 +1,13 @@
+redis:
+  addr: "localhost:6380"
+
+db:
+  dsn: "root:root@tcp(localhost:3307)/dahuang"
+
+grpc:
+  server:
+    port: 8095
+
+etcd:
+  endpoints:
+    - "localhost:12379"

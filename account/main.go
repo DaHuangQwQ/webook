@@ -4,7 +4,7 @@ import "webook/pkg/logger"
 
 func main() {
 	logger.InitViper()
-	app := InitApp()
+	app := initApp()
 	err := app.server.Serve()
 	if err != nil {
 		panic(err)

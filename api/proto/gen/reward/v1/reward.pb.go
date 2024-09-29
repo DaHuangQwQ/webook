@@ -129,7 +129,6 @@ func (x *GetRewardRequest) GetUid() int64 {
 }
 
 // 正常来说，对于外面的人来说只关心打赏成功了没
-// 不要提前定义字段，直到有需要
 type GetRewardResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -1,0 +1,23 @@
+redis:
+  addr: "localhost:6380"
+
+db:
+  dsn: "root:root@tcp(localhost:3307)/dahuang"
+
+grpc:
+  server:
+    port: 8094
+  client:
+    payment:
+      secure: false
+      addr: "etcd:///service/payment"
+    account:
+      secure: false
+      addr: "etcd:///service/account"
+
+etcd:
+  endpoints:
+    - "localhost:12379"
+
+
+
