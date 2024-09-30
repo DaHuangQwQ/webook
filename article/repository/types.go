@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 	"webook/article/domain"
-	"webook/internal/api"
+	"webook/bff/api"
 )
 
 type ArticleRepository interface {

@@ -1,0 +1,16 @@
+redis:
+  addr: "localhost:6380"
+
+db:
+  dsn: "root:root@tcp(localhost:3307)/dahuang"
+
+kafka:
+  addrs:
+    - "localhost:9094"
+
+grpc:
+  server:
+    port: 8097
+  client:
+    user:
+      addr: "etcd:///service/user"

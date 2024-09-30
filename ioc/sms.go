@@ -7,19 +7,19 @@ import (
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	tencentSMS "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
-	"webook/internal/service/sms"
-	"webook/internal/service/sms/aliyun"
-	"webook/internal/service/sms/tencent"
+	"webook/sms/service"
+	"webook/sms/service/aliyun"
+	"webook/sms/service/tencent"
 )
 
-func InitSMSService() sms.Service {
+func InitSMSService() service.Service {
 	//return localsms.NewService()
 	// 如果有需要，就可以用这个
 	return InitAliSMSService()
 	//return initTencentSMSService()
 }
 
-func InitTencentSMSService() sms.Service {
+func InitTencentSMSService() service.Service {
 	//secretId, ok := os.LookupEnv("SMS_SECRET_ID")
 	//if !ok {
 	//	panic("找不到腾讯 SMS 的 secret id")
@@ -41,7 +41,7 @@ func InitTencentSMSService() sms.Service {
 	return tencent.NewService(c, "1400842696", "妙影科技")
 }
 
-func InitAliSMSService() sms.Service {
+func InitAliSMSService() service.Service {
 	type Config struct {
 		AccessKeyId     string `yaml:"AccessKeyId"`
 		AccessKeySecret string `yaml:"AccessKeySecret"`

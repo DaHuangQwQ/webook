@@ -10,18 +10,20 @@ import (
 	"webook/article/domain"
 	"webook/article/events"
 	"webook/article/repository"
-	"webook/internal/api"
+	"webook/bff/api"
 )
 
 type articleService struct {
 	repo     repository.ArticleRepository
+	userRepo repository.AuthorRepository
 	producer events.Producer
 }
 
-func NewArticleService(repo repository.ArticleRepository, producer events.Producer) ArticleService {
+func NewArticleService(repo repository.ArticleRepository, userRepo repository.AuthorRepository, producer events.Producer) ArticleService {
 	return &articleService{
 		repo:     repo,
 		producer: producer,
+		userRepo: userRepo,
 	}
 }
 

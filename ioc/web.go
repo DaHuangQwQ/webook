@@ -8,7 +8,6 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"strings"
 	"time"
-	systemSvc "webook/internal/service/system"
 	"webook/internal/web"
 	"webook/internal/web/jwt"
 	"webook/internal/web/middleware"
@@ -17,6 +16,7 @@ import (
 	"webook/pkg/ginx/middleware/ratelimit"
 	"webook/pkg/logger"
 	limit "webook/pkg/ratelimit"
+	system2 "webook/user/service/system"
 )
 
 func InitWebServer(mdls []gin.HandlerFunc,
@@ -49,8 +49,8 @@ func InitWebServer(mdls []gin.HandlerFunc,
 func InitGinMiddlewares(
 	redisClient redis.Cmdable,
 	l logger.LoggerV1,
-	svc systemSvc.UserService,
-	authSvc systemSvc.AuthService,
+	svc system2.UserService,
+	authSvc system2.AuthService,
 	casbin casbin.IEnforcer,
 ) []gin.HandlerFunc {
 	pb := &prometheus.Builder{

@@ -13,7 +13,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"webook/internal/api"
+	"webook/bff/api"
 	"webook/ioc"
 	"webook/pkg/ginx"
 )

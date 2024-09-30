@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 	"sync"
 	"time"
-	"webook/internal/api"
+	"webook/bff/api"
 	"webook/pkg/ginx"
 	"webook/pkg/gormx/connpool"
 	"webook/pkg/logger"

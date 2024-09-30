@@ -3,9 +3,9 @@ package ioc
 import (
 	"context"
 	"time"
-	"webook/internal/domain"
+	"webook/cronjob/domain"
+	"webook/cronjob/service"
 	"webook/internal/job"
-	"webook/internal/service"
 	"webook/pkg/logger"
 	service2 "webook/ranking/service"
 )

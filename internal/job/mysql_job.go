@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"golang.org/x/sync/semaphore"
 	"time"
-	"webook/internal/domain"
-	"webook/internal/service"
+	"webook/cronjob/domain"
+	"webook/cronjob/service"
 	"webook/pkg/logger"
 )
 

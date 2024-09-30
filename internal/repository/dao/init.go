@@ -3,20 +3,22 @@ package dao
 import (
 	"gorm.io/gorm"
 	"webook/article/repository/dao"
-	"webook/internal/repository/dao/system"
+	dao2 "webook/cronjob/repository/dao"
+	dao3 "webook/user/repository/dao"
+	system2 "webook/user/repository/dao/system"
 )
 
 func InitTables(db *gorm.DB) error {
 	return db.AutoMigrate(
 		&Order{},
 		&Recruitment{},
-		&Job{},
+		&dao2.Job{},
 
-		&User{},
+		&dao3.User{},
 		&dao.Article{},
 		&dao.PublishedArticle{},
-		&system.SysRole{},
-		&system.SysAuthRule{},
-		&system.SysDept{},
+		&system2.SysRole{},
+		&system2.SysAuthRule{},
+		&system2.SysDept{},
 	)
 }

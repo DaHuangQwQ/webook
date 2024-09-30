@@ -5,35 +5,27 @@ package main
 import (
 	"github.com/google/wire"
 	events2 "webook/article/events"
-	repository3 "webook/article/repository"
-	cache3 "webook/article/repository/cache"
-	dao3 "webook/article/repository/dao"
-	service2 "webook/article/service"
+	repository3 "webook/code/repository"
+	cache3 "webook/code/repository/cache"
+	service2 "webook/code/service"
 	"webook/interactive/events"
 	repository2 "webook/interactive/repository"
 	cache2 "webook/interactive/repository/cache"
 	dao2 "webook/interactive/repository/dao"
 	"webook/internal/repository"
-	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
-	systemDao "webook/internal/repository/dao/system"
-	systemRepository "webook/internal/repository/system"
 	"webook/internal/service"
-	systemService "webook/internal/service/system"
 	"webook/internal/web"
 	"webook/internal/web/jwt"
 	"webook/internal/web/system"
 	"webook/ioc"
-	repository4 "webook/ranking/repository"
-	cache4 "webook/ranking/repository/cache"
-	service3 "webook/ranking/service"
-)
-
-var rankingSvcSet = wire.NewSet(
-	cache4.NewRedisRankingCache,
-	cache4.NewRankingLocalCache,
-	repository4.NewCachedRankingRepository,
-	service3.NewBatchRankingService,
+	repository4 "webook/user/repository"
+	"webook/user/repository/cache"
+	dao3 "webook/user/repository/dao"
+	system4 "webook/user/repository/dao/system"
+	system3 "webook/user/repository/system"
+	service3 "webook/user/service"
+	system2 "webook/user/service/system"
 )
 
 func InitWebServer() *App {
@@ -50,7 +42,6 @@ func InitWebServer() *App {
 		ioc.InitRlockClient,
 		ioc.InitIntrGRPCClient,
 
-		rankingSvcSet,
 		ioc.InitJobs,
 		ioc.InitRankingJob,
 
@@ -58,45 +49,41 @@ func InitWebServer() *App {
 		events2.NewKafkaProducer,
 		events.NewInteractiveReadEventConsumer,
 		// DAO 部分
-		dao.NewUserDao,
-		dao3.NewGormArticleDao,
-		systemDao.NewGormAuthDao,
-		systemDao.NewGormRoleDao,
-		systemDao.NewGormDeptDao,
+		dao3.NewUserDao,
+		system4.NewGormAuthDao,
+		system4.NewGormRoleDao,
+		system4.NewGormDeptDao,
 		dao2.NewGormInteractiveDao,
 		dao.NewGormOrderDao,
 		dao.NewGormRecruitmentDao,
 
 		// cache 部分
-		cache.NewCodeCache,
+		cache3.NewCodeCache,
 		cache.NewUserCache,
-		cache3.NewArticleRedisCache,
 		cache2.NewRedisInteractiveCache,
 
 		// repository 部分
-		repository.NewUserRepository,
-		repository.NewCodeRepository,
-		systemRepository.NewCachedAuthRepository,
-		systemRepository.NewCachedRoleRepository,
-		systemRepository.NewCachedUserRepository,
-		systemRepository.NewCachedDeptRepository,
-		repository3.NewCachedArticleRepository,
+		repository4.NewUserRepository,
+		repository3.NewCodeRepository,
+		system3.NewCachedAuthRepository,
+		system3.NewCachedRoleRepository,
+		system3.NewCachedUserRepository,
+		system3.NewCachedDeptRepository,
 		repository2.NewCachedInteractiveRepository,
 		repository.NewCachedOrderRepository,
 		repository.NewCachedRecruitmentRepository,
 
 		// Service 部分
 		ioc.InitSMSService,
-		service.NewUserService,
-		service.NewCodeService,
-		service2.NewArticleService,
+		service3.NewUserService,
+		service2.NewCodeService,
 		service.NewOrderService,
 		service.NewRecruitmentService,
-		systemService.NewAuthService,
-		systemService.NewRoleService,
-		systemService.NewSystemService,
-		systemService.NewDeptService,
-		systemService.NewSysMonitorService,
+		system2.NewAuthService,
+		system2.NewRoleService,
+		system2.NewSystemService,
+		system2.NewDeptService,
+		system2.NewSysMonitorService,
 
 		ioc.InitWechat,
 

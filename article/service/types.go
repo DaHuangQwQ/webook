@@ -5,7 +5,7 @@ import (
 	"mime/multipart"
 	"time"
 	"webook/article/domain"
-	"webook/internal/api"
+	"webook/bff/api"
 )
 
 //go:generate mockgen -source=article.go -package=svcmocks -destination=mocks/article.mock.go ArticleService

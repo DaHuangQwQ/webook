@@ -9,8 +9,7 @@ import (
 	"webook/article/domain"
 	"webook/article/repository/cache"
 	"webook/article/repository/dao"
-	"webook/internal/api"
-	"webook/internal/repository"
+	"webook/bff/api"
 	"webook/internal/repository/dao/oss"
 )
 
@@ -18,17 +17,14 @@ type CachedArticleRepository struct {
 	dao dao.ArticleDao
 	oss oss.Client
 
-	userRepo repository.UserRepository
-
 	cache cache.ArticleCache
 }
 
-func NewCachedArticleRepository(dao dao.ArticleDao, oss oss.Client, userRepo repository.UserRepository, cache cache.ArticleCache) ArticleRepository {
+func NewCachedArticleRepository(dao dao.ArticleDao, oss oss.Client, cache cache.ArticleCache) ArticleRepository {
 	return &CachedArticleRepository{
-		dao:      dao,
-		oss:      oss,
-		userRepo: userRepo,
-		cache:    cache,
+		dao:   dao,
+		oss:   oss,
+		cache: cache,
 	}
 }
 
@@ -134,19 +130,13 @@ func (c *CachedArticleRepository) Sync(ctx context.Context, article domain.Artic
 	}
 	// 在这里尝试，设置缓存
 	go func() {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		ct, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		user, er := c.userRepo.FindByID(ctx, article.Author.Id)
-		if er != nil {
-			// 要记录日志
-			return
-		}
 		article.Author = domain.Author{
-			Id:   user.Id,
-			Name: user.Nickname,
+			Id: article.Author.Id,
 		}
-		er = c.cache.SetPub(ctx, article)
+		er := c.cache.SetPub(ct, article)
 		if er != nil {
 			// 记录日志
 		}
@@ -165,10 +155,6 @@ func (c *CachedArticleRepository) GetList(ctx context.Context) ([]domain.Article
 	}
 	articlesDomainList := make([]domain.Article, len(articlesList))
 	for index, article := range articlesList {
-		author, err := c.userRepo.FindByID(ctx, article.AuthorId)
-		if err != nil {
-			return nil, err
-		}
 		articlesDomainList[index] = domain.Article{
 			Id:      article.Id,
 			Title:   article.Title,
@@ -176,8 +162,7 @@ func (c *CachedArticleRepository) GetList(ctx context.Context) ([]domain.Article
 			ImgUrl:  article.ImgUrl,
 			Type:    article.Type,
 			Author: domain.Author{
-				Id:   author.Id,
-				Name: author.Nickname,
+				Id: article.AuthorId,
 			},
 		}
 	}
