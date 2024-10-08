@@ -3,7 +3,7 @@ package system
 import (
 	"context"
 	"webook/user/domain"
-	"webook/user/repository/dao/system"
+	"webook/user/repository/dao"
 )
 
 type DeptRepository interface {
@@ -12,10 +12,10 @@ type DeptRepository interface {
 }
 
 type CachedDeptRepository struct {
-	dao system.DeptDao
+	dao dao.DeptDao
 }
 
-func NewCachedDeptRepository(dao system.DeptDao) DeptRepository {
+func NewCachedDeptRepository(dao dao.DeptDao) DeptRepository {
 	return &CachedDeptRepository{
 		dao: dao,
 	}
@@ -39,7 +39,7 @@ func (repo *CachedDeptRepository) GetList(ctx context.Context, deptName string, 
 	return depts, err
 }
 
-func (repo *CachedDeptRepository) toDomain(dept system.SysDept) domain.SysDept {
+func (repo *CachedDeptRepository) toDomain(dept dao.SysDept) domain.SysDept {
 	return domain.SysDept{
 		DeptId:    uint64(dept.DeptID),
 		DeptName:  dept.DeptName,
@@ -53,8 +53,8 @@ func (repo *CachedDeptRepository) toDomain(dept system.SysDept) domain.SysDept {
 	}
 }
 
-func (repo *CachedDeptRepository) roEntity(dept domain.SysDept) system.SysDept {
-	return system.SysDept{
+func (repo *CachedDeptRepository) roEntity(dept domain.SysDept) dao.SysDept {
+	return dao.SysDept{
 		DeptID:    int64(dept.DeptId),
 		DeptName:  dept.DeptName,
 		ParentID:  int64(dept.ParentId),

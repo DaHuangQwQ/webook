@@ -7,7 +7,7 @@ import (
 
 func InitSyncProducer() sarama.SyncProducer {
 	type Config struct {
-		Addr []string `yaml:"addr"`
+		Addrs []string `yaml:"addrs"`
 	}
 	var cfg Config
 	err := viper.UnmarshalKey("kafka", &cfg)
@@ -16,7 +16,7 @@ func InitSyncProducer() sarama.SyncProducer {
 	}
 	scfg := sarama.NewConfig()
 	scfg.Producer.Return.Successes = true
-	client, err := sarama.NewClient(cfg.Addr, scfg)
+	client, err := sarama.NewClient(cfg.Addrs, scfg)
 	if err != nil {
 		panic(err)
 	}

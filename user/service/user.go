@@ -8,7 +8,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"mime/multipart"
-	"webook/internal/domain"
 	domain2 "webook/user/domain"
 	"webook/user/repository"
 )
@@ -18,7 +17,7 @@ type UserService interface {
 	Login(ctx context.Context, email string, password string) (domain2.User, error)
 	Profile(ctx context.Context, id int64) (domain2.User, error)
 	FindOrCreate(ctx context.Context, phone string) (domain2.User, error)
-	FindOrCreateByWechat(ctx context.Context, wechatInfo domain.WechatInfo) (domain2.User, error)
+	FindOrCreateByWechat(ctx context.Context, wechatInfo domain2.WechatInfo) (domain2.User, error)
 	UpdateByID(ctx context.Context, user domain2.User) error
 	FindByID(ctx context.Context, id int64) (domain2.User, error)
 	AvatarUpdate(ctx context.Context, id int64, file multipart.File, fileType string) (string, error)
@@ -99,7 +98,7 @@ func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain2
 	return svc.repo.FindByPhone(ctx, phone)
 }
 
-func (svc *userService) FindOrCreateByWechat(ctx context.Context, wechatInfo domain.WechatInfo) (domain2.User, error) {
+func (svc *userService) FindOrCreateByWechat(ctx context.Context, wechatInfo domain2.WechatInfo) (domain2.User, error) {
 	// 快路径
 	user, err := svc.repo.FindByWechat(ctx, wechatInfo.OpenId)
 	if err != repository.ErrUserNotFound {

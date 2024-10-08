@@ -4,12 +4,12 @@ import (
 	"github.com/spf13/viper"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"google.golang.org/grpc"
-	grpc2 "webook/article/grpc"
 	"webook/pkg/grpcx"
 	"webook/pkg/logger"
+	grpc2 "webook/user/grpc"
 )
 
-func NewGrpcxServer(articleSvc *grpc2.ArticleServiceServer, l logger.LoggerV1, etcdClient *clientv3.Client) *grpcx.Server {
+func NewGrpcxServer(userSvc *grpc2.UserServiceServer, l logger.LoggerV1, etcdClient *clientv3.Client) *grpcx.Server {
 	type Config struct {
 		Port int `yaml:"port"`
 	}
@@ -19,11 +19,11 @@ func NewGrpcxServer(articleSvc *grpc2.ArticleServiceServer, l logger.LoggerV1, e
 		panic(err)
 	}
 	server := grpc.NewServer()
-	articleSvc.Register(server)
+	userSvc.Register(server)
 	return &grpcx.Server{
 		Server:     server,
 		Port:       config.Port,
-		Name:       "article",
+		Name:       "user",
 		L:          l,
 		EtcdClient: etcdClient,
 	}

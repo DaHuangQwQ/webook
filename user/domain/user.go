@@ -2,7 +2,6 @@ package domain
 
 import (
 	"time"
-	"webook/internal/domain"
 )
 
 type User struct {
@@ -20,15 +19,15 @@ type User struct {
 
 	CTime time.Time `json:"ctime"`
 
-	WechatInfo  domain.WechatInfo
-	Birthday    int    `json:"birthday"      description:"生日"`
-	UserStatus  uint   `json:"userStatus"    description:"用户状态;0:禁用,1:正常,2:未验证"`
-	DeptId      uint64 `json:"deptId"        description:"部门id"`
-	Remark      string `json:"remark"        description:"备注"`
-	IsAdmin     int    `json:"isAdmin"       description:"是否后台管理员 1 是  0   否"`
-	Address     string `json:"address"       description:"联系地址"`
-	Describe    string `json:"describe"      description:"描述信息"`
-	LastLoginIp string `json:"lastLoginIp"   description:"最后登录ip"`
+	WechatInfo  WechatInfo
+	Birthday    time.Time `json:"birthday"      description:"生日"`
+	UserStatus  uint      `json:"userStatus"    description:"用户状态;0:禁用,1:正常,2:未验证"`
+	DeptId      uint64    `json:"deptId"        description:"部门id"`
+	Remark      string    `json:"remark"        description:"备注"`
+	IsAdmin     int       `json:"isAdmin"       description:"是否后台管理员 1 是  0   否"`
+	Address     string    `json:"address"       description:"联系地址"`
+	AboutMe     string    `json:"describe"      description:"描述信息"`
+	LastLoginIp string    `json:"lastLoginIp"   description:"最后登录ip"`
 }
 
 type UserInfo struct {

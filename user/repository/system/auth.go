@@ -5,7 +5,7 @@ import (
 	"github.com/casbin/casbin/v2"
 	"strconv"
 	"webook/user/domain"
-	"webook/user/repository/dao/system"
+	"webook/user/repository/dao"
 )
 
 type AuthRepository interface {
@@ -18,11 +18,11 @@ type AuthRepository interface {
 }
 
 type CachedAuthRepository struct {
-	dao    system.AuthDao
+	dao    dao.AuthDao
 	casbin casbin.IEnforcer
 }
 
-func NewCachedAuthRepository(dao system.AuthDao, casbin casbin.IEnforcer) AuthRepository {
+func NewCachedAuthRepository(dao dao.AuthDao, casbin casbin.IEnforcer) AuthRepository {
 	return &CachedAuthRepository{
 		dao:    dao,
 		casbin: casbin,
@@ -64,8 +64,8 @@ func (repo *CachedAuthRepository) Update(ctx context.Context, authRule domain.Sy
 	return repo.dao.Update(ctx, repo.toEntity(authRule))
 }
 
-func (repo *CachedAuthRepository) toEntity(authRule domain.SysAuthRule) system.SysAuthRule {
-	return system.SysAuthRule{
+func (repo *CachedAuthRepository) toEntity(authRule domain.SysAuthRule) dao.SysAuthRule {
+	return dao.SysAuthRule{
 		ID:         authRule.Id,
 		PID:        authRule.Pid,
 		Name:       authRule.Name,
@@ -89,7 +89,7 @@ func (repo *CachedAuthRepository) toEntity(authRule domain.SysAuthRule) system.S
 	}
 }
 
-func (repo *CachedAuthRepository) toDomain(authRule system.SysAuthRule) domain.SysAuthRule {
+func (repo *CachedAuthRepository) toDomain(authRule dao.SysAuthRule) domain.SysAuthRule {
 	return domain.SysAuthRule{
 		Id:         authRule.ID,
 		Pid:        authRule.PID,

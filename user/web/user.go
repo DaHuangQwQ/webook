@@ -1,18 +1,15 @@
-package system
+package web
 
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
 	"webook/bff/api"
-	"webook/internal/web"
-	ijwt "webook/internal/web/jwt"
 	"webook/pkg/ginx"
+	ijwt "webook/pkg/ginx/jwt"
 	"webook/pkg/logger"
 	"webook/user/service/system"
 )
-
-var _ web.Handler = (*UserHandler)(nil)
 
 type UserHandler struct {
 	svc system.UserService
@@ -44,14 +41,14 @@ func (h *UserHandler) GetUserMenus(ctx *gin.Context) {
 	claims := ctx.MustGet("claims").(ijwt.UserClaims)
 	userMenus, permissions, err := h.svc.GetAdminRules(ctx.Request.Context(), claims.Uid)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("GetAdminRules 错误", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: map[string]any{

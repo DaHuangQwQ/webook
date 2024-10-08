@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
-	ijwt "webook/bff/web/jwt"
+	ijwt "webook/pkg/ginx/jwt"
 	"webook/pkg/logger"
 )
 

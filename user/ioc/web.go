@@ -1,57 +1,41 @@
 package ioc
 
 import (
-	"github.com/casbin/casbin/v2"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/redis/go-redis/v9"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"strings"
 	"time"
-	"webook/internal/web"
-	"webook/internal/web/jwt"
-	"webook/internal/web/middleware"
-	"webook/internal/web/system"
+	"webook/pkg/ginx"
 	"webook/pkg/ginx/middleware/prometheus"
 	"webook/pkg/ginx/middleware/ratelimit"
-	"webook/pkg/logger"
 	limit "webook/pkg/ratelimit"
-	system2 "webook/user/service/system"
+	"webook/user/web"
 )
 
 func InitWebServer(mdls []gin.HandlerFunc,
-	userHdl *web.UserHandler,
-	wechatHdl *web.OAuth2WechatHandler,
-	articleHdl *web.ArticleHandler,
-	authHdl *system.AuthHandler,
-	roleHdl *system.RoleHandler,
-	sysUserHdl *system.UserHandler,
-	deptHdl *system.DeptHandler,
-	monitorHdl *system.MonitorHandler,
-	orderHdl *web.OrderHandler,
-	recruitmentHdl *web.RecruitmentHandler,
-) *gin.Engine {
+	authHdl *web.AuthHandler,
+	roleHdl *web.RoleHandler,
+	sysUserHdl *web.UserHandler,
+	deptHdl *web.DeptHandler,
+	monitorHdl *web.MonitorHandler,
+) *ginx.Server {
 	server := gin.Default()
 	server.Use(mdls...)
-	userHdl.RegisterRoutes(server)
-	wechatHdl.RegisterRoutes(server)
-	articleHdl.RegisterRoutes(server)
 	authHdl.RegisterRoutes(server)
 	roleHdl.RegisterRoutes(server)
 	sysUserHdl.RegisterRoutes(server)
 	deptHdl.RegisterRoutes(server)
 	monitorHdl.RegisterRoutes(server)
-	orderHdl.RegisterRoutes(server)
-	recruitmentHdl.RegisterRoutes(server)
-	return server
+	return &ginx.Server{
+		Engine: server,
+		Addr:   ":8079",
+	}
 }
 
 func InitGinMiddlewares(
 	redisClient redis.Cmdable,
-	l logger.LoggerV1,
-	svc system2.UserService,
-	authSvc system2.AuthService,
-	casbin casbin.IEnforcer,
 ) []gin.HandlerFunc {
 	pb := &prometheus.Builder{
 		Namespace: "DaHuang",
@@ -82,7 +66,5 @@ func InitGinMiddlewares(
 		}),
 		otelgin.Middleware("webook"),
 		ratelimit.NewBuilder(limit.NewRedisSlidingWindowLimiter(redisClient, time.Second, 10)).Build(),
-		middleware.NewLoginJwtMiddleware(l).Build(jwt.NewRedisJWTHandler(redisClient)),
-		middleware.NewAuthMiddleware(svc, authSvc, casbin, l).Build(),
 	}
 }

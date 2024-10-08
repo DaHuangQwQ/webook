@@ -2,7 +2,7 @@ package system
 
 import (
 	"context"
-	"webook/bff/api"
+	"webook/user/api"
 	"webook/user/domain"
 	system2 "webook/user/repository/system"
 )

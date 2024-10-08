@@ -1,16 +1,13 @@
-package system
+package web
 
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	"webook/internal/web"
 	"webook/pkg/logger"
 	"webook/user/domain"
 	system2 "webook/user/service/system"
 )
-
-var _ web.Handler = (*AuthHandler)(nil)
 
 type AuthHandler struct {
 	svc     system2.AuthService
@@ -43,14 +40,14 @@ func (h *AuthHandler) List(ctx *gin.Context) {
 	}
 	authList, err := h.svc.List(ctx.Request.Context())
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("getList 错误", logger.Field{"err", err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: map[string]any{
@@ -62,7 +59,7 @@ func (h *AuthHandler) List(ctx *gin.Context) {
 func (h *AuthHandler) Add(ctx *gin.Context) {
 	var req domain.SysAuthRule
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "参数错误" + err.Error(),
 		})
@@ -71,14 +68,14 @@ func (h *AuthHandler) Add(ctx *gin.Context) {
 	req.Id = 0
 	err := h.svc.Add(ctx.Request.Context(), req)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("Auth添加失败", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 	})
@@ -87,7 +84,7 @@ func (h *AuthHandler) Add(ctx *gin.Context) {
 func (h *AuthHandler) Update(ctx *gin.Context) {
 	var req domain.SysAuthRule
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "参数错误",
 		})
@@ -95,14 +92,14 @@ func (h *AuthHandler) Update(ctx *gin.Context) {
 	}
 	err := h.svc.Update(ctx.Request.Context(), req)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("Auth添加失败", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 	})
@@ -114,7 +111,7 @@ func (h *AuthHandler) Delete(ctx *gin.Context) {
 	}
 	var req Req
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "参数错误",
 		})
@@ -122,14 +119,14 @@ func (h *AuthHandler) Delete(ctx *gin.Context) {
 	}
 	err := h.svc.Delete(ctx.Request.Context(), req.Ids)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("Delete 错误", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 	})
@@ -138,7 +135,7 @@ func (h *AuthHandler) Delete(ctx *gin.Context) {
 func (h *AuthHandler) GetParams(ctx *gin.Context) {
 	menuList, err := h.svc.GetIsMenuList(ctx.Request.Context())
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
@@ -147,14 +144,14 @@ func (h *AuthHandler) GetParams(ctx *gin.Context) {
 	}
 	roleList, err := h.roleSvc.GetRoleList(ctx.Request.Context())
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("GetIsMenuList 错误", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: map[string]any{
@@ -169,7 +166,7 @@ func (h *AuthHandler) Get(ctx *gin.Context) {
 	i64, _ := strconv.ParseInt(id, 10, 64)
 	auth, err := h.svc.Get(ctx.Request.Context(), i64)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
@@ -178,14 +175,14 @@ func (h *AuthHandler) Get(ctx *gin.Context) {
 	}
 	roles, err := h.svc.GetMenuRoles(ctx.Request.Context(), i64)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("GetMenuRoles 错误", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 		Data: map[string]any{

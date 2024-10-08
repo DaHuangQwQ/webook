@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/spf13/viper"
 	"time"
-	"webook/internal/domain"
 	"webook/internal/repository/dao/oss"
 	domain2 "webook/user/domain"
 	"webook/user/repository/cache"
@@ -166,7 +165,7 @@ func (repo *CachedUserRepository) entityToDomain(user dao.User) domain2.User {
 		CTime:    time.UnixMilli(user.CTime),
 		Avatar:   user.AvatarUrl,
 
-		WechatInfo: domain.WechatInfo{
+		WechatInfo: domain2.WechatInfo{
 			OpenId:  user.WechatOpenId.String,
 			UnionId: user.WechatUnionId.String,
 		},

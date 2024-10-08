@@ -1,17 +1,14 @@
-package system
+package web
 
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
-	api2 "webook/bff/api"
-	"webook/internal/web"
 	"webook/pkg/logger"
+	"webook/user/api"
 	"webook/user/domain"
 	"webook/user/service/system"
 )
-
-var _ web.Handler = (*RoleHandler)(nil)
 
 type RoleHandler struct {
 	svc system.RoleService
@@ -52,17 +49,17 @@ func (h *RoleHandler) GetList(ctx *gin.Context) {
 	total, search, err := h.svc.GetRoleListSearch(ctx.Request.Context(), domain.Role{
 		Name:   RoleName,
 		Status: uint8(ui8),
-	}, api2.PageReq{
+	}, api.PageReq{
 		PageNum:  PageNum,
 		PageSize: PageSize,
 	})
 	if err != nil {
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
-		Data: api2.RoleListRes{
-			ListRes: api2.ListRes{
+		Data: api.RoleListRes{
+			ListRes: api.ListRes{
 				Total: total,
 			},
 			List: search,
@@ -74,14 +71,14 @@ func (h *RoleHandler) GetList(ctx *gin.Context) {
 func (h *RoleHandler) GetParams(ctx *gin.Context) {
 	list, err := h.svc.GetParams(ctx.Request.Context())
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("获取角色列表错误", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Data: map[string]any{
 			"menu": list,
@@ -100,7 +97,7 @@ func (h *RoleHandler) AddRole(ctx *gin.Context) {
 	}
 	var req Req
 	if err := ctx.Bind(&req); err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "参数错误",
 		})
@@ -114,14 +111,14 @@ func (h *RoleHandler) AddRole(ctx *gin.Context) {
 		MenuIds:   req.MenuIds,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "系统错误",
 		})
 		h.l.Info("add role error", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 	})
@@ -131,7 +128,7 @@ func (h *RoleHandler) AddRole(ctx *gin.Context) {
 func (h *RoleHandler) GetRole(ctx *gin.Context) {
 	id := ctx.Query("id")
 	if id == "" {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "参数错误",
 		})
@@ -140,7 +137,7 @@ func (h *RoleHandler) GetRole(ctx *gin.Context) {
 	Id, _ := strconv.ParseInt(id, 10, 64)
 	roleInfo, err := h.svc.Get(ctx.Request.Context(), Id)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  err.Error(),
 		})
@@ -148,13 +145,13 @@ func (h *RoleHandler) GetRole(ctx *gin.Context) {
 	}
 	menuIds, err := h.svc.GetFilteredNamedPolicy(ctx.Request.Context(), Id)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  err.Error(),
 		})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Data: map[string]any{
 			"role":    roleInfo,
@@ -175,7 +172,7 @@ func (h *RoleHandler) EditRole(ctx *gin.Context) {
 	}
 	var req Req
 	if err := ctx.Bind(&req); err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "参数错误",
 		})
@@ -190,13 +187,13 @@ func (h *RoleHandler) EditRole(ctx *gin.Context) {
 		MenuIds:   req.MenuIds,
 	})
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  err.Error(),
 		})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 	})
@@ -209,7 +206,7 @@ func (h *RoleHandler) DeleteRole(ctx *gin.Context) {
 	}
 	var req Req
 	if err := ctx.Bind(&req); err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  "参数错误",
 		})
@@ -217,14 +214,14 @@ func (h *RoleHandler) DeleteRole(ctx *gin.Context) {
 	}
 	err := h.svc.DeleteByIds(ctx.Request.Context(), req.Ids)
 	if err != nil {
-		ctx.JSON(http.StatusOK, web.Result{
+		ctx.JSON(http.StatusOK, Result{
 			Code: 5,
 			Msg:  err.Error(),
 		})
 		h.l.Info("delete role error", logger.Field{Key: "err", Val: err})
 		return
 	}
-	ctx.JSON(http.StatusOK, web.Result{
+	ctx.JSON(http.StatusOK, Result{
 		Code: 0,
 		Msg:  "ok",
 	})

@@ -8,6 +8,8 @@ import (
 
 func main() {
 	InitViper()
+	a := viper.AllKeys()
+	println(a)
 	app := initApp()
 	err := app.server.Serve()
 	if err != nil {

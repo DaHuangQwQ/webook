@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 	"webook/bff/api"
-	"webook/internal/domain"
 	domain2 "webook/user/domain"
 	"webook/user/repository/dao"
 )
@@ -147,7 +146,7 @@ func (repo *CachedUserRepository) toDomain(user dao.User) domain2.User {
 		CTime:    time.UnixMilli(user.CTime),
 		Avatar:   user.AvatarUrl,
 
-		WechatInfo: domain.WechatInfo{
+		WechatInfo: domain2.WechatInfo{
 			OpenId:  user.WechatOpenId.String,
 			UnionId: user.WechatUnionId.String,
 		},
@@ -158,7 +157,7 @@ func (repo *CachedUserRepository) toDomain(user dao.User) domain2.User {
 		Remark:      user.Remark,
 		IsAdmin:     int(user.IsAdmin),
 		Address:     user.Address,
-		Describe:    user.Describe,
+		AboutMe:     user.Describe,
 		LastLoginIp: user.LastLoginIP,
 	}
 }
@@ -194,7 +193,7 @@ func (repo *CachedUserRepository) toEntity(user domain2.User) dao.User {
 		Remark:     user.Remark,
 		IsAdmin:    uint8(user.IsAdmin),
 		Address:    user.Address,
-		Describe:   user.Describe,
+		Describe:   user.AboutMe,
 	}
 }
 

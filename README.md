@@ -68,3 +68,8 @@ Gin + Gorm + Kafka + Mysql + Redis + MongoDB + GRPC
 8. 支付功能
    1. 秒杀：开一个新的topic 开一个新的kafka集群
    2. 按照 bizTraceNo 分区，打赏一个分区 其他业务一个分区，又要保证消息有序，又要解决消息积压，批次消费 按照 key 或者业务 转发到不同的 channel，channel 那边又会有 goroutine 去消费，然后再批量的提交
+9. 操作系统优化
+   1. tpc连接：缓存
+   2. 交换区
+   3. 文件系统
+   4. jvm 虚拟机： gc

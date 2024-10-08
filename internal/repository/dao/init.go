@@ -5,7 +5,6 @@ import (
 	"webook/article/repository/dao"
 	dao2 "webook/cronjob/repository/dao"
 	dao3 "webook/user/repository/dao"
-	system2 "webook/user/repository/dao/system"
 )
 
 func InitTables(db *gorm.DB) error {
@@ -17,8 +16,8 @@ func InitTables(db *gorm.DB) error {
 		&dao3.User{},
 		&dao.Article{},
 		&dao.PublishedArticle{},
-		&system2.SysRole{},
-		&system2.SysAuthRule{},
-		&system2.SysDept{},
+		&dao3.SysRole{},
+		&dao3.SysAuthRule{},
+		&dao3.SysDept{},
 	)
 }

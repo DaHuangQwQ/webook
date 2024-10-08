@@ -5,7 +5,7 @@ import (
 	"github.com/casbin/casbin/v2"
 	"strconv"
 	"webook/user/domain"
-	"webook/user/repository/dao/system"
+	"webook/user/repository/dao"
 )
 
 type RoleRepository interface {
@@ -25,10 +25,10 @@ type RoleRepository interface {
 
 type CachedRoleRepository struct {
 	casbin casbin.IEnforcer
-	dao    system.RoleDao
+	dao    dao.RoleDao
 }
 
-func NewCachedRoleRepository(casbin casbin.IEnforcer, dao system.RoleDao) RoleRepository {
+func NewCachedRoleRepository(casbin casbin.IEnforcer, dao dao.RoleDao) RoleRepository {
 	return &CachedRoleRepository{
 		casbin: casbin,
 		dao:    dao,
@@ -126,7 +126,7 @@ func (c *CachedRoleRepository) Save(ctx context.Context, role domain.Role) error
 	return nil
 }
 
-func (c *CachedRoleRepository) toDomain(role system.SysRole) domain.Role {
+func (c *CachedRoleRepository) toDomain(role dao.SysRole) domain.Role {
 	return domain.Role{
 		Id:        role.ID,
 		Name:      role.Name,
@@ -137,8 +137,8 @@ func (c *CachedRoleRepository) toDomain(role system.SysRole) domain.Role {
 	}
 }
 
-func (c *CachedRoleRepository) toRole(role domain.Role) system.SysRole {
-	return system.SysRole{
+func (c *CachedRoleRepository) toRole(role domain.Role) dao.SysRole {
+	return dao.SysRole{
 		ID:        role.Id,
 		Name:      role.Name,
 		ListOrder: role.ListOrder,

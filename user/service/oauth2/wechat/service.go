@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"webook/internal/domain"
 	"webook/pkg/logger"
+	"webook/user/domain"
 )
 
 type Service interface {

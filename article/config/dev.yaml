@@ -14,3 +14,7 @@ grpc:
   client:
     user:
       addr: "etcd:///service/user"
+
+etcd:
+  endpoints:
+    - "localhost:12379"
