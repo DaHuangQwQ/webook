@@ -3,7 +3,10 @@ services:
   mysql8:
     image: mysql:8.0.29
     restart: always
-    command: --default-authentication-plugin=mysql_native_password
+    command:
+      - --default_authentication_plugin=mysql_native_password
+      - --binlog-format=ROW
+      - --server-id=1
     environment:
       MYSQL_ROOT_PASSWORD: root
     volumes:
@@ -42,6 +45,7 @@ services:
       - '9094:9094'
     environment:
       - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CREATE_TOPICS=webook_binlog:3:1
       #      - 允许自动创建 topic，线上不要开启
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
       - KAFKA_CFG_PROCESS_ROLES=controller,broker
@@ -79,5 +83,39 @@ services:
       - "ES_JAVA_OPTS=-Xms84m -Xmx512m"
     ports:
       - "9200:9200"
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.13.0
+    volumes:
+      - ./config/logstash:/usr/share/logstash/pipeline
+    #      - ./logstash-logs:/usr/share/logstash/logs
+    #      - ./app.log:/usr/share/logstash/app.log
+    environment:
+      - "xpack.monitoring.elasticsearch.hosts=http://elasticsearch:9200"
+    ports:
+      - 5044:5044
+  kibana:
+    #    注意检查你的 ElasticSearch 版本，这边我将 ES 也改到了这个版本
+    image: docker.elastic.co/kibana/kibana:7.13.0
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - i18n.locale=zh-CN
+    ports:
+      - "5601:5601"
+  canal:
+    image: canal/canal-server
+    environment:
+      - CANAL_IP=canal-server
+      - CANAL_PORT=11111
+      - CANAL_DESTINATIONS=example
+    depends_on:
+      - mysql8
+      - kafka
+    ports:
+      #      - 暴露了 canal 的端口，但是其实一般比较少直接跟 canal 打交道
+      - 11111:11111
+    volumes:
+      - ./script/canal/webook/instance.properties:/home/admin/canal-server/conf/webook/instance.properties
+      - ./script/canal/canal.properties:/home/admin/canal-server/conf/canal.properties
 volumes:
   mysql_data:

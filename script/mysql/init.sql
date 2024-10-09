@@ -1,5 +1,11 @@
 CREATE DATABASE dahuang;
 
+
+# 准备 canal 用户
+CREATE USER 'canal'@'%' IDENTIFIED BY 'canal';
+GRANT ALL PRIVILEGES ON *.* TO 'canal'@'%' WITH GRANT OPTION;
+
+
 INSERT INTO `sys_auth_rules` (id, p_id, name, title, icon, link_url, redirect, menu_type, weigh, is_iframe, path, component, is_cached, remark, is_affix, is_link, module_type, `condition`)
 VALUES
     (1, 0, 'api/v1/system/auth', '权限管理', 'ele-Stamp', '', '', 0, 30, 0, '/system/auth', 'layout/routerView/parent', 0, '', 0, 0, '0', ''),

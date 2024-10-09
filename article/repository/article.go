@@ -71,7 +71,7 @@ func (c *CachedArticleRepository) ListById(ctx context.Context, uid int64, offse
 	res, err := c.dao.GetListByAuthor(ctx, uid, offset, limit)
 	articles := make([]domain.Article, len(res))
 	for i, v := range res {
-		articles[i] = c.toDomain(v)
+		articles[i] = c.ToDomain(v)
 	}
 	go func() {
 		err := c.cache.SetFirstPage(ctx, uid, articles)
@@ -181,7 +181,7 @@ func (c *CachedArticleRepository) toEntity(article domain.Article) dao.Article {
 	}
 }
 
-func (c *CachedArticleRepository) toDomain(article dao.Article) domain.Article {
+func (c *CachedArticleRepository) ToDomain(article dao.Article) domain.Article {
 	return domain.Article{
 		Id:      article.Id,
 		Title:   article.Title,
