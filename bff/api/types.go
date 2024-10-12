@@ -16,3 +16,8 @@ type ListRes struct {
 	Total       interface{} `json:"total"`
 	List        []any       `json:"list"`
 }
+
+type ListReq struct {
+	Offset int32 `json:"offset"`
+	Limit  int32 `json:"limit"`
+}

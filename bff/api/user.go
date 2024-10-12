@@ -156,3 +156,16 @@ type SysUserRoleInfoRes struct {
 	RoleId uint   `json:"roleId"`
 	Name   string `json:"name"`
 }
+
+type UserSignUpReq struct {
+	Meta            `path:"/users/signup" method:"post"`
+	Email           string `json:"email"`
+	Password        string `json:"password"`
+	ConfirmPassword string `json:"confirmPassword"`
+}
+
+type UserLoginReq struct {
+	Meta     `path:"/users/login" method:"post"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}

@@ -24,7 +24,7 @@ func (h *RecruitmentHandler) RegisterRoutes(router *gin.Engine) {
 }
 
 func (h *RecruitmentHandler) Add(ctx *gin.Context, req api.RecruitmentAddReq) (ginx.Result, error) {
-	//err := h.svc.Add(ctx, req.Recruitment)
+	//err := h.articleSvc.Add(ctx, req.Recruitment)
 	//if err != nil {
 	//	return ginx.Result{
 	//		Code: 5,

@@ -1,91 +1,71 @@
 package api
 
 import (
-	"webook/article/domain"
+	articlev1 "webook/api/proto/gen/article/v1"
 )
 
-type GetListReq struct {
-	Meta `path:"/articles/list" method:"get"`
-	PageReq
+type GetArticleListReq struct {
+	Meta `path:"/list" method:"post"`
+	ListReq
 }
 
-type GetListRes struct {
-	ListRes
+type GetArticlePubDetailReq struct {
+	Meta `path:"/:id" method:"get"`
 }
 
-type GetPubArticleDetail struct {
-	Meta      `path:"/articles/pub_detail" method:"get"`
-	ArticleId int64 `json:"article_id"`
-}
-
-type LikeReq struct {
-	Meta      `path:"/articles/like" method:"post"`
-	ArticleID int64 `json:"article_id"`
-	Like      bool  `json:"like"`
-}
-
-type ArticleEditReq struct {
-	Meta `path:"/articles/edit" method:"post"`
-	ArticleReq
-}
-
-type ArticlePublishReq struct {
-	Meta `path:"/articles/publish" method:"post"`
-	ArticleReq
-}
-
-type ArticleWithdrawReq struct {
-	Meta `path:"/articles/withdraw" method:"post"`
+type RewardReq struct {
+	Meta `path:"/reward" method:"post"`
 	Id   int64 `json:"id"`
+	Amt  int64 `json:"amt"`
 }
 
-type ArticleGetListReq struct {
-	Meta `path:"/articles/getlist" method:"get"`
+type ArticleLikeReq struct {
+	Meta `path:"/like" method:"post"`
+	Id   int64 `json:"id"`
+	Like bool  `json:"like"`
 }
 
-type ArticleDeleteReq struct {
-	Meta `path:"/articles/delete" method:"post"`
-	Ids  []int64 `json:"ids"`
+type CollectReq struct {
+	Meta `path:"/collect" method:"post"`
+	Id   int64 `json:"id"`
+	Cid  int64 `json:"cid"`
 }
 
-type ArticleGetTopNReq struct {
-	Meta `path:"/articles/top" method:"get"`
-}
+type ArticleVo struct {
+	Id    int64  `json:"id"`
+	Title string `json:"title"`
+	// 摘要
+	Abstract string `json:"abstract"`
+	// 内容
+	Content string `json:"content"`
+	Status  int32  `json:"status"`
+	Author  string `json:"author"`
+	Ctime   string `json:"ctime"`
+	Utime   string `json:"utime"`
 
-type Article struct {
-	Id        int64  `json:"id"`
-	Title     string `json:"title"`
-	Content   string `json:"content"`
-	CreatedAt int64  `json:"created_at"`
-	UpdatedAt int64  `json:"updated_at"`
+	// 点赞之类的信息
+	LikeCnt    int64 `json:"likeCnt"`
+	CollectCnt int64 `json:"collectCnt"`
+	ReadCnt    int64 `json:"readCnt"`
 
-	Status     uint8  `json:"status"`
-	Author     string `json:"author"`
-	ReadCnt    int64  `json:"read_cnt"`
-	LikeCnt    int64  `json:"like_cnt"`
-	CollectCnt int64  `json:"collect_cnt"`
-
+	// 个人是否点赞的信息
 	Liked     bool `json:"liked"`
 	Collected bool `json:"collected"`
 }
 
 type ArticleReq struct {
 	Id      int64  `json:"id"`
-	ImgUrl  string `json:"imgUrl"`
 	Title   string `json:"title"`
-	Type    string `json:"type"`
 	Content string `json:"content"`
 }
 
-func (art *ArticleReq) ToDomain(uid int64) domain.Article {
-	return domain.Article{
-		Id:      art.Id,
-		Title:   art.Title,
-		Content: art.Content,
-		Author: domain.Author{
+func (req ArticleReq) ToDTO(uid int64) *articlev1.Article {
+	return &articlev1.Article{
+		Id:      req.Id,
+		Title:   req.Title,
+		Content: req.Content,
+		Author: &articlev1.Author{
 			Id: uid,
 		},
-		ImgUrl: art.ImgUrl,
-		Type:   art.Type,
 	}
 }

@@ -1,89 +1,83 @@
 package middleware
 
 import (
+	"github.com/DaHuangQwQ/gutil/set"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
-	"strings"
-	ijwt "webook/internal/web/jwt"
-	"webook/pkg/logger"
+	"time"
+	ijwt "webook/bff/web/jwt"
 )
 
-type LoginJwtMiddleware struct {
-	paths []string
-	l     logger.LoggerV1
+type JWTLoginMiddlewareBuilder struct {
+	publicPaths set.Set[string]
+	ijwt.Handler
 }
 
-func NewLoginJwtMiddleware(l logger.LoggerV1) *LoginJwtMiddleware {
-	return &LoginJwtMiddleware{
-		paths: []string{
-			"/users/signup",
-			"/users/login",
-			"/users/login_sms",
-			"/users/login_sms/code/send",
-			"/users/refresh_token",
-			"/user/list",
-			"/order/list",
-			"/hello",
-			"/oauth2/wechat/authurl",
-			"/oauth2/wechat/callback",
-			"/oauth2/wechat/code2session",
-			"/articles/getlist",
-			"/articles/list",
-			"/articles/top",
-			"/swagger",
-			"/metrics",
-			"/recruit/add",
-
-			"/users/demo",
-			"/orders/list",
-		},
-		l: l,
+func NewJWTLoginMiddlewareBuilder(hdl ijwt.Handler) *JWTLoginMiddlewareBuilder {
+	s := set.NewMapSet[string](3)
+	s.Add("/users/signup")
+	s.Add("/users/login_sms/code/send")
+	s.Add("/users/login_sms")
+	s.Add("/users/refresh_token")
+	s.Add("/users/login")
+	s.Add("/oauth2/wechat/authurl")
+	s.Add("/oauth2/wechat/callback")
+	s.Add("/test/random")
+	return &JWTLoginMiddlewareBuilder{
+		publicPaths: s,
+		Handler:     hdl,
 	}
 }
-
-func (m *LoginJwtMiddleware) Build(jwtHandler ijwt.Handler) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		for _, path := range m.paths {
-			if strings.HasPrefix(c.Request.URL.Path, path) {
-				return
-			}
-		}
-		tokenString := jwtHandler.ExtractToken(c)
-		if tokenString == "" {
-			m.l.Info("token为空")
-			c.AbortWithStatus(http.StatusUnauthorized)
+func (j *JWTLoginMiddlewareBuilder) Build() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		// 不需要校验
+		if j.publicPaths.Exist(ctx.Request.URL.Path) {
 			return
 		}
-		var claims ijwt.UserClaims
-		parseToken, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
-			return ijwt.JWTKey, nil
+		// 如果是空字符串，你可以预期后面 Parse 就会报错
+		tokenStr := j.ExtractTokenString(ctx)
+		uc := ijwt.UserClaims{}
+		token, err := jwt.ParseWithClaims(tokenStr, &uc, func(token *jwt.Token) (interface{}, error) {
+			return ijwt.AccessTokenKey, nil
 		})
+		if err != nil || !token.Valid {
+			// 不正确的 token
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
+		}
+
+		expireTime, err := uc.GetExpirationTime()
 		if err != nil {
-			m.l.Info("token解析失败")
-			c.AbortWithStatus(http.StatusUnauthorized)
+			// 拿不到过期时间
+			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		if parseToken == nil || !parseToken.Valid {
-			// 在这里发现 access_token 过期了，生成一个新的 access_token
-			// token 解析出来了，但是 token 可能是非法的，或者过期了的
-			m.l.Info("token过期")
-			c.AbortWithStatus(http.StatusPaymentRequired)
+		if expireTime.Before(time.Now()) {
+			// 已经过期
+			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		if claims.UserAgent != c.Request.UserAgent() {
-			// token 被窃取
-			// 监控
-			//m.l.Warn("userAgent不同")
-			//c.AbortWithStatus(http.StatusUnauthorized)
-			//return
-		}
-		err = jwtHandler.CheckSession(c, claims.Ssid)
+
+		// 注释掉，防止有些同学在浏览器和 postman 混用的时候
+		// 没有办法继续访问
+		//if ctx.GetHeader("User-Agent") != uc.UserAgent {
+		//	// 换了一个 User-Agent，可能是攻击者
+		//	ctx.AbortWithStatus(http.StatusUnauthorized)
+		//	return
+		//}
+
+		err = j.CheckSession(ctx, uc.Ssid)
 		if err != nil {
-			m.l.Info("检查token失败")
-			c.AbortWithStatus(http.StatusUnauthorized)
+			// 系统错误或者用户已经主动退出登录了
+			// 这里也可以考虑说，如果在 Redis 已经崩溃的时候，
+			// 就不要去校验是不是已经主动退出登录了。
+			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		c.Set("claims", claims)
+
+		// 说明 token 是合法的
+		// 我们把这个 token 里面的数据放到 ctx 里面，后面用的时候就不用再次 Parse 了
+		ctx.Set("claims", uc)
 	}
 }
