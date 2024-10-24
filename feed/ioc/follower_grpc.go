@@ -12,7 +12,7 @@ func InitFollowClient() followv1.FollowServiceClient {
 		Target string `yaml:"target"`
 	}
 	var cfg config
-	err := viper.UnmarshalKey("grpc.client.sms", &cfg)
+	err := viper.UnmarshalKey("grpc.client.follow", &cfg)
 	if err != nil {
 		panic(err)
 	}

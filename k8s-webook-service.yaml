@@ -38,7 +38,7 @@ spec:
     metadata:
       labels:
         #        因为上面 selector 里面我们找的是这个 label
-        app: webook
+        app: weboxok
     #        pod 的具体规格说明
     spec:
       #      pod 里面运行的 container

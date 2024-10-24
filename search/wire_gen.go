@@ -27,12 +27,12 @@ func initApp() *App {
 	tagDAO := dao.NewTagESDAO(client)
 	articleRepository := repository.NewArticleRepository(articleDAO, tagDAO)
 	syncService := service.NewSyncService(anyRepository, userRepository, articleRepository)
-	searchSyncServiceServer := grpc.NewSearchSyncServiceServer(syncService)
+	syncServiceServer := grpc.NewSearchSyncServiceServer(syncService)
 	searchService := service.NewSearchService(userRepository, articleRepository)
 	searchServiceServer := grpc.NewSearchServiceServer(searchService)
 	clientv3Client := ioc.InitEtcdClient()
 	loggerV1 := ioc.InitLogger()
-	server := ioc.InitGRPCxServer(searchSyncServiceServer, searchServiceServer, clientv3Client, loggerV1)
+	server := ioc.InitGRPCxServer(syncServiceServer, searchServiceServer, clientv3Client, loggerV1)
 	app := &App{
 		server: server,
 	}

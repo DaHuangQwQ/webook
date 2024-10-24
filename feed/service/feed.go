@@ -42,6 +42,8 @@ func (f *feedService) CreateFeedEvent(ctx context.Context, feed domain.FeedEvent
 }
 
 // GetFeedEventListV1 不依赖于 Handler 的直接查询
+// 为什么 使用 timestamp 而不是 offset
+// 查询的时候业务上不需要特殊处理
 func (f *feedService) GetFeedEventListV1(ctx context.Context, uid int64, timestamp, limit int64) ([]domain.FeedEvent, error) {
 	var eg errgroup.Group
 	var mu sync.RWMutex
@@ -88,6 +90,7 @@ func (f *feedService) GetFeedEventList(ctx context.Context, uid int64, timestamp
 	var eg errgroup.Group
 	res := make([]domain.FeedEvent, 0, limit*int64(len(f.handlerMap)))
 	var mu sync.RWMutex
+	// 每个业务方查询
 	for _, handler := range f.handlerMap {
 		h := handler
 		eg.Go(func() error {

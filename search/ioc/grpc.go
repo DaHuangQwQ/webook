@@ -9,7 +9,7 @@ import (
 	grpc2 "webook/search/grpc"
 )
 
-func InitGRPCxServer(syncRpc *grpc2.SearchSyncServiceServer,
+func InitGRPCxServer(syncRpc *grpc2.SyncServiceServer,
 	searchRpc *grpc2.SearchServiceServer,
 	ecli *clientv3.Client,
 	l logger.LoggerV1) *grpcx.Server {

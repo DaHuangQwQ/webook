@@ -1,23 +1,30 @@
-.PHONY: docker
+.PHONY: all build docker clean gprc $(MODULES)
+
+BUILD_DIR = build
+SRC_FILES = $(shell find . -name 'main.go')
+
+# 动态获取 build 目录下所有的文件名作为模块名称
+MODULES := $(shell ls build)
+
+# 定义每个模块的构建规则
+$(MODULES):
+	docker build -t dahuang/$@:latest --build-arg MODULE_NAME=$@ .
+
+
+# 默认目标：构建所有模块
+all: $(MODULES)
+
+
+
 down:
 	@kubectl delete -f ./k8s-webook-service.yaml || true
 	@kubectl delete -f ./k8s-webook-redis.yaml || true
 	@kubectl delete -f ./k8s-webook-mysql.yaml || true
 	@kubectl delete -f ./k8s-webook-ingress.yaml || true
-mock:
-	@mockgen -source=internal/service/code.go -package=svcmocks -destination=internal/service/mocks/code.mock.go
-	@mockgen -source=internal/service/user.go -package=svcmocks -destination=internal/service/mocks/user.mock.go
-	@mockgen -source=internal/repository/user.go -package=repomocks -destination=internal/repository/mocks/user.mock.go
-	@mockgen -source=internal/repository/code.go -package=repomocks -destination=internal/repository/mocks/code.mock.go
-	@mockgen -source=internal/repository/dao/user.go -package=daomocks -destination=internal/repository/dao/mocks/user.mock.go
-	@mockgen -source=internal/repository/cache/user.go -package=cachemocks -destination=internal/repository/cache/mocks/user.mock.go
-	@mockgen -source=pkg/ratelimit/types.go -package=limitmocks -destination=pkg/ratelimit/mocks/ratelimit.mock.go
-	@mockgen -package=redismocks -destination=internal/repository/cache/redismocks/cmdable.mock.go github.com/redis/go-redis/v9 Cmdable
-	@go mod tidy
 docker:
 	@rm webook || true
 	@go mod tidy
-	@GOOS=linux GOARCH=arm go build -tags=k8s -o webook .
+	@GOOS=linux GOARCH=arm go build -o webook .
 	@docker rmi -f dahuang/webook:v0.0.1
 	@docker build -t dahuang/webook:v0.0.1 .
 k8s:
@@ -32,7 +39,30 @@ mysql:
 remote:
 	@rm webook || true
 	@go mod tidy
-	@GOOS=linux GOARCH=amd64 go build -tags=k8s -o webook .
-.PHONY: gprc
+	@GOOS=linux GOARCH=amd64 go build -o webook .
 grpc:
 	@buf generate api/proto
+
+# Build all Go applications with main.go
+build:
+	@mkdir -p $(BUILD_DIR)
+	@for file in $(SRC_FILES); do \
+		dir=$$(dirname $$file); \
+		dir_name=$$(basename $$dir); \
+		echo "Building $$file in directory $$dir"; \
+		GOOS=linux GOARCH=arm go build -o $(BUILD_DIR)/$$dir_name $$dir; \
+	done
+
+# Clean build artifacts
+clean:
+	@for module in $(MODULES); do \
+		echo "Removing Docker image for: $$module"; \
+		docker rmi dahuang/$$module:latest; \
+	done
+
+update:
+	export ETCDCTL_ENDPOINTS="http://127.0.0.1:12379"
+	cat ./config/dev.yaml | etcdctl put /config/config.yaml
+
+cleanDir:
+	rm -rf $(BUILD_DIR)

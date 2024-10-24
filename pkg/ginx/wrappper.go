@@ -4,7 +4,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
-	ijwt "webook/pkg/ginx/jwt"
 	"webook/pkg/logger"
 )
 
@@ -14,7 +13,7 @@ func NewWarpLogger(l logger.LoggerV1) {
 	L = l
 }
 
-func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u ijwt.UserClaims) (Result, error)) (string, gin.HandlerFunc) {
+func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u UserClaims) (Result, error)) (string, gin.HandlerFunc) {
 	var (
 		path string
 		req  Req
@@ -41,7 +40,7 @@ func WarpWithToken[Req any](fn func(ctx *gin.Context, req Req, u ijwt.UserClaims
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		user, ok := res.(ijwt.UserClaims)
+		user, ok := res.(UserClaims)
 		if !ok {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return

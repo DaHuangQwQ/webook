@@ -342,11 +342,11 @@ func (c *UserHandler) Edit(ctx *gin.Context) {
 // ProfileJWT 用户详情, JWT 版本
 func (c *UserHandler) ProfileJWT(ctx *gin.Context) {
 	type Profile struct {
-		Email    string
-		Phone    string
-		Nickname string
-		Birthday string
-		AboutMe  string
+		Email    string `json:"email"`
+		Phone    string `json:"phone"`
+		Nickname string `json:"nickname"`
+		Birthday string `json:"birthday"`
+		AboutMe  string `json:"aboutMe"`
 	}
 	uc := ctx.MustGet("user").(ijwt.UserClaims)
 	resp, err := c.svc.Profile(ctx, &userv1.ProfileRequest{Id: uc.Id})

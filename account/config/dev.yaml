@@ -6,7 +6,7 @@ db:
 
 grpc:
   server:
-    port: 8095
+    port: 8080
 
 etcd:
   endpoints:

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package feed.v1;
+
+option go_package="feed/v1;feedv1";
+
+message User {
+  int64 id = 1;
+}
+
+message Article {
+  int64 id = 1;
+}
+
+message FeedEvent {
+  int64 id = 1;
+  User user = 2;
+  string type = 3;
+  string content = 4;
+  int64 ctime = 5;
+}
+
+
+service FeedSvc {
+  rpc CreateFeedEvent(CreateFeedEventRequest) returns (CreateFeedEventResponse);
+  rpc FindFeedEvents( FindFeedEventsRequest)returns (FindFeedEventsResponse);
+}
+
+message CreateFeedEventRequest {
+  FeedEvent feedEvent = 1;
+}
+
+message CreateFeedEventResponse{
+}
+
+message FindFeedEventsRequest {
+  int64 Uid = 1;
+  int64 Limit = 2;
+  int64 timestamp = 3;
+}
+message  FindFeedEventsResponse {
+  repeated FeedEvent feedEvents = 1;
+}
