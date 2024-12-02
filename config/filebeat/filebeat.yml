@@ -224,7 +224,7 @@ output.logstash:
     #logging.selectors: ["*"]
 
     # ============================= X-Pack Monitoring ==============================
-    # Filebeat can export internal metrics to a central Elasticsearch monitoring
+    # Filebeat can export internal_temp metrics to a central Elasticsearch monitoring
     # cluster.  This requires xpack monitoring to be enabled in Elasticsearch.  The
     # reporting is disabled by default.
 

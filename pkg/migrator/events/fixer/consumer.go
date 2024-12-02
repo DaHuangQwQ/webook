@@ -3,14 +3,14 @@ package fixer
 import (
 	"context"
 	"errors"
+	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/webook/pkg/migrator"
+	"github.com/DaHuangQwQ/webook/pkg/migrator/events"
+	"github.com/DaHuangQwQ/webook/pkg/migrator/fixer"
+	"github.com/DaHuangQwQ/webook/pkg/saramax"
 	"github.com/IBM/sarama"
 	"gorm.io/gorm"
 	"time"
-	"webook/pkg/logger"
-	"webook/pkg/migrator"
-	"webook/pkg/migrator/events"
-	"webook/pkg/migrator/fixer"
-	"webook/pkg/saramax"
 )
 
 type Consumer[T migrator.Entity] struct {

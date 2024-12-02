@@ -1,10 +1,10 @@
 package ioc
 
 import (
+	events2 "github.com/DaHuangQwQ/webook/interactive/events"
+	"github.com/DaHuangQwQ/webook/internal_temp/events"
 	"github.com/IBM/sarama"
 	"github.com/spf13/viper"
-	events2 "webook/interactive/events"
-	"webook/internal/events"
 )
 
 func InitSaramaClient() sarama.Client {

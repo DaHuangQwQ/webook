@@ -1,15 +1,15 @@
 package ioc
 
 import (
+	"github.com/DaHuangQwQ/webook/sms/service"
+	"github.com/DaHuangQwQ/webook/sms/service/aliyun"
+	"github.com/DaHuangQwQ/webook/sms/service/tencent"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	aliyunSms "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
 	"github.com/spf13/viper"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	tencentSMS "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
-	"webook/sms/service"
-	"webook/sms/service/aliyun"
-	"webook/sms/service/tencent"
 )
 
 func InitSMSService() service.Service {

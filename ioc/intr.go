@@ -1,14 +1,14 @@
 package ioc
 
 import (
+	interactivev1 "github.com/DaHuangQwQ/webook/api/proto/gen/interactive/v1"
+	"github.com/DaHuangQwQ/webook/internal_temp/client"
+	_ "github.com/DaHuangQwQ/webook/pkg/grpcx/balancer/wrr"
 	"github.com/spf13/viper"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.etcd.io/etcd/client/v3/naming/resolver"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	interactivev1 "webook/api/proto/gen/interactive/v1"
-	"webook/internal/client"
-	_ "webook/pkg/grpcx/balancer/wrr"
 )
 
 func InitEtcd() *clientv3.Client {

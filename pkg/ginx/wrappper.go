@@ -1,10 +1,10 @@
 package ginx
 
 import (
+	"github.com/DaHuangQwQ/webook/pkg/logger"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"reflect"
-	"webook/pkg/logger"
 )
 
 var L logger.LoggerV1

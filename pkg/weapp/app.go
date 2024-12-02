@@ -1,9 +1,9 @@
 package weapp
 
 import (
-	"webook/pkg/ginx"
-	"webook/pkg/grpcx"
-	"webook/pkg/saramax"
+	"github.com/DaHuangQwQ/webook/pkg/ginx"
+	"github.com/DaHuangQwQ/webook/pkg/grpcx"
+	"github.com/DaHuangQwQ/webook/pkg/saramax"
 )
 
 type App struct {

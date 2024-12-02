@@ -2,8 +2,8 @@ package saramax
 
 import (
 	"encoding/json"
+	"github.com/DaHuangQwQ/webook/pkg/logger"
 	"github.com/IBM/sarama"
-	"webook/pkg/logger"
 )
 
 type Handler[T any] struct {

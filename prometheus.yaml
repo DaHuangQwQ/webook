@@ -3,4 +3,4 @@ scrape_configs:
     scrape_interval: 5s
     scrape_timeout: 3s
     static_configs:
-      - targets: ["host.docker.internal:8081"]
+      - targets: ["host.docker.internal_temp:8081"]

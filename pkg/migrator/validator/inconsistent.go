@@ -2,13 +2,13 @@ package validator
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/webook/pkg/migrator"
+	"github.com/DaHuangQwQ/webook/pkg/migrator/events"
 	"github.com/ecodeclub/ekit/slice"
 	"golang.org/x/sync/errgroup"
 	"gorm.io/gorm"
 	"time"
-	"webook/pkg/logger"
-	"webook/pkg/migrator"
-	"webook/pkg/migrator/events"
 )
 
 type Validator[T migrator.Entity] struct {

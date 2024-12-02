@@ -2,10 +2,10 @@ package validator
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/webook/pkg/migrator"
+	events2 "github.com/DaHuangQwQ/webook/pkg/migrator/events"
 	"gorm.io/gorm"
-	"webook/pkg/logger"
-	"webook/pkg/migrator"
-	events2 "webook/pkg/migrator/events"
 )
 
 type CanalIncrValidator[T migrator.Entity] struct {

@@ -2,10 +2,10 @@ package validator
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/webook/pkg/logger"
+	events2 "github.com/DaHuangQwQ/webook/pkg/migrator/events"
 	"gorm.io/gorm"
 	"time"
-	"webook/pkg/logger"
-	events2 "webook/pkg/migrator/events"
 )
 
 type baseValidator struct {

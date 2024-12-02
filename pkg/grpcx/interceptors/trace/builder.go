@@ -2,6 +2,7 @@ package trace
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/webook/pkg/grpcx/interceptors"
 	"github.com/go-kratos/kratos/v2/errors"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -11,7 +12,6 @@ import (
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
-	"webook/pkg/grpcx/interceptors"
 )
 
 type OTELInterceptorBuilder struct {

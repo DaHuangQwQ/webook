@@ -1,8 +1,8 @@
 package ginx
 
 import (
+	"github.com/DaHuangQwQ/webook/bff/api"
 	"reflect"
-	"webook/bff/api"
 )
 
 var Paths = make(map[string]api.Path)

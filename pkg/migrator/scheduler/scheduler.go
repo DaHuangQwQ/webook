@@ -3,17 +3,17 @@ package scheduler
 import (
 	"context"
 	"fmt"
+	"github.com/DaHuangQwQ/webook/bff/api"
+	"github.com/DaHuangQwQ/webook/pkg/ginx"
+	"github.com/DaHuangQwQ/webook/pkg/gormx/connpool"
+	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/webook/pkg/migrator"
+	"github.com/DaHuangQwQ/webook/pkg/migrator/events"
+	"github.com/DaHuangQwQ/webook/pkg/migrator/validator"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"sync"
 	"time"
-	"webook/bff/api"
-	"webook/pkg/ginx"
-	"webook/pkg/gormx/connpool"
-	"webook/pkg/logger"
-	"webook/pkg/migrator"
-	"webook/pkg/migrator/events"
-	"webook/pkg/migrator/validator"
 )
 
 // Scheduler 用来统一管理整个迁移过程

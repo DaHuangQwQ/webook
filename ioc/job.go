@@ -1,13 +1,13 @@
 package ioc
 
 import (
+	"github.com/DaHuangQwQ/webook/internal/ranking/service"
+	"github.com/DaHuangQwQ/webook/internal_temp/job"
+	"github.com/DaHuangQwQ/webook/pkg/logger"
 	rlock "github.com/gotomicro/redis-lock"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/robfig/cron/v3"
 	"time"
-	"webook/internal/job"
-	"webook/pkg/logger"
-	"webook/ranking/service"
 )
 
 func InitRankingJob(svc service.RankingService, rlock *rlock.Client, l logger.LoggerV1) *job.RankingJob {
