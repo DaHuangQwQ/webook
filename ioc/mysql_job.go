@@ -2,11 +2,11 @@ package ioc
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/gpkg/logger"
 	"github.com/DaHuangQwQ/webook/internal/cronjob/domain"
 	"github.com/DaHuangQwQ/webook/internal/cronjob/service"
 	service2 "github.com/DaHuangQwQ/webook/internal/ranking/service"
 	"github.com/DaHuangQwQ/webook/internal_temp/job"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
 	"time"
 )
 

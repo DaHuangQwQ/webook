@@ -1,9 +1,8 @@
 package ioc
 
 import (
-	"github.com/DaHuangQwQ/webook/internal_temp/repository/dao"
-	prometheus3 "github.com/DaHuangQwQ/webook/pkg/gormx"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/gpkg/gormx"
+	"github.com/DaHuangQwQ/gpkg/logger"
 	prometheus2 "github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
@@ -50,7 +49,7 @@ func InitDB(logger logger.LoggerV1) *gorm.DB {
 	if err != nil {
 		panic(err)
 	}
-	cb := prometheus3.NewCallbacks(prometheus2.SummaryOpts{
+	cb := gormx.NewCallbacks(prometheus2.SummaryOpts{
 		Namespace: "DaHuang",
 		Subsystem: "webook",
 		Name:      "gorm_db",
@@ -72,10 +71,6 @@ func InitDB(logger logger.LoggerV1) *gorm.DB {
 	}
 	err = db.Use(tracing.NewPlugin(tracing.WithoutMetrics(),
 		tracing.WithDBName("webook")))
-	if err != nil {
-		panic(err)
-	}
-	err = dao.InitTables(db)
 	if err != nil {
 		panic(err)
 	}

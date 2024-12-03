@@ -1,9 +1,9 @@
 package ioc
 
 import (
-	"github.com/DaHuangQwQ/webook/sms/service"
-	"github.com/DaHuangQwQ/webook/sms/service/aliyun"
-	"github.com/DaHuangQwQ/webook/sms/service/tencent"
+	"github.com/DaHuangQwQ/webook/internal/sms/service"
+	"github.com/DaHuangQwQ/webook/internal/sms/service/aliyun"
+	"github.com/DaHuangQwQ/webook/internal/sms/service/tencent"
 	openapi "github.com/alibabacloud-go/darabonba-openapi/v2/client"
 	aliyunSms "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
 	"github.com/spf13/viper"

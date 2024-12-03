@@ -1,8 +1,8 @@
 package ioc
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/user/service/oauth2/wechat"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/user/service/oauth2/wechat"
 	"github.com/spf13/viper"
 )
 

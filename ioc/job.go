@@ -1,9 +1,9 @@
 package ioc
 
 import (
+	"github.com/DaHuangQwQ/gpkg/logger"
 	"github.com/DaHuangQwQ/webook/internal/ranking/service"
 	"github.com/DaHuangQwQ/webook/internal_temp/job"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
 	rlock "github.com/gotomicro/redis-lock"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/robfig/cron/v3"
