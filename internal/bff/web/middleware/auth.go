@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	system2 "github.com/DaHuangQwQ/webook/user/service/system"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	system2 "github.com/DaHuangQwQ/webook/internal/user/service/system"
 	"github.com/casbin/casbin/v2"
 	"github.com/gin-gonic/gin"
 )

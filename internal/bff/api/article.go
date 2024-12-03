@@ -1,9 +1,5 @@
 package api
 
-import (
-	articlev1 "github.com/DaHuangQwQ/webook/api/proto/gen/article/v1"
-)
-
 type GetArticleListReq struct {
 	Meta `path:"/list" method:"post"`
 	ListReq
@@ -57,15 +53,4 @@ type ArticleReq struct {
 	Id      int64  `json:"id"`
 	Title   string `json:"title"`
 	Content string `json:"content"`
-}
-
-func (req ArticleReq) ToDTO(uid int64) *articlev1.Article {
-	return &articlev1.Article{
-		Id:      req.Id,
-		Title:   req.Title,
-		Content: req.Content,
-		Author: &articlev1.Author{
-			Id: uid,
-		},
-	}
 }

@@ -1,7 +1,7 @@
 package jwt
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
+	"github.com/DaHuangQwQ/gpkg/ginx"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )

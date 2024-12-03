@@ -1,7 +1,7 @@
 package api
 
 import (
-	domain2 "github.com/DaHuangQwQ/webook/user/domain"
+	domain2 "github.com/DaHuangQwQ/webook/internal/user/domain"
 )
 
 // UserMenusReq

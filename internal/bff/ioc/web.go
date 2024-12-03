@@ -2,19 +2,18 @@ package ioc
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/bff/web"
-	ijwt "github.com/DaHuangQwQ/webook/bff/web/jwt"
-	"github.com/DaHuangQwQ/webook/bff/web/middleware"
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
-	prometheusx "github.com/DaHuangQwQ/webook/pkg/ginx/middleware/prometheus"
-	"github.com/DaHuangQwQ/webook/pkg/ginx/middleware/ratelimit"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	limit "github.com/DaHuangQwQ/webook/pkg/ratelimit"
+	"github.com/DaHuangQwQ/gpkg/ginx"
+	prometheusx "github.com/DaHuangQwQ/gpkg/ginx/middleware/prometheus"
+	"github.com/DaHuangQwQ/gpkg/ginx/middleware/ratelimit"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	limit "github.com/DaHuangQwQ/gpkg/ratelimit"
+	"github.com/DaHuangQwQ/webook/internal/bff/web"
+	ijwt "github.com/DaHuangQwQ/webook/internal/bff/web/jwt"
+	"github.com/DaHuangQwQ/webook/internal/bff/web/middleware"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/redis/go-redis/v9"
-	"github.com/spf13/viper"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 	"strings"
 	"time"
@@ -25,8 +24,9 @@ func InitGinServer(
 	l logger.LoggerV1,
 	jwtHdl ijwt.Handler,
 	user *web.UserHandler,
-	article *web.ArticleHandler,
-	reward *web.RewardHandler) *ginx.Server {
+	// article *web.ArticleHandler,
+	// reward *web.RewardHandler,
+) *ginx.Server {
 	pb := &prometheusx.Builder{
 		Namespace: "DaHuang",
 		Subsystem: "webook",
@@ -44,9 +44,9 @@ func InitGinServer(
 		middleware.NewJWTLoginMiddlewareBuilder(jwtHdl).Build())
 
 	user.RegisterRoutes(engine)
-	article.RegisterRoutes(engine)
-	reward.RegisterRoutes(engine)
-	addr := viper.GetString("http.addr")
+	//article.RegisterRoutes(engine)
+	//reward.RegisterRoutes(engine)
+	//addr := viper.GetString("http.addr")
 	ginx.InitCounter(prometheus.CounterOpts{
 		Namespace: "daming_geektime",
 		Subsystem: "webook_bff",
@@ -55,7 +55,7 @@ func InitGinServer(
 	ginx.NewWarpLogger(l)
 	return &ginx.Server{
 		Engine: engine,
-		Addr:   addr,
+		Addr:   ":8080",
 	}
 }
 

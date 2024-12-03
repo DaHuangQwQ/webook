@@ -1,33 +1,31 @@
 //go:build wireinject
 
-package main
+package bff
 
 import (
-	"github.com/DaHuangQwQ/webook/bff/ioc"
-	"github.com/DaHuangQwQ/webook/bff/web"
-	"github.com/DaHuangQwQ/webook/bff/web/jwt"
-	"github.com/DaHuangQwQ/webook/pkg/weapp"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/bff/ioc"
+	"github.com/DaHuangQwQ/webook/internal/bff/web"
+	ijwt "github.com/DaHuangQwQ/webook/internal/bff/web/jwt"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 )
 
-func InitApp() *weapp.App {
+//go:generate wire
+func InitApp(
+	l logger.LoggerV1,
+	redisClient redis.Cmdable,
+) *App {
 	wire.Build(
-		ioc.InitLogger,
-		ioc.InitRedis,
-		ioc.InitEtcdClient,
-
-		web.NewArticleHandler,
-		web.NewUserHandler,
-		web.NewRewardHandler,
-		jwt.NewRedisHandler,
-
-		ioc.InitUserClient,
-		ioc.InitIntrClient,
-		ioc.InitRewardClient,
-		ioc.InitCodeClient,
-		ioc.InitArticleClient,
 		ioc.InitGinServer,
-		wire.Struct(new(weapp.App), "WebServer"),
+		ijwt.NewRedisHandler,
+
+		//web.NewArticleHandler,
+		web.NewUserHandler,
+		//web.NewRewardHandler,
+		//jwt.NewRedisHandler,
+
+		wire.Struct(new(App), "*"),
 	)
-	return new(weapp.App)
+	return new(App)
 }

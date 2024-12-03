@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/DaHuangQwQ/gutil/set"
-	ijwt "github.com/DaHuangQwQ/webook/bff/web/jwt"
+	ijwt "github.com/DaHuangQwQ/webook/internal/bff/web/jwt"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
