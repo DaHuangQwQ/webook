@@ -5,21 +5,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	domain2 "github.com/DaHuangQwQ/webook/user/domain"
-	"github.com/DaHuangQwQ/webook/user/repository"
+	"github.com/DaHuangQwQ/webook/internal/user/domain"
+	"github.com/DaHuangQwQ/webook/internal/user/repository"
 	"golang.org/x/crypto/bcrypt"
 	"io"
 	"mime/multipart"
 )
 
 type UserService interface {
-	Signup(ctx context.Context, u domain2.User) error
-	Login(ctx context.Context, email string, password string) (domain2.User, error)
-	Profile(ctx context.Context, id int64) (domain2.User, error)
-	FindOrCreate(ctx context.Context, phone string) (domain2.User, error)
-	FindOrCreateByWechat(ctx context.Context, wechatInfo domain2.WechatInfo) (domain2.User, error)
-	UpdateByID(ctx context.Context, user domain2.User) error
-	FindByID(ctx context.Context, id int64) (domain2.User, error)
+	Signup(ctx context.Context, u domain.User) error
+	Login(ctx context.Context, email string, password string) (domain.User, error)
+	Profile(ctx context.Context, id int64) (domain.User, error)
+	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
+	FindOrCreateByWechat(ctx context.Context, wechatInfo domain.WechatInfo) (domain.User, error)
+	UpdateByID(ctx context.Context, user domain.User) error
+	FindByID(ctx context.Context, id int64) (domain.User, error)
 	AvatarUpdate(ctx context.Context, id int64, file multipart.File, fileType string) (string, error)
 	GetAvatar(ctx context.Context, id int64) (string, error)
 }
@@ -43,7 +43,7 @@ func NewUserService(repo repository.UserRepository) UserService {
 	}
 }
 
-func (svc *userService) Signup(ctx context.Context, u domain2.User) error {
+func (svc *userService) Signup(ctx context.Context, u domain.User) error {
 	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
@@ -52,29 +52,29 @@ func (svc *userService) Signup(ctx context.Context, u domain2.User) error {
 	return svc.repo.Create(ctx, u)
 }
 
-func (svc *userService) Login(ctx context.Context, email string, password string) (domain2.User, error) {
+func (svc *userService) Login(ctx context.Context, email string, password string) (domain.User, error) {
 	u, err := svc.repo.FindByEmail(ctx, email)
 
 	if errors.Is(err, repository.ErrUserNotFound) {
-		return domain2.User{}, ErrInvalidUserOrPassword
+		return domain.User{}, ErrInvalidUserOrPassword
 	}
 	if err != nil {
-		return domain2.User{}, err
+		return domain.User{}, err
 	}
 	// 检查密码对不对
 	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	if err != nil {
-		return domain2.User{}, ErrInvalidUserOrPassword
+		return domain.User{}, ErrInvalidUserOrPassword
 	}
 	return u, nil
 }
 
-func (svc *userService) Profile(ctx context.Context, id int64) (domain2.User, error) {
+func (svc *userService) Profile(ctx context.Context, id int64) (domain.User, error) {
 	u, err := svc.repo.FindByID(ctx, id)
 	return u, err
 }
 
-func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain2.User, error) {
+func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain.User, error) {
 
 	// 快路径
 	user, err := svc.repo.FindByPhone(ctx, phone)
@@ -88,17 +88,17 @@ func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain2
 	//	return
 	//}
 	// 慢路径
-	err = svc.repo.Create(ctx, domain2.User{
+	err = svc.repo.Create(ctx, domain.User{
 		Phone: phone,
 	})
 	if err != nil && err != ErrDuplicate {
-		return domain2.User{}, err
+		return domain.User{}, err
 	}
 	// 这里会遇到 主从延迟 的问题
 	return svc.repo.FindByPhone(ctx, phone)
 }
 
-func (svc *userService) FindOrCreateByWechat(ctx context.Context, wechatInfo domain2.WechatInfo) (domain2.User, error) {
+func (svc *userService) FindOrCreateByWechat(ctx context.Context, wechatInfo domain.WechatInfo) (domain.User, error) {
 	// 快路径
 	user, err := svc.repo.FindByWechat(ctx, wechatInfo.OpenId)
 	if err != repository.ErrUserNotFound {
@@ -111,21 +111,21 @@ func (svc *userService) FindOrCreateByWechat(ctx context.Context, wechatInfo dom
 	//	return
 	//}
 	// 慢路径
-	err = svc.repo.Create(ctx, domain2.User{
+	err = svc.repo.Create(ctx, domain.User{
 		WechatInfo: wechatInfo,
 	})
 	if err != nil && err != ErrDuplicate {
-		return domain2.User{}, err
+		return domain.User{}, err
 	}
 	// 这里会遇到 主从延迟 的问题
 	return svc.repo.FindByWechat(ctx, wechatInfo.OpenId)
 }
 
-func (svc *userService) UpdateByID(ctx context.Context, user domain2.User) error {
+func (svc *userService) UpdateByID(ctx context.Context, user domain.User) error {
 	return svc.repo.UpdateByID(ctx, user)
 }
 
-func (svc *userService) FindByID(ctx context.Context, id int64) (domain2.User, error) {
+func (svc *userService) FindByID(ctx context.Context, id int64) (domain.User, error) {
 	return svc.repo.FindByID(ctx, id)
 }
 

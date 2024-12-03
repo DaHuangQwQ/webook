@@ -3,9 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"github.com/DaHuangQwQ/webook/comment/domain"
-	"github.com/DaHuangQwQ/webook/comment/repository/dao"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/comment/domain"
+	"github.com/DaHuangQwQ/webook/internal/comment/repository/dao"
 	"golang.org/x/sync/errgroup"
 	"time"
 )

@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/DaHuangQwQ/webook/feed/domain"
-	"github.com/DaHuangQwQ/webook/feed/repository/cache"
-	"github.com/DaHuangQwQ/webook/feed/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/feed/domain"
+	"github.com/DaHuangQwQ/webook/internal/feed/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/feed/repository/dao"
 	"time"
 )
 

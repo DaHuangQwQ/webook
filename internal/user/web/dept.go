@@ -1,9 +1,9 @@
 package web
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/user/domain"
-	"github.com/DaHuangQwQ/webook/user/service/system"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/user/domain"
+	"github.com/DaHuangQwQ/webook/internal/user/service/system"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"

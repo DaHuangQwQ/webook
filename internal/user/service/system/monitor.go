@@ -3,7 +3,7 @@ package system
 import (
 	"context"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/user/api"
+	"github.com/DaHuangQwQ/webook/internal/user/api"
 	"github.com/shirou/gopsutil/v3/cpu"
 	"github.com/shirou/gopsutil/v3/disk"
 	"github.com/shirou/gopsutil/v3/host"

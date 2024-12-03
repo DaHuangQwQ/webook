@@ -2,10 +2,10 @@ package events
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/feed/domain"
-	"github.com/DaHuangQwQ/webook/feed/service"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/pkg/saramax"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/gpkg/saramax"
+	"github.com/DaHuangQwQ/webook/internal/feed/domain"
+	"github.com/DaHuangQwQ/webook/internal/feed/service"
 	"github.com/IBM/sarama"
 	"time"
 )

@@ -1,9 +1,9 @@
 package web
 
 import (
-	"github.com/DaHuangQwQ/webook/payment/service/wechat"
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/gpkg/ginx"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/payment/service/wechat"
 	"github.com/gin-gonic/gin"
 	"github.com/wechatpay-apiv3/wechatpay-go/core/notify"
 	"github.com/wechatpay-apiv3/wechatpay-go/services/payments"

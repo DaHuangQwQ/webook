@@ -2,7 +2,7 @@ package dao
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/payment/domain"
+	"github.com/DaHuangQwQ/webook/internal/payment/domain"
 	"gorm.io/gorm"
 	"time"
 )

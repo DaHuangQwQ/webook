@@ -1,18 +1,15 @@
 //go:build wireinject
 
-package main
+package user
 
 import (
-	"github.com/DaHuangQwQ/webook/user/grpc"
-	"github.com/DaHuangQwQ/webook/user/ioc"
-	"github.com/DaHuangQwQ/webook/user/repository"
-	"github.com/DaHuangQwQ/webook/user/repository/cache"
-	"github.com/DaHuangQwQ/webook/user/repository/dao"
-	system2 "github.com/DaHuangQwQ/webook/user/repository/system"
-	"github.com/DaHuangQwQ/webook/user/service"
-	"github.com/DaHuangQwQ/webook/user/service/system"
-	"github.com/DaHuangQwQ/webook/user/web"
+	"github.com/DaHuangQwQ/webook/internal/user/repository"
+	"github.com/DaHuangQwQ/webook/internal/user/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/user/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/user/service"
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
+	"gorm.io/gorm"
 )
 
 var serverSet = wire.NewSet(
@@ -20,46 +17,11 @@ var serverSet = wire.NewSet(
 	cache.NewUserCache,
 	repository.NewUserRepository,
 	service.NewUserService,
-	grpc.NewUserServiceServer,
 )
 
-var thirdSet = wire.NewSet(
-	ioc.InitLogger,
-	ioc.InitDB,
-	ioc.InitRedis,
-	ioc.InitOssService,
-	ioc.InitCasbinService,
-	ioc.InitEtcdClient,
-	ioc.NewGrpcxServer,
-)
-
-func initApp() *App {
+func InitApp(db *gorm.DB, client redis.Cmdable) *App {
 	wire.Build(
 		serverSet,
-		thirdSet,
-
-		dao.NewGormDeptDao,
-		dao.NewGormAuthDao,
-		dao.NewGormRoleDao,
-
-		system2.NewCachedAuthRepository,
-		system2.NewCachedDeptRepository,
-		system2.NewCachedUserRepository,
-		system2.NewCachedRoleRepository,
-
-		system.NewAuthService,
-		system.NewSystemService,
-		system.NewDeptService,
-		system.NewRoleService,
-		system.NewSysMonitorService,
-
-		web.NewRoleHandler,
-		web.NewUserHandler,
-		web.NewMonitorHandler,
-		web.NewDeptHandler,
-		web.NewAuthHandler,
-		ioc.InitGinMiddlewares,
-		ioc.InitWebServer,
 		wire.Struct(new(App), "*"),
 	)
 	return new(App)

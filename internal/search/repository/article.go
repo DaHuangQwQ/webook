@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"github.com/DaHuangQwQ/gutil/slice"
-	"github.com/DaHuangQwQ/webook/search/domain"
-	"github.com/DaHuangQwQ/webook/search/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/search/domain"
+	"github.com/DaHuangQwQ/webook/internal/search/repository/dao"
 )
 
 type articleRepository struct {

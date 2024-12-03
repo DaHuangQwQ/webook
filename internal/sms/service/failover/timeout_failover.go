@@ -2,7 +2,7 @@ package failover
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/sms/service"
+	"github.com/DaHuangQwQ/webook/internal/sms/service"
 	"sync/atomic"
 )
 

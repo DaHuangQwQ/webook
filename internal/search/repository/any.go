@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/search/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/search/repository/dao"
 )
 
 type AnyRepository interface {

@@ -2,7 +2,7 @@ package tencent
 
 import (
 	"context"
-	mysms "github.com/DaHuangQwQ/webook/sms/service"
+	mysms "github.com/DaHuangQwQ/webook/internal/sms/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"

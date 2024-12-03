@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/article/domain"
-	"github.com/DaHuangQwQ/webook/bff/api"
+	"github.com/DaHuangQwQ/webook/internal/article/domain"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
 	"time"
 )
 

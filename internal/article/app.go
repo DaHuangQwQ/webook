@@ -1,7 +1,9 @@
-package main
+package article
 
-import "github.com/DaHuangQwQ/webook/pkg/grpcx"
+import (
+	"github.com/DaHuangQwQ/webook/internal/article/service"
+)
 
 type App struct {
-	server *grpcx.Server
+	Server service.ArticleService
 }

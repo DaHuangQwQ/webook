@@ -2,11 +2,11 @@ package repository
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/gpkg/logger"
 	"github.com/DaHuangQwQ/gutil/slice"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/tag/domain"
-	"github.com/DaHuangQwQ/webook/tag/repository/cache"
-	"github.com/DaHuangQwQ/webook/tag/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/tag/domain"
+	"github.com/DaHuangQwQ/webook/internal/tag/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/tag/repository/dao"
 	"time"
 )
 

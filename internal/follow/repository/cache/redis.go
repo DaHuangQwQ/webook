@@ -3,7 +3,7 @@ package cache
 import (
 	"context"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/follow/domain"
+	"github.com/DaHuangQwQ/webook/internal/follow/domain"
 	"github.com/redis/go-redis/v9"
 	"strconv"
 )

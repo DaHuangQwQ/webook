@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/article/domain"
-	"github.com/DaHuangQwQ/webook/bff/api"
+	"github.com/DaHuangQwQ/webook/internal/article/domain"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
 	"mime/multipart"
 	"time"
 )
@@ -12,7 +12,7 @@ import (
 type ArticleService interface {
 	Save(ctx context.Context, article domain.Article) (id int64, err error)
 	Img_Update(ctx context.Context, file multipart.File, fileType string) (string, error)
-	Withdraw(ctx context.Context, article domain.Article) error
+	Withdraw(ctx context.Context, articleId, authorId int64) error
 	Publish(ctx context.Context, article domain.Article) (int64, error)
 	GetList(ctx context.Context) (list []domain.Article, err error)
 	List(ctx context.Context, req api.PageReq) (list []domain.Article, err error)

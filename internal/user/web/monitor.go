@@ -1,8 +1,8 @@
 package web
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
-	"github.com/DaHuangQwQ/webook/user/service/system"
+	"github.com/DaHuangQwQ/gpkg/ginx"
+	"github.com/DaHuangQwQ/webook/internal/user/service/system"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

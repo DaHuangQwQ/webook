@@ -1,11 +1,11 @@
 package web
 
 import (
-	"github.com/DaHuangQwQ/webook/bff/api"
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
-	ijwt "github.com/DaHuangQwQ/webook/pkg/ginx/jwt"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/user/service/system"
+	"github.com/DaHuangQwQ/gpkg/ginx"
+	ijwt "github.com/DaHuangQwQ/gpkg/ginx/jwt"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
+	"github.com/DaHuangQwQ/webook/internal/user/service/system"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"

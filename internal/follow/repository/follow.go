@@ -2,10 +2,10 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/follow/domain"
-	"github.com/DaHuangQwQ/webook/follow/repository/cache"
-	"github.com/DaHuangQwQ/webook/follow/repository/dao"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/follow/domain"
+	"github.com/DaHuangQwQ/webook/internal/follow/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/follow/repository/dao"
 )
 
 type FollowRepository interface {

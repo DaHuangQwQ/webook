@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/search/domain"
-	"github.com/DaHuangQwQ/webook/search/repository"
+	"github.com/DaHuangQwQ/webook/internal/search/domain"
+	"github.com/DaHuangQwQ/webook/internal/search/repository"
 )
 
 type SyncService interface {

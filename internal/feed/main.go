@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/logger"
+	"github.com/DaHuangQwQ/gpkg/logger"
 )
 
 func main() {

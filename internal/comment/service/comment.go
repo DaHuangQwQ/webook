@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/comment/domain"
-	"github.com/DaHuangQwQ/webook/comment/repository"
+	"github.com/DaHuangQwQ/webook/internal/comment/domain"
+	"github.com/DaHuangQwQ/webook/internal/comment/repository"
 )
 
 type commentService struct {

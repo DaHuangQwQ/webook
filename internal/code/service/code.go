@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 	"fmt"
-	smsv1 "github.com/DaHuangQwQ/webook/api/proto/gen/sms/v1"
-	"github.com/DaHuangQwQ/webook/code/repository"
+	//smsv1 "github.com/DaHuangQwQ/webook/api/proto/gen/sms/v1"
+	"github.com/DaHuangQwQ/webook/internal/code/repository"
 	"math/rand"
 )
 

@@ -3,11 +3,11 @@ package dao
 import (
 	"context"
 	"errors"
-	"github.com/DaHuangQwQ/webook/bff/api"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
 	"github.com/go-sql-driver/mysql"
+	"gorm.io/gorm"
 	"time"
 )
-import "gorm.io/gorm"
 
 type GormUserDao struct {
 	db *gorm.DB

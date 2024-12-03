@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/grpcx"
+	"github.com/DaHuangQwQ/gpkg/grpcx"
 )
 
 type App struct {

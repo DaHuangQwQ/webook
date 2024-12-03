@@ -1,8 +1,8 @@
 package events
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/search/service"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/webook/internal/search/service"
 	"github.com/IBM/sarama"
 )
 

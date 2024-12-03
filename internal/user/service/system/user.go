@@ -3,9 +3,9 @@ package system
 import (
 	"context"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/bff/api"
-	domain2 "github.com/DaHuangQwQ/webook/user/domain"
-	"github.com/DaHuangQwQ/webook/user/repository/system"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
+	domain2 "github.com/DaHuangQwQ/webook/internal/user/domain"
+	"github.com/DaHuangQwQ/webook/internal/user/repository/system"
 	"github.com/spf13/viper"
 	"strings"
 )

@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
-	userv1 "github.com/DaHuangQwQ/webook/api/proto/gen/user/v1"
-	"github.com/DaHuangQwQ/webook/article/domain"
-	"github.com/DaHuangQwQ/webook/article/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/user"
+
+	//userv1 "github.com/DaHuangQwQ/webook/internal/api/proto/gen/user/v1"
+	"github.com/DaHuangQwQ/webook/internal/article/domain"
+	"github.com/DaHuangQwQ/webook/internal/article/repository/dao"
 )
 
 // AuthorRepository 封装user的client用于获取用户信息
@@ -14,11 +16,11 @@ type AuthorRepository interface {
 }
 
 type GrpcAuthorRepository struct {
-	client userv1.UserServiceClient
+	client user.App
 	dao    dao.ArticleDao
 }
 
-func NewGrpcAuthorRepository(articleDao dao.ArticleDao, client userv1.UserServiceClient) AuthorRepository {
+func NewGrpcAuthorRepository(articleDao dao.ArticleDao, client user.App) AuthorRepository {
 	return &GrpcAuthorRepository{
 		client: client,
 		dao:    articleDao,
@@ -30,14 +32,12 @@ func (g *GrpcAuthorRepository) FindAuthor(ctx context.Context, id int64) (domain
 	if err != nil {
 		return domain.Author{}, nil
 	}
-	u, err := g.client.Profile(ctx, &userv1.ProfileRequest{
-		Id: art.AuthorId,
-	})
+	u, err := g.client.Server.Profile(ctx, art.AuthorId)
 	if err != nil {
 		return domain.Author{}, err
 	}
 	return domain.Author{
-		Id:   u.User.Id,
-		Name: u.User.Nickname,
+		Id:   u.Id,
+		Name: u.Nickname,
 	}, nil
 }

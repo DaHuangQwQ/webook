@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/sms/service"
+	"github.com/DaHuangQwQ/webook/internal/sms/service"
 	"github.com/golang-jwt/jwt/v5"
 )
 

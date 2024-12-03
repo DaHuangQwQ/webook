@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"github.com/DaHuangQwQ/gutil/slice"
-	"github.com/DaHuangQwQ/webook/article/domain"
-	"github.com/DaHuangQwQ/webook/article/repository/cache"
-	"github.com/DaHuangQwQ/webook/article/repository/dao"
-	"github.com/DaHuangQwQ/webook/bff/api"
-	"github.com/DaHuangQwQ/webook/internal_temp/repository/dao/oss"
+	"github.com/DaHuangQwQ/webook/internal/article/domain"
+	"github.com/DaHuangQwQ/webook/internal/article/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/article/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+
+	//"github.com/DaHuangQwQ/webook/internal_temp/repository/dao/oss"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -106,7 +108,8 @@ func (c *CachedArticleRepository) Img_Update(ctx context.Context, file []byte, f
 	}
 	fileName := fmt.Sprintf("articleImg/%d.%s", time.Now().UnixMilli(), fileType)
 	ossAdress := "https://ceit." + config.ENDP + "/" + fileName
-	return ossAdress, c.oss.UploadFile(ctx, fileName, file)
+	//return ossAdress, c.oss.UploadFile(ctx, fileName, file)
+	return ossAdress, nil
 }
 
 func (c *CachedArticleRepository) Update(ctx context.Context, article domain.Article) error {

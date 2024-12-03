@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/account/domain"
-	"github.com/DaHuangQwQ/webook/account/repository"
+	"github.com/DaHuangQwQ/webook/internal/account/domain"
+	"github.com/DaHuangQwQ/webook/internal/account/repository"
 )
 
 type accountService struct {

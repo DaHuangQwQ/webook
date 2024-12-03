@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/tag/domain"
+	"github.com/DaHuangQwQ/webook/internal/tag/domain"
 	"github.com/redis/go-redis/v9"
 	"time"
 )

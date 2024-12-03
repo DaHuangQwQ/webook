@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/reward/domain"
+	"github.com/DaHuangQwQ/webook/internal/reward/domain"
 )
 
 //go:generate mockgen -source=./types.go -destination=mocks/reward.mock.go -package=svcmocks RewardService

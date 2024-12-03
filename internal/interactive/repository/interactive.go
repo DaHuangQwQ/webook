@@ -3,10 +3,10 @@ package repository
 import (
 	"context"
 	"github.com/DaHuangQwQ/gutil/slice"
-	"github.com/DaHuangQwQ/webook/interactive/domain"
-	"github.com/DaHuangQwQ/webook/interactive/repository/cache"
-	"github.com/DaHuangQwQ/webook/interactive/repository/dao"
-	dao2 "github.com/DaHuangQwQ/webook/interactive/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/interactive/domain"
+	"github.com/DaHuangQwQ/webook/internal/interactive/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/interactive/repository/dao"
+	dao2 "github.com/DaHuangQwQ/webook/internal/interactive/repository/dao"
 )
 
 type InteractiveRepository interface {

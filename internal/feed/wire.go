@@ -3,12 +3,10 @@
 package main
 
 import (
-	"github.com/DaHuangQwQ/webook/feed/grpc"
-	"github.com/DaHuangQwQ/webook/feed/ioc"
-	"github.com/DaHuangQwQ/webook/feed/repository"
-	"github.com/DaHuangQwQ/webook/feed/repository/cache"
-	"github.com/DaHuangQwQ/webook/feed/repository/dao"
-	"github.com/DaHuangQwQ/webook/feed/service"
+	"github.com/DaHuangQwQ/webook/internal/feed/repository"
+	"github.com/DaHuangQwQ/webook/internal/feed/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/feed/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/feed/service"
 	"github.com/google/wire"
 )
 
@@ -21,23 +19,11 @@ var serverSet = wire.NewSet(
 	service.NewFollowEventHandler,
 	//service.NewArticleEventHandler,
 	//service.NewLikeEventHandler,
-	grpc.NewFeedEventGrpcSvc,
-)
-
-var thirdSet = wire.NewSet(
-	ioc.InitLogger,
-	ioc.InitDB,
-	ioc.InitRedis,
-	ioc.InitEtcdClient,
-	ioc.NewGrpcxServer,
-	ioc.RegisterHandler,
-	ioc.InitFollowClient,
 )
 
 func initApp() *App {
 	wire.Build(
 		serverSet,
-		thirdSet,
 		wire.Struct(new(App), "*"),
 	)
 	return new(App)

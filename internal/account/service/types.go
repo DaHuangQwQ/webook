@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/account/domain"
+	"github.com/DaHuangQwQ/webook/internal/account/domain"
 )
 
 type AccountService interface {

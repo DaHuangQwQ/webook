@@ -3,7 +3,7 @@ package dao
 import (
 	"context"
 	"database/sql"
-	"github.com/DaHuangQwQ/webook/payment/domain"
+	"github.com/DaHuangQwQ/webook/internal/payment/domain"
 	"time"
 )
 

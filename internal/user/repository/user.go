@@ -4,10 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/internal_temp/repository/dao/oss"
-	domain2 "github.com/DaHuangQwQ/webook/user/domain"
-	"github.com/DaHuangQwQ/webook/user/repository/cache"
-	"github.com/DaHuangQwQ/webook/user/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/user/domain"
+	"github.com/DaHuangQwQ/webook/internal/user/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/user/repository/dao"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -15,7 +14,7 @@ import (
 type CachedUserRepository struct {
 	dao   dao.UserDao
 	cache cache.UserCache
-	oss   oss.Client
+	//oss   oss.Client
 }
 
 func (repo *CachedUserRepository) GetAvatar(ctx context.Context, id int64) (string, error) {
@@ -31,36 +30,35 @@ var (
 	ErrUserNotFound = dao.ErrRecordNotFound
 )
 
-func NewUserRepository(dao dao.UserDao, cache cache.UserCache, oss oss.Client) UserRepository {
+func NewUserRepository(dao dao.UserDao, cache cache.UserCache) UserRepository {
 	return &CachedUserRepository{
 		dao:   dao,
 		cache: cache,
-		oss:   oss,
 	}
 }
 
-func (repo *CachedUserRepository) Create(ctx context.Context, user domain2.User) error {
+func (repo *CachedUserRepository) Create(ctx context.Context, user domain.User) error {
 	err := repo.dao.Insert(ctx, repo.domainToEntity(user))
 	return err
 }
 
-func (repo *CachedUserRepository) FindByEmail(ctx context.Context, email string) (domain2.User, error) {
+func (repo *CachedUserRepository) FindByEmail(ctx context.Context, email string) (domain.User, error) {
 	u, err := repo.dao.FindByEmail(ctx, email)
 	if err != nil {
-		return domain2.User{}, err
+		return domain.User{}, err
 	}
 	return repo.entityToDomain(u), nil
 }
 
-func (repo *CachedUserRepository) FindByPhone(ctx context.Context, phone string) (domain2.User, error) {
+func (repo *CachedUserRepository) FindByPhone(ctx context.Context, phone string) (domain.User, error) {
 	u, err := repo.dao.FindByPhone(ctx, phone)
 	if err != nil {
-		return domain2.User{}, err
+		return domain.User{}, err
 	}
 	return repo.entityToDomain(u), nil
 }
 
-func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domain2.User, error) {
+func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domain.User, error) {
 	//u, err := repo.cache.Get(ctx, id)
 
 	//switch err {
@@ -76,7 +74,7 @@ func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domai
 
 	ue, err := repo.dao.FindById(ctx, id)
 	if err != nil {
-		return domain2.User{}, err
+		return domain.User{}, err
 	}
 	user := repo.entityToDomain(ue)
 
@@ -92,15 +90,15 @@ func (repo *CachedUserRepository) FindByID(ctx context.Context, id int64) (domai
 	return user, nil
 }
 
-func (repo *CachedUserRepository) FindByWechat(ctx context.Context, OpenId string) (domain2.User, error) {
+func (repo *CachedUserRepository) FindByWechat(ctx context.Context, OpenId string) (domain.User, error) {
 	u, err := repo.dao.FindByWechat(ctx, OpenId)
 	if err != nil {
-		return domain2.User{}, err
+		return domain.User{}, err
 	}
 	return repo.entityToDomain(u), nil
 }
 
-func (repo *CachedUserRepository) UpdateByID(ctx context.Context, user domain2.User) error {
+func (repo *CachedUserRepository) UpdateByID(ctx context.Context, user domain.User) error {
 	return repo.dao.Update(ctx, repo.domainToEntity(user))
 }
 
@@ -123,10 +121,11 @@ func (repo *CachedUserRepository) AvatarUpdate(ctx context.Context, id int64, fi
 		return "", err
 	}
 
-	return ossAdress, repo.oss.UploadFile(ctx, fileName, file)
+	//return ossAdress, repo.oss.UploadFile(ctx, fileName, file)
+	return ossAdress, nil
 }
 
-func (repo *CachedUserRepository) domainToEntity(user domain2.User) dao.User {
+func (repo *CachedUserRepository) domainToEntity(user domain.User) dao.User {
 	return dao.User{
 		Id:       user.Id,
 		Nickname: user.Nickname,
@@ -153,8 +152,8 @@ func (repo *CachedUserRepository) domainToEntity(user domain2.User) dao.User {
 	}
 }
 
-func (repo *CachedUserRepository) entityToDomain(user dao.User) domain2.User {
-	return domain2.User{
+func (repo *CachedUserRepository) entityToDomain(user dao.User) domain.User {
+	return domain.User{
 		Id:       user.Id,
 		Email:    user.Email.String,
 		Password: user.Password,
@@ -165,7 +164,7 @@ func (repo *CachedUserRepository) entityToDomain(user dao.User) domain2.User {
 		CTime:    time.UnixMilli(user.CTime),
 		Avatar:   user.AvatarUrl,
 
-		WechatInfo: domain2.WechatInfo{
+		WechatInfo: domain.WechatInfo{
 			OpenId:  user.WechatOpenId.String,
 			UnionId: user.WechatUnionId.String,
 		},

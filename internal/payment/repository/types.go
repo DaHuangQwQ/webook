@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/payment/domain"
+	"github.com/DaHuangQwQ/webook/internal/payment/domain"
 	"time"
 )
 

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
-	"github.com/DaHuangQwQ/webook/pkg/grpcx"
+	"github.com/DaHuangQwQ/gpkg/ginx"
+	"github.com/DaHuangQwQ/gpkg/grpcx"
 )
 
 type App struct {

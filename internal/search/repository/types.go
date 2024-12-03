@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/search/domain"
+	"github.com/DaHuangQwQ/webook/internal/search/domain"
 )
 
 type UserRepository interface {

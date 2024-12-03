@@ -2,11 +2,11 @@ package service
 
 import (
 	"context"
+	"github.com/DaHuangQwQ/gpkg/logger"
 	"github.com/DaHuangQwQ/gutil/slice"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/tag/domain"
-	"github.com/DaHuangQwQ/webook/tag/events"
-	"github.com/DaHuangQwQ/webook/tag/repository"
+	"github.com/DaHuangQwQ/webook/internal/tag/domain"
+	"github.com/DaHuangQwQ/webook/internal/tag/events"
+	"github.com/DaHuangQwQ/webook/internal/tag/repository"
 	"time"
 )
 

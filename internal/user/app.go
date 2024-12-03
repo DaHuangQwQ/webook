@@ -1,11 +1,10 @@
-package main
+package user
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
-	"github.com/DaHuangQwQ/webook/pkg/grpcx"
+	"github.com/DaHuangQwQ/webook/internal/user/service"
 )
 
 type App struct {
-	server   *grpcx.Server
-	webAdmin *ginx.Server
+	Server service.UserService
+	//webAdmin *ginx.Server
 }

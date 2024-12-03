@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/follow/domain"
-	"github.com/DaHuangQwQ/webook/follow/repository"
+	"github.com/DaHuangQwQ/webook/internal/follow/domain"
+	"github.com/DaHuangQwQ/webook/internal/follow/repository"
 )
 
 type FollowRelationService interface {

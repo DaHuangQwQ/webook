@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/payment/domain"
+	"github.com/DaHuangQwQ/webook/internal/payment/domain"
 )
 
 type PaymentService interface {

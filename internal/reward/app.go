@@ -1,6 +1,6 @@
 package main
 
-import "github.com/DaHuangQwQ/webook/pkg/grpcx"
+import "github.com/DaHuangQwQ/gpkg/grpcx"
 
 type App struct {
 	server *grpcx.Server

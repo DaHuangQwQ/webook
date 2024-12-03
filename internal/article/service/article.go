@@ -4,10 +4,10 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/article/domain"
-	"github.com/DaHuangQwQ/webook/article/events"
-	"github.com/DaHuangQwQ/webook/article/repository"
-	"github.com/DaHuangQwQ/webook/bff/api"
+	"github.com/DaHuangQwQ/webook/internal/article/domain"
+	"github.com/DaHuangQwQ/webook/internal/article/events"
+	"github.com/DaHuangQwQ/webook/internal/article/repository"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
 	"io"
 	"mime/multipart"
 	"time"
@@ -92,8 +92,8 @@ func (s *articleService) Publish(ctx context.Context, article domain.Article) (i
 	return s.repo.Sync(ctx, article)
 }
 
-func (s *articleService) Withdraw(ctx context.Context, article domain.Article) error {
-	return s.repo.SyncStatus(ctx, article.Id, article.Author.Id, domain.ArticleStatusPrivate)
+func (s *articleService) Withdraw(ctx context.Context, articleId, authorId int64) error {
+	return s.repo.SyncStatus(ctx, articleId, authorId, domain.ArticleStatusPrivate)
 }
 
 func (s *articleService) GetList(ctx context.Context) (list []domain.Article, err error) {

@@ -3,8 +3,8 @@ package ratelimit
 import (
 	"context"
 	"errors"
-	limiter "github.com/DaHuangQwQ/webook/pkg/ratelimit"
-	"github.com/DaHuangQwQ/webook/sms/service"
+	limiter "github.com/DaHuangQwQ/gpkg/ratelimit"
+	"github.com/DaHuangQwQ/webook/internal/sms/service"
 )
 
 // 装饰器模式

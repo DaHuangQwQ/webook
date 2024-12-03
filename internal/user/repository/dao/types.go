@@ -3,7 +3,7 @@ package dao
 import (
 	"context"
 	"database/sql"
-	"github.com/DaHuangQwQ/webook/bff/api"
+	"github.com/DaHuangQwQ/webook/internal/bff/api"
 	"gorm.io/gorm"
 	"time"
 )

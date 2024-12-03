@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/sms/service"
+	"github.com/DaHuangQwQ/webook/internal/sms/service"
 	aliyunSms "github.com/alibabacloud-go/dysmsapi-20170525/v4/client"
 )
 

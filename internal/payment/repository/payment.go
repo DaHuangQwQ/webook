@@ -3,8 +3,8 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"github.com/DaHuangQwQ/webook/payment/domain"
-	"github.com/DaHuangQwQ/webook/payment/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/payment/domain"
+	"github.com/DaHuangQwQ/webook/internal/payment/repository/dao"
 	"time"
 )
 

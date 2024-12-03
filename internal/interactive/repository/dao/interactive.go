@@ -2,7 +2,7 @@ package dao
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/pkg/migrator"
+	"github.com/DaHuangQwQ/gpkg/migrator"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"

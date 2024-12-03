@@ -2,8 +2,8 @@ package system
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/user/domain"
-	"github.com/DaHuangQwQ/webook/user/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/user/domain"
+	"github.com/DaHuangQwQ/webook/internal/user/repository/dao"
 )
 
 type DeptRepository interface {

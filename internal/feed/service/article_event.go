@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	followv1 "github.com/DaHuangQwQ/webook/api/proto/gen/follow/v1"
-	"github.com/DaHuangQwQ/webook/feed/domain"
-	"github.com/DaHuangQwQ/webook/feed/repository"
+	//followv1 "github.com/DaHuangQwQ/webook/api/proto/gen/follow/v1"
+	"github.com/DaHuangQwQ/webook/internal/feed/domain"
+	"github.com/DaHuangQwQ/webook/internal/feed/repository"
 	"github.com/ecodeclub/ekit/slice"
 	"golang.org/x/sync/errgroup"
 	"sort"

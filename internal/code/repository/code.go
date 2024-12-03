@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/code/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/code/repository/cache"
 )
 
 type CachedCodeRepository struct {

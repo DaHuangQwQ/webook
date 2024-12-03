@@ -1,6 +1,6 @@
 package api
 
-import "github.com/DaHuangQwQ/webook/user/domain"
+import "github.com/DaHuangQwQ/webook/internal/user/domain"
 
 type RoleListReq struct {
 	Meta     `path:"/role/list" method:"get" summary:"角色列表"`

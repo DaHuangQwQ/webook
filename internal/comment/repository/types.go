@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/comment/domain"
+	"github.com/DaHuangQwQ/webook/internal/comment/domain"
 )
 
 type CommentRepository interface {

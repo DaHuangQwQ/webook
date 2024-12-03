@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/reward/domain"
-	"github.com/DaHuangQwQ/webook/reward/repository/cache"
-	"github.com/DaHuangQwQ/webook/reward/repository/dao"
+	"github.com/DaHuangQwQ/webook/internal/reward/domain"
+	"github.com/DaHuangQwQ/webook/internal/reward/repository/cache"
+	"github.com/DaHuangQwQ/webook/internal/reward/repository/dao"
 )
 
 type rewardRepository struct {

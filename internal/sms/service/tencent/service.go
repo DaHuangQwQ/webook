@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/DaHuangQwQ/gutil/slice"
-	mysms "github.com/DaHuangQwQ/webook/sms/service"
+	mysms "github.com/DaHuangQwQ/webook/internal/sms/service"
 	sms "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms/v20210111"
 )
 

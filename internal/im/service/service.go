@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/im/domain"
+	"github.com/DaHuangQwQ/webook/internal/im/domain"
 	"github.com/ecodeclub/ekit/net/httpx"
 	"github.com/google/uuid"
 	"go.opentelemetry.io/otel/trace"

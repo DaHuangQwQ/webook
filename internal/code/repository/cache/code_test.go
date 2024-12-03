@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/code/repository/cache/redismocks"
+	"github.com/DaHuangQwQ/webook/internal/code/repository/cache/redismocks"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"

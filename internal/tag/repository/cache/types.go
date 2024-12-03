@@ -2,7 +2,7 @@ package cache
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/tag/domain"
+	"github.com/DaHuangQwQ/webook/internal/tag/domain"
 	"github.com/redis/go-redis/v9"
 )
 

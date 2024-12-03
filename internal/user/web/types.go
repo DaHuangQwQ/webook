@@ -1,7 +1,7 @@
 package web
 
 import (
-	"github.com/DaHuangQwQ/webook/pkg/ginx"
+	"github.com/DaHuangQwQ/gpkg/ginx"
 	"github.com/gin-gonic/gin"
 )
 

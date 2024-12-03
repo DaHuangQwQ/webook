@@ -2,9 +2,9 @@ package events
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/interactive/repository"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/pkg/saramax"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/gpkg/saramax"
+	"github.com/DaHuangQwQ/webook/internal/interactive/repository"
 	"github.com/IBM/sarama"
 	"time"
 )

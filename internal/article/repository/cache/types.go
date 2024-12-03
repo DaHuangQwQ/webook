@@ -2,7 +2,7 @@ package cache
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/article/domain"
+	"github.com/DaHuangQwQ/webook/internal/article/domain"
 )
 
 type ArticleCache interface {

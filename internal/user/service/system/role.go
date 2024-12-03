@@ -2,9 +2,9 @@ package system
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/user/api"
-	"github.com/DaHuangQwQ/webook/user/domain"
-	system2 "github.com/DaHuangQwQ/webook/user/repository/system"
+	"github.com/DaHuangQwQ/webook/internal/user/api"
+	"github.com/DaHuangQwQ/webook/internal/user/domain"
+	system2 "github.com/DaHuangQwQ/webook/internal/user/repository/system"
 )
 
 type RoleService interface {

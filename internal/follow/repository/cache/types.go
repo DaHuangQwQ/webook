@@ -2,7 +2,7 @@ package cache
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/follow/domain"
+	"github.com/DaHuangQwQ/webook/internal/follow/domain"
 )
 
 type FollowCache interface {

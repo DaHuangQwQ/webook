@@ -2,11 +2,11 @@ package events
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/im/domain"
-	"github.com/DaHuangQwQ/webook/im/service"
-	"github.com/DaHuangQwQ/webook/pkg/canalx"
-	"github.com/DaHuangQwQ/webook/pkg/logger"
-	"github.com/DaHuangQwQ/webook/pkg/saramax"
+	"github.com/DaHuangQwQ/gpkg/canalx"
+	"github.com/DaHuangQwQ/gpkg/logger"
+	"github.com/DaHuangQwQ/gpkg/saramax"
+	"github.com/DaHuangQwQ/webook/internal/im/domain"
+	"github.com/DaHuangQwQ/webook/internal/im/service"
 	"github.com/IBM/sarama"
 	"strconv"
 	"time"

@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/DaHuangQwQ/webook/user/domain"
+	"github.com/DaHuangQwQ/webook/internal/user/domain"
 	"github.com/redis/go-redis/v9"
 	"time"
 )

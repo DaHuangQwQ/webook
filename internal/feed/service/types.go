@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	"github.com/DaHuangQwQ/webook/feed/domain"
+	"github.com/DaHuangQwQ/webook/internal/feed/domain"
 )
 
 type FeedService interface {
