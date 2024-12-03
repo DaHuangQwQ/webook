@@ -1,80 +1,5 @@
 version: "3.0"
 services:
-  account:
-    image: dahuang/account:latest
-    container_name: account
-    ports:
-      - "8080:8080"
-  bff:
-    image: dahuang/bff:latest
-    container_name: bff
-    ports:
-      - "8081:8080"
-  comment:
-    image: dahuang/comment:latest
-    container_name: comment
-    ports:
-      - "8082:8080"
-  feed:
-    image: dahuang/feed:latest
-    container_name: feed
-    ports:
-      - "8083:8080"
-  interactive:
-    image: dahuang/interactive:latest
-    container_name: interactive
-    ports:
-      - "8084:8080"
-  ranking:
-    image: dahuang/ranking:latest
-    container_name: ranking
-    ports:
-      - "8085:8080"
-  search:
-    image: dahuang/search:latest
-    container_name: search
-    ports:
-      - "8086:8080"
-  user:
-    image: dahuang/user:latest
-    container_name: user
-    ports:
-      - "8087:8080"
-  article:
-    image: dahuang/article:latest
-    container_name: article
-    ports:
-      - "8088:8080"
-  code:
-    image: dahuang/code:latest
-    container_name: code
-    ports:
-      - "8089:8080"
-  cronjob:
-    image: dahuang/cronjob:latest
-    container_name: cronjob
-    ports:
-      - "8090:8080"
-  follow:
-    image: dahuang/follow:latest
-    container_name: follow
-    ports:
-      - "8091:8080"
-  payment:
-    image: dahuang/payment:latest
-    container_name: payment
-    ports:
-      - "8092:8080"
-  reward:
-    image: dahuang/reward:latest
-    container_name: reward
-    ports:
-      - "8093:8080"
-  tag:
-    image: dahuang/tag:latest
-    container_name: tag
-    ports:
-      - "8094:8080"
   mysql8:
     image: mysql:8.0.29
     restart: always
@@ -86,7 +11,7 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./script/mysql/:/docker-entrypoint-initdb.d/
+      - ./.script/mysql/:/docker-entrypoint-initdb.d/
     ports:
       - "3307:3306"
 
@@ -97,22 +22,6 @@ services:
     ports:
       - "6380:6379"
 
-  etcd:
-    image: "bitnami/etcd:latest"
-    restart: always
-    environment:
-      - ALLOW_NONE_AUTHENTICATION=yes
-    ports:
-      - "12379:2379"
-
-#  mongo:
-#    image: mongo:6.0
-#    restart: always
-#    environment:
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: example
-#    ports:
-#      - 27017:27017
   kafka:
     image: 'bitnami/kafka:3.6.0'
     ports:
@@ -190,7 +99,7 @@ services:
       #      - 暴露了 canal 的端口，但是其实一般比较少直接跟 canal 打交道
       - 11111:11111
     volumes:
-      - ./script/canal/webook/instance.properties:/home/admin/canal-server/conf/webook/instance.properties
-      - ./script/canal/canal.properties:/home/admin/canal-server/conf/canal.properties
+      - ./.script/canal/webook/instance.properties:/home/admin/canal-server/conf/webook/instance.properties
+      - ./.script/canal/canal.properties:/home/admin/canal-server/conf/canal.properties
 volumes:
   mysql_data:
